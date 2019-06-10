@@ -1,0 +1,18 @@
+Tariff;Start;End;Type;Season
+Time-of-Use three periods;00:00:00;07:59:59;Super Off-Peak;Winter
+Time-of-Use three periods;08:00:00;08:29:59;Off-Peak;Winter
+Time-of-Use three periods;08:30:00;10:29:59;Peak;Winter
+Time-of-Use three periods;10:30:00;17:59:59;Off-Peak;Winter
+Time-of-Use three periods;18:00:00;20:29:59;Peak;Winter
+Time-of-Use three periods;20:30:00;21:59:59;Off-Peak;Winter
+Time-of-Use three periods;22:00:00;23:59:59;Super Off-Peak;Winter
+Time-of-Use three periods;00:00:00;07:59:59;Super Off-Peak;Summer
+Time-of-Use three periods;08:00:00;9:59:59;Off-Peak;Summer
+Time-of-Use three periods;10:30:00;12:59:59;Peak;Summer
+Time-of-Use three periods;13:00:00;19:29:59;Off-Peak;Summer
+Time-of-Use three periods;19:30:00;20:59:59;Peak;Summer
+Time-of-Use three periods;21:00:00;21:59:59;Off-Peak;Summer
+Time-of-Use three periods;22:00:00;23:59:59;Super Off-Peak;Summer
+Time-of-Use two periods;00:00:00;7:59:59;Off-Peak;
+Time-of-Use two periods;8:00:00;22:59:59;Peak;
+Time-of-Use two periods;22:00:00;23:59:59;Off-Peak;

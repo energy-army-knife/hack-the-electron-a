@@ -1,34 +1,80 @@
-from typing import List
-
-import pandas as pd
+from enum import Enum
 
 
 class BuildingData:
 
-    def __init__(self, df: pd.DataFrame):
-        self.data_frame = df
-        self.building_types = list(set(self.data_frame.Type))
-        self.services = list(set(self.data_frame.Service))
+    def __init__(self, type: str, service: str, meter_id):
+        self.type = type
+        self.service = service
+        self.meter_id = meter_id
 
-    def get_building_types(self) -> list:
-        return self.building_types
 
-    def get_meters_id_by_building_type(self, building_type: str) -> List[str]:
-        if building_type not in self.building_types:
-            raise Exception("The building type does not exist")
-        return list(self.data_frame[self.data_frame.Type == building_type].meter_id)
+class Season(Enum):
+    Winter = 1
+    Summer = 2
+    ALL = Winter | Summer
 
-    def get_meters_id_by_service(self, service: str) -> List[str]:
-        if service not in self.services:
-            raise Exception("The service does not exist")
-        return list(self.data_frame[self.data_frame.Service == service].meter_id)
 
-    def get_meters_by_building_and_service(self, building_type: str, service: str):
+class HourTariffType(Enum):
+    PEAK = 1
+    OFF_PEAK = 2
+    SUPER_OFF_PEAK = 3
 
-        meters_building_type = set(self.get_meters_id_by_building_type(building_type))
-        meters_service = set(self.get_meters_id_by_service(service))
-        return list(meters_building_type.intersection(meters_service))
+    @staticmethod
+    def from_str(label: str):
+        label = label.lower().strip()
 
-    def get_meter_id_info(self, meter_id: str) -> pd.DataFrame:
-        return self.data_frame[self.data_frame.meter_id == meter_id]
+        if label == "peak":
+            return HourTariffType.PEAK
 
+        elif label == "off-peak":
+            return HourTariffType.OFF_PEAK
+
+        elif label == "super off-peak":
+            return HourTariffType.SUPER_OFF_PEAK
+
+        else:
+            raise NotImplementedError
+
+
+class TariffType(Enum):
+    SIMPLE = 1
+    TWO_PERIOD = 2
+    THREE_PERIOD = 3
+
+    @staticmethod
+    def from_str(label: str):
+        label = label.lower().strip()
+
+        if label == "simple tariff":
+            return TariffType.SIMPLE
+
+        elif label == "time-of-use two periods":
+            return TariffType.TWO_PERIOD
+
+        elif label == "time-of-use three periods":
+            return TariffType.THREE_PERIOD
+
+        else:
+            raise NotImplementedError
+
+
+class TariffCost:
+
+    def __init__(self, contracted_power: float, tariff_type: TariffType, power_cost_per_day: float, peak_periods_cost: float,
+                 off_peak_periods: float, super_peak_cost: float):
+        self.contracted_power = contracted_power
+        self.tariff_type = tariff_type
+        self.power_cost_per_day = power_cost_per_day
+        self.peak_periods_cost = peak_periods_cost
+        self.off_peak_periods = off_peak_periods
+        self.super_peak_cost = super_peak_cost
+
+
+class MeterContractInformation:
+
+    def __init__(self, meter_id: str, tariff: TariffType, contracted_power: float, n_phases: str):
+        self.meter_id = meter_id
+        self.tariff = tariff
+        self.contracted_power = contracted_power
+        self.n_phases = n_phases
