@@ -16,3 +16,4 @@ Time-of-Use three periods;22:00:00;23:59:59;Super Off-Peak;Summer
 Time-of-Use two periods;00:00:00;7:59:59;Off-Peak;
 Time-of-Use two periods;8:00:00;22:59:59;Peak;
 Time-of-Use two periods;22:00:00;23:59:59;Off-Peak;
+Simple Tariff;00:00:00;23:59:59;Peak;
