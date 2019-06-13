@@ -156,13 +156,16 @@ class MetersInformation(CSVDataLoader):
         return MeterContractInformation(meter_id, row[self.COLUMN_NAME_TARIFF], row[self.COLUMN_NAME_CONTRACTED_POWER],
                                         row[self.COLUMN_NAME_PHASES])
 
+    def get_meters_id_by_tariff(self, tariff_type: TariffType) -> list:
+        return self.data_frame.loc[self.data_frame[self.COLUMN_NAME_TARIFF] == tariff_type].index.values
+
 
 if __name__ == '__main__':
 
     tarriff_periods = TariffPeriods("../resources/HackTheElectron dataset support data/"
                                     "Tariff-Periods-Table 1.csv")
 
-    tarriff_periods_tariff_2 = tarriff_periods.get_periods_for_tariff("Time-of-Use two periods")
+    tarriff_periods_tariff_2 = tarriff_periods.get_periods_for_tariff(TariffType.TWO_PERIOD)
 
     meter_info = MetersInformation("../resources/dataset_index.csv")
 
@@ -181,7 +184,6 @@ if __name__ == '__main__':
     # two_period_time = time.apply(lambda x: type_tariff_operation(x, "Time-of-Use three periods", tarriff_periods))
     print("Stop")
     # print(two_period_time)
-
 
     building_data_loader = BuildingDataLoader("../resources/HackTheElectron dataset support data/"
                                               "Building Info-Table 1.csv")

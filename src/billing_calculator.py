@@ -7,7 +7,6 @@ from src.exceptions import TariffHoursException
 
 
 class BillingCalculator:
-
     WINTER_HOUR_CHANGE_2016 = datetime.datetime(2016, 10, 30)
     WINTER_HOUR_CHANGE_2017 = datetime.datetime(2017, 10, 29)
     WINTER_HOUR_CHANGE_2018 = datetime.datetime(2018, 10, 28)
@@ -16,11 +15,11 @@ class BillingCalculator:
     SUMMER_HOUR_CHANGE_2017 = datetime.datetime(2017, 3, 26)
     SUMMER_HOUR_CHANGE_2018 = datetime.datetime(2018, 3, 25)
 
-    SEASONS = {"Summer": [(SUMMER_HOUR_CHANGE_2016, WINTER_HOUR_CHANGE_2016),
-                          (SUMMER_HOUR_CHANGE_2017, WINTER_HOUR_CHANGE_2017),
-                          (SUMMER_HOUR_CHANGE_2018, WINTER_HOUR_CHANGE_2018)],
-               "Winter": [(WINTER_HOUR_CHANGE_2016, SUMMER_HOUR_CHANGE_2017),
-                          (WINTER_HOUR_CHANGE_2017, SUMMER_HOUR_CHANGE_2018),
+    SEASONS = {"Summer": [(SUMMER_HOUR_CHANGE_2016, WINTER_HOUR_CHANGE_2016 - datetime.timedelta(days=1)),
+                          (SUMMER_HOUR_CHANGE_2017, WINTER_HOUR_CHANGE_2017 - datetime.timedelta(days=1)),
+                          (SUMMER_HOUR_CHANGE_2018, WINTER_HOUR_CHANGE_2018 - datetime.timedelta(days=1))],
+               "Winter": [(WINTER_HOUR_CHANGE_2016, SUMMER_HOUR_CHANGE_2017 - datetime.timedelta(days=1)),
+                          (WINTER_HOUR_CHANGE_2017, SUMMER_HOUR_CHANGE_2018 - datetime.timedelta(days=1)),
                           (WINTER_HOUR_CHANGE_2018, datetime.datetime.now())]}
 
     def __init__(self, meter_contract_info: MeterContractInformation, power: pd.DataFrame,
@@ -44,6 +43,10 @@ class BillingCalculator:
         else:
             return power_data.loc[start_datetime:end_datetime]
 
+    @staticmethod
+    def compute_cost_per_days(power_data: pd.DataFrame, tariff_cost: TariffCost):
+        return ((power_data.index[-1] - power_data.index[0]).days + 1) * tariff_cost.power_cost_per_day
+
     def simple_tariff(self, start_date: str = None, end_date: str = None) -> float:
 
         power_data = self.filter_by_date(self.power, start_date, end_date)
@@ -51,7 +54,9 @@ class BillingCalculator:
         tariff_costs = self.tariff_data_loader.get_tariff_by_contracted_tariff_type(
             self.meter_contract_info.contracted_power, TariffType.SIMPLE)
 
-        return power_data.sum() * tariff_costs.peak_periods_cost / (4 * 1000)
+        cost_per_days = self.compute_cost_per_days(power_data, tariff_costs)
+
+        return power_data.sum() * tariff_costs.peak_periods_cost / (4 * 1000) + cost_per_days
 
     def two_periods_tariff(self, start_date: str = None, end_date: str = None) -> float:
 
@@ -61,7 +66,9 @@ class BillingCalculator:
                                                                                     TariffType.TWO_PERIOD)
 
         tariff_two_periods = tarriff_periods.get_periods_for_tariff(TariffType.TWO_PERIOD)
-        return self.tariff_hours_compute(power_data, tariff_two_periods, tariff_costs)
+        cost_per_days = self.compute_cost_per_days(power_data, tariff_costs)
+
+        return self.tariff_hours_compute(power_data, tariff_two_periods, tariff_costs) + cost_per_days
 
     def three_period_tariff(self, start_date: str = None, end_date: str = None) -> float:
 
@@ -72,9 +79,11 @@ class BillingCalculator:
 
         tariff_hours_three = self.tariff_periods.get_periods_for_tariff(TariffType.THREE_PERIOD)
 
+        cost_per_days = self.compute_cost_per_days(power_data, tariff_cost)
+
         winter_cost = self.compute_cost_by_season(power_data, "Winter", tariff_hours_three, tariff_cost)
         summer_cost = self.compute_cost_by_season(power_data, "Summer", tariff_hours_three, tariff_cost)
-        return winter_cost + summer_cost
+        return winter_cost + summer_cost + cost_per_days
 
     def compute_cost_by_season(self, power_data: pd.DataFrame, season: str, tariff_hours: pd.DataFrame,
                                tariff_cost: TariffCost) -> float:
@@ -102,7 +111,8 @@ class BillingCalculator:
             elif period[TariffPeriods.COLUMN_NAME_TARIFF_TYPE] == HourTariffType.SUPER_OFF_PEAK:
                 cost += power_spent * tariff_costs.super_peak_cost
             else:
-                raise TariffHoursException("The tariff slot type {0} does to exist".format(period[TariffPeriods.COLUMN_NAME_TARIFF_TYPE]))
+                raise TariffHoursException(
+                    "The tariff slot type {0} does to exist".format(period[TariffPeriods.COLUMN_NAME_TARIFF_TYPE]))
         return cost
 
 
@@ -125,10 +135,11 @@ if __name__ == '__main__':
 
     billing_calculator = BillingCalculator(meter_contract, meter_power_0, tariff_data_load,
                                            tarriff_periods)
-
-    total_cost_simple = billing_calculator.simple_tariff("2017-01-01", "2017-01-02")
-    total_two_cost = billing_calculator.two_periods_tariff("2017-01-01", "2017-01-02")
-    total_three_period = billing_calculator.three_period_tariff("2017-01-01", "2017-01-02")
+    date_start = "2016-11-1"
+    date_end = "2016-11-30"
+    total_cost_simple = billing_calculator.simple_tariff(date_start, date_end)
+    total_two_cost = billing_calculator.two_periods_tariff(date_start, date_end)
+    total_three_period = billing_calculator.three_period_tariff(date_start, date_end)
 
     print("Simple Tariff")
     print("Payed: {0}".format(total_cost_simple))
@@ -138,4 +149,3 @@ if __name__ == '__main__':
 
     print("Three Period Tariff")
     print("Payed: {0}".format(total_three_period))
-
