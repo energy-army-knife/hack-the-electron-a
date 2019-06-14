@@ -79,17 +79,16 @@ if __name__ == '__main__':
     meter_power_0 = power_loader.get_power_meter_id(meter_analyse)
 
     billing_calculator = BillingCalculator(meter_power_0, tariff_data_load, tarriff_periods)
-    date_start = "2016-11-1"
-    date_end = "2016-11-30"
+
     total_cost_simple = billing_calculator.compute_cost(meter_contract.contracted_power, TariffType.SIMPLE)
     total_two_cost = billing_calculator.compute_cost(meter_contract.contracted_power, TariffType.TWO_PERIOD)
     total_three_period = billing_calculator.compute_cost(meter_contract.contracted_power, TariffType.THREE_PERIOD)
 
     print("Simple Tariff")
-    print("Payed: {0}".format(total_cost_simple))
+    print("Payed: {0}".format(total_cost_simple.get_value()))
 
     print("Two Tariff")
-    print("Payed: {0}".format(total_two_cost))
+    print("Payed: {0}".format(total_two_cost.get_value()))
 
     print("Three Period Tariff")
-    print("Payed: {0}".format(total_three_period))
+    print("Payed: {0}".format(total_three_period.get_value()))
