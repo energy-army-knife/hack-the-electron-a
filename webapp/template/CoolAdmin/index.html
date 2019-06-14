@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{%  block header %}
+    <script>
+        var percentage_last_month_peak = {{ percentage_last_month_peak }};
+        var percentage_last_month_off_peak = {{ percentage_last_month_off_peak }};
+
+        var power_spent_by_hours = JSON.parse("{{ power_spent_by_hours }}");
+        var power_spent_by_hours_label= JSON.parse("{{ power_spent_by_hours_label }}");
+        var percentage_last_month_super_off_peak = {{ percentage_last_month_super_off_peak }};
+
+    </script>
+{% endblock %}
+
+
+{% block content %}
+
+<!-- MAIN CONTENT-->
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-1">overview</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row m-t-25">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="overview-item overview-item--c1">
+                        <div class="overview__inner">
+                            <div class="overview-box clearfix">
+                                <div class="icon">
+                                    <i class="zmdi zmdi-account-o"></i>
+                                </div><br>
+                                <div class="text">
+                                    <h2>{{ contracted_power }}</h2>
+                                    <span>Contracted Power</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="overview-item overview-item--c2">
+                        <div class="overview__inner">
+                            <div class="overview-box clearfix">
+                                <div class="icon">
+                                    <i class="zmdi zmdi-shopping-cart"></i>
+                                </div><br>
+                                <div class="text">
+                                    <h2>{{ peak_load }}</h2>
+                                    <span>Peak load</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="overview-item overview-item--c3">
+                        <div class="overview__inner">
+                            <div class="overview-box clearfix">
+                                <div class="icon">
+                                    <i class="zmdi zmdi-calendar-note"></i>
+                                </div><br>
+                                <div class="text">
+                                    <h2>{{ mean_load }}</h2>
+                                    <span>mean load</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="overview-item overview-item--c4">
+                        <div class="overview__inner">
+                            <div class="overview-box clearfix">
+                                <div class="icon">
+                                    <i class="zmdi zmdi-money"></i>
+                                </div><br>
+                                <div class="text">
+                                    <h2>{{ bill }}€</h2>
+                                    <span>current bill</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="au-card m-b-30">
+                        <div class="au-card-inner">
+                            <h3 class="title-2 m-b-40">Hours used during a month</h3>
+                            <canvas id="team-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="au-card chart-percent-card">
+                        <div class="au-card-inner">
+                            <h3 class="title-2 tm-b-5">Percentage by tariff type</h3>
+                            <div class="row no-gutters">
+                                <div class="col-xl-6">
+                                    <div class="chart-note-wrap">
+                                        <div class="chart-note mr-0 d-block">
+                                            <span class="dot dot--blue"></span>
+                                            <span>Peak</span>
+                                        </div>
+                                        {% if tariff > 1 %}
+                                            <div class="chart-note mr-0 d-block">
+                                                <span class="dot dot--red"></span>
+                                                <span>Off-Peak</span>
+                                            </div>
+                                        {% endif %}
+                                        {% if tariff > 2 %}
+                                            <div class="chart-note mr-0 d-block">
+                                                <span class="dot dot--green"></span>
+                                                <span>Super-Off-Peak</span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-xl-6">
+                                    <div class="percent-chart">
+                                        <canvas id="percent-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="copyright">
+                        <p>Copyright © 2018 Colorlib. All rights reserved. Template by <a href="https://colorlib.com">Colorlib</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END MAIN CONTENT-->
+{% endblock %}
