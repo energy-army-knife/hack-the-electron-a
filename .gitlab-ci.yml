@@ -1,3 +1,4 @@
-script:
-- echo "starting django server"
-- python manage.py runserver 0.0.0.0:8000
+.script: &build_script
+    script:
+        - echo "starting django server"
+        - python manage.py runserver 0.0.0.0:8000
