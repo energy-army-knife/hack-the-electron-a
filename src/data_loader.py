@@ -2,8 +2,8 @@ from typing import List
 
 import pandas as pd
 
-from loader.data_models import BuildingData, TariffCost, MeterContractInformation, TariffType, HourTariffType
-from loader.exceptions import BuildingDataLoaderException, TariffDataLoaderException
+from src.data_models import BuildingData, TariffCost, MeterContractInformation, TariffType, HourTariffType
+from src.exceptions import BuildingDataLoaderException, TariffDataLoaderException
 
 
 class CSVDataLoader:
@@ -109,8 +109,8 @@ class PowerDataLoader(CSVDataLoader):
 
         self.time = self.data_frame.index
 
-    def get_power_meter_id(self, meter_id):
-        return self.data_frame[meter_id]
+    def get_power_meter_id(self, meter_id) -> pd.DataFrame:
+        return self.data_frame[meter_id].to_frame()
 
 
 class HolidayDataLoader(CSVDataLoader):
@@ -158,6 +158,9 @@ class MetersInformation(CSVDataLoader):
 
     def get_meters_id_by_tariff(self, tariff_type: TariffType) -> list:
         return self.data_frame.loc[self.data_frame[self.COLUMN_NAME_TARIFF] == tariff_type].index.values
+
+    def get_all_meters(self):
+        return self.data_frame.index.to_list()
 
 
 if __name__ == '__main__':

@@ -13,9 +13,8 @@
     </script>
 {% endblock %}
 
-
 {% block content %}
-
+<!-- MAIN CONTENT-->
 <!-- MAIN CONTENT-->
 <div class="main-content">
     <div class="section__content section__content--p30">
@@ -23,10 +22,28 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="overview-wrap">
-                        <h2 class="title-1">overview</h2>
+                        <h2 class="title-1">Analyser</h2>
                     </div>
                 </div>
             </div>
+            <form action="{% url 'analyser' %}" target="_blank"  method="post">
+                {% csrf_token  %}
+                 <input type="hidden" name="meter_id" value="{{ meter_id }}">
+                <div class="form-group row">
+                  <label for="id-date-start" class="col-2 col-form-label">Date</label>
+                  <div class="col-3">
+                    <input class="form-control" type="date" value="2016-10-01" id="id-date-start" name="date-start">
+                  </div>
+                     <div class="col-3">
+                    <input class="form-control" type="date" value="2016-10-31" id="id-date-end" name="date-end">
+                  </div>
+                    <div>
+                    <button type="submit" class="btn btn-dark">Ok</button>
+                </div>
+                </div>
+            </form>
+
+
             <div class="row m-t-25">
                 <div class="col-sm-6 col-lg-3">
                     <div class="overview-item overview-item--c1">
@@ -82,7 +99,7 @@
                                 </div><br>
                                 <div class="text">
                                     <h2>{{ bill }}€</h2>
-                                    <span>current bill</span>
+                                    <span>Bill</span>
                                 </div>
                             </div>
                         </div>
@@ -144,5 +161,4 @@
         </div>
     </div>
 </div>
-<!-- END MAIN CONTENT-->
 {% endblock %}

@@ -2,7 +2,7 @@ import datetime
 
 import pandas as pd
 
-from loader.data_loader import TariffPeriods
+from src.data_loader import TariffPeriods
 
 
 class TimePeakTypesCalculator:
@@ -54,7 +54,7 @@ class TimePeakTypesCalculator:
             power_spent_data = power_data.between_time(period[TariffPeriods.COLUMN_NAME_START_PERIOD],
                                                   period[TariffPeriods.COLUMN_NAME_END_PERIOD])
             if power_spent_data.shape[0] > 0:
-                power_spent = power_spent_data.sum() / (4 * 1000)
+                power_spent = power_spent_data.sum().values[0] / (4 * 1000)
                 peak_type = period[TariffPeriods.COLUMN_NAME_TARIFF_TYPE]
                 if peak_type not in power_spent_by_type:
                     power_spent_by_type[peak_type] = 0

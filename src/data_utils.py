@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def filter_power_by_date(power_data: pd.DataFrame, start_datetime: str = None, end_datetime: str = None):
+def filter_power_by_date(power_data: pd.DataFrame, start_datetime: str = None, end_datetime: str = None) -> pd.DataFrame:
     if start_datetime and end_datetime is None:
         return power_data
 
