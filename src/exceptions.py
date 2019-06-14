@@ -8,3 +8,7 @@ class TariffDataLoaderException(Exception):
 
 class TariffHoursException(Exception):
     pass
+
+
+class TariffDoesNotExistException(Exception):
+    pass

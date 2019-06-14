@@ -1,119 +1,63 @@
 import pandas as pd
-import datetime
 
 from src.data_loader import TariffPeriods, TariffDataLoader, PowerDataLoader, MetersInformation
-from src.data_models import MeterContractInformation, TariffCost, TariffType, HourTariffType
+from src.data_models import TariffCost, TariffType, HourTariffType, MeterContractInformation
 from src.exceptions import TariffHoursException
+from src.time_peak_type_calculator import TimePeakTypesCalculator
+
+
+class Bill:
+    def __init__(self, costs_per_day: float, times_peaks_distribution: dict, costs_peaks_distribution: dict):
+        self.costs_per_day = costs_per_day
+        self.times_peaks_distribution = times_peaks_distribution
+        self.costs_peaks_distribution = costs_peaks_distribution
+
+    def get_value(self) -> float:
+        return sum(self.costs_peaks_distribution.values()) + self.costs_per_day
 
 
 class BillingCalculator:
-    WINTER_HOUR_CHANGE_2016 = datetime.datetime(2016, 10, 30)
-    WINTER_HOUR_CHANGE_2017 = datetime.datetime(2017, 10, 29)
-    WINTER_HOUR_CHANGE_2018 = datetime.datetime(2018, 10, 28)
 
-    SUMMER_HOUR_CHANGE_2016 = datetime.datetime(2016, 3, 27)
-    SUMMER_HOUR_CHANGE_2017 = datetime.datetime(2017, 3, 26)
-    SUMMER_HOUR_CHANGE_2018 = datetime.datetime(2018, 3, 25)
+    def __init__(self, power: pd.DataFrame, tariff_data_loader: TariffDataLoader, tariff_periods: TariffPeriods = None):
 
-    SEASONS = {"Summer": [(SUMMER_HOUR_CHANGE_2016, WINTER_HOUR_CHANGE_2016 - datetime.timedelta(days=1)),
-                          (SUMMER_HOUR_CHANGE_2017, WINTER_HOUR_CHANGE_2017 - datetime.timedelta(days=1)),
-                          (SUMMER_HOUR_CHANGE_2018, WINTER_HOUR_CHANGE_2018 - datetime.timedelta(days=1))],
-               "Winter": [(WINTER_HOUR_CHANGE_2016, SUMMER_HOUR_CHANGE_2017 - datetime.timedelta(days=1)),
-                          (WINTER_HOUR_CHANGE_2017, SUMMER_HOUR_CHANGE_2018 - datetime.timedelta(days=1)),
-                          (WINTER_HOUR_CHANGE_2018, datetime.datetime.now())]}
-
-    def __init__(self, meter_contract_info: MeterContractInformation, power: pd.DataFrame,
-                 tariff_data_loader: TariffDataLoader, tariff_periods: TariffPeriods = None):
-        self.meter_contract_info = meter_contract_info
         self.power = power
         self.tariff_data_loader = tariff_data_loader
         self.tariff_periods = tariff_periods
+        self.time_peaks_calculator = TimePeakTypesCalculator(self.power)
 
-    @staticmethod
-    def filter_by_date(power_data: pd.DataFrame, start_datetime: str = None, end_datetime: str = None):
+    def compute_total_cost(self, contracted_power: float, tariff: TariffType) -> Bill:
 
-        if start_datetime and end_datetime is None:
-            return power_data
+        contract_costs = self.tariff_data_loader.get_tariff_by_contracted_tariff_type(contracted_power, tariff)
 
-        elif start_datetime is None:
-            return power_data.loc[:end_datetime]
+        cost_per_days = self.compute_cost_per_days(self.power, contract_costs)
+        periods_peaks = self.tariff_periods.get_periods_for_tariff(tariff)
+        take_into_account_season = tariff == TariffType.THREE_PERIOD
+        times_peaks_distribution = self.time_peaks_calculator.get_power_spent(periods_peaks, take_into_account_season)
+        costs_peaks_distribution = self.tariff_hours_compute(times_peaks_distribution, contract_costs)
 
-        elif end_datetime is None:
-            return power_data.loc[start_datetime:]
-        else:
-            return power_data.loc[start_datetime:end_datetime]
+        return Bill(cost_per_days, times_peaks_distribution, costs_peaks_distribution)
 
     @staticmethod
     def compute_cost_per_days(power_data: pd.DataFrame, tariff_cost: TariffCost):
         return ((power_data.index[-1] - power_data.index[0]).days + 1) * tariff_cost.power_cost_per_day
 
-    def simple_tariff(self, start_date: str = None, end_date: str = None) -> float:
-
-        power_data = self.filter_by_date(self.power, start_date, end_date)
-
-        tariff_costs = self.tariff_data_loader.get_tariff_by_contracted_tariff_type(
-            self.meter_contract_info.contracted_power, TariffType.SIMPLE)
-
-        cost_per_days = self.compute_cost_per_days(power_data, tariff_costs)
-
-        return power_data.sum() * tariff_costs.peak_periods_cost / (4 * 1000) + cost_per_days
-
-    def two_periods_tariff(self, start_date: str = None, end_date: str = None) -> float:
-
-        power_data = self.filter_by_date(self.power, start_date, end_date)
-
-        tariff_costs = self.tariff_data_loader.get_tariff_by_contracted_tariff_type(meter_contract.contracted_power,
-                                                                                    TariffType.TWO_PERIOD)
-
-        tariff_two_periods = tarriff_periods.get_periods_for_tariff(TariffType.TWO_PERIOD)
-        cost_per_days = self.compute_cost_per_days(power_data, tariff_costs)
-
-        return self.tariff_hours_compute(power_data, tariff_two_periods, tariff_costs) + cost_per_days
-
-    def three_period_tariff(self, start_date: str = None, end_date: str = None) -> float:
-
-        power_data = self.filter_by_date(self.power, start_date, end_date)
-
-        tariff_cost = self.tariff_data_loader.get_tariff_by_contracted_tariff_type(
-            self.meter_contract_info.contracted_power, TariffType.THREE_PERIOD)
-
-        tariff_hours_three = self.tariff_periods.get_periods_for_tariff(TariffType.THREE_PERIOD)
-
-        cost_per_days = self.compute_cost_per_days(power_data, tariff_cost)
-
-        winter_cost = self.compute_cost_by_season(power_data, "Winter", tariff_hours_three, tariff_cost)
-        summer_cost = self.compute_cost_by_season(power_data, "Summer", tariff_hours_three, tariff_cost)
-        return winter_cost + summer_cost + cost_per_days
-
-    def compute_cost_by_season(self, power_data: pd.DataFrame, season: str, tariff_hours: pd.DataFrame,
-                               tariff_cost: TariffCost) -> float:
-        season_tariff_hours = tariff_hours[tariff_hours["Season"] == season]
-
-        total_season_cost = 0
-        for season_period in self.SEASONS[season]:
-            season_pw = power_data.loc[season_period[0]: season_period[1]]
-            total_season_cost += self.tariff_hours_compute(season_pw, season_tariff_hours, tariff_cost)
-
-        return total_season_cost
-
     @staticmethod
-    def tariff_hours_compute(meter_power: pd.DataFrame, tarrif_hours: pd.DataFrame, tariff_costs: TariffCost):
-        cost = 0
+    def tariff_hours_compute(times_peaks_distribution: dict, tariff_costs: TariffCost) -> dict:
 
-        for index, period in tarrif_hours.iterrows():
-            power_spent = meter_power.between_time(period[TariffPeriods.COLUMN_NAME_START_PERIOD],
-                                                   period[TariffPeriods.COLUMN_NAME_END_PERIOD]).sum() / (4 * 1000)
+        times_peaks_costs = times_peaks_distribution.copy()
 
-            if period[TariffPeriods.COLUMN_NAME_TARIFF_TYPE] == HourTariffType.PEAK:
-                cost += power_spent * tariff_costs.peak_periods_cost
-            elif period[TariffPeriods.COLUMN_NAME_TARIFF_TYPE] == HourTariffType.OFF_PEAK:
-                cost += power_spent * tariff_costs.off_peak_periods
-            elif period[TariffPeriods.COLUMN_NAME_TARIFF_TYPE] == HourTariffType.SUPER_OFF_PEAK:
-                cost += power_spent * tariff_costs.super_peak_cost
+        for peak_name, power_spent in times_peaks_costs.items():
+
+            if peak_name == HourTariffType.PEAK:
+                times_peaks_costs[peak_name] = power_spent * tariff_costs.peak_periods_cost
+            elif peak_name == HourTariffType.OFF_PEAK:
+                times_peaks_costs[peak_name] = power_spent * tariff_costs.off_peak_periods
+            elif peak_name == HourTariffType.SUPER_OFF_PEAK:
+                times_peaks_costs[peak_name] = power_spent * tariff_costs.super_peak_cost
             else:
                 raise TariffHoursException(
-                    "The tariff slot type {0} does to exist".format(period[TariffPeriods.COLUMN_NAME_TARIFF_TYPE]))
-        return cost
+                    "The tariff slot type {0} does to exist".format(peak_name))
+        return times_peaks_costs
 
 
 if __name__ == '__main__':
@@ -131,21 +75,21 @@ if __name__ == '__main__':
 
     info_meter_0 = power_loader.get_power_meter_id(meter_analyse)
     meter_contract = meter_info.get_meter_id_contract_info(meter_analyse)
-    meter_power_0 = power_loader.get_power_meter_id(meter_analyse)
+    meter_power_0 = power_loader.get_power_meter_id(meter_analyse)[0:1]
 
-    billing_calculator = BillingCalculator(meter_contract, meter_power_0, tariff_data_load,
-                                           tarriff_periods)
-    date_start = "2016-11-1"
-    date_end = "2016-11-30"
-    total_cost_simple = billing_calculator.simple_tariff(date_start, date_end)
-    total_two_cost = billing_calculator.two_periods_tariff(date_start, date_end)
-    total_three_period = billing_calculator.three_period_tariff(date_start, date_end)
+    billing_calculator = BillingCalculator(meter_power_0, tariff_data_load, tarriff_periods)
+
+    total_cost_simple = billing_calculator.compute_total_cost(meter_contract.contracted_power, TariffType.SIMPLE)
+    total_two_cost = billing_calculator.compute_total_cost(meter_contract.contracted_power, TariffType.TWO_PERIOD)
+    total_three_period = billing_calculator.compute_total_cost(meter_contract.contracted_power, TariffType.THREE_PERIOD)
 
     print("Simple Tariff")
-    print("Payed: {0}".format(total_cost_simple))
+    print("Payed: {0}".format(total_cost_simple.get_value()))
 
     print("Two Tariff")
-    print("Payed: {0}".format(total_two_cost))
+    print("Payed: {0}".format(total_two_cost.get_value()))
 
     print("Three Period Tariff")
-    print("Payed: {0}".format(total_three_period))
+    print("Payed: {0}".format(total_three_period.get_value()))
+
+

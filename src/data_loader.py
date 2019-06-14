@@ -109,8 +109,8 @@ class PowerDataLoader(CSVDataLoader):
 
         self.time = self.data_frame.index
 
-    def get_power_meter_id(self, meter_id):
-        return self.data_frame[meter_id]
+    def get_power_meter_id(self, meter_id) -> pd.DataFrame:
+        return self.data_frame[meter_id].to_frame()
 
 
 class HolidayDataLoader(CSVDataLoader):
@@ -152,12 +152,15 @@ class MetersInformation(CSVDataLoader):
         self.data_frame.set_index(self.COLUMN_NAME_METER, inplace=True)
 
     def get_meter_id_contract_info(self, meter_id: str) -> MeterContractInformation:
-        row = self.data_frame.loc['meter_0']
+        row = self.data_frame.loc[meter_id]
         return MeterContractInformation(meter_id, row[self.COLUMN_NAME_TARIFF], row[self.COLUMN_NAME_CONTRACTED_POWER],
                                         row[self.COLUMN_NAME_PHASES])
 
     def get_meters_id_by_tariff(self, tariff_type: TariffType) -> list:
         return self.data_frame.loc[self.data_frame[self.COLUMN_NAME_TARIFF] == tariff_type].index.values
+
+    def get_all_meters(self):
+        return self.data_frame.index.to_list()
 
 
 if __name__ == '__main__':

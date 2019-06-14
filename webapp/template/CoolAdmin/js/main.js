@@ -796,12 +796,12 @@ $(document).ready(function() {
         var myChart = new Chart(ctx, {
           type: 'line',
           data: {
-            labels: ["2010", "2011", "2012", "2013", "2014", "2015", "2016"],
+            labels: power_spent_by_hours_label,
             type: 'line',
             defaultFontFamily: 'Poppins',
             datasets: [{
-              data: [0, 7, 3, 5, 2, 10, 7],
-              label: "Expense",
+              data: power_spent_by_hours,
+              label: "Power Spent",
               backgroundColor: 'rgba(0,103,255,.15)',
               borderColor: 'rgba(0,103,255,0.5)',
               borderWidth: 3.5,
@@ -857,7 +857,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Value',
+                  labelString: 'Power Spent',
                   fontFamily: "Poppins"
                 },
                 ticks: {
