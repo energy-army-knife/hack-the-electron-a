@@ -2,3 +2,5 @@
 resources/.ipynb_checkpoints/
 */__pycache__
 */*/__pycache__
+output/
+*/.ipynb_checkpoints

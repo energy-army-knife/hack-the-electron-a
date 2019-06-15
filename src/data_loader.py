@@ -163,6 +163,12 @@ class MetersInformation(CSVDataLoader):
         return self.data_frame.index.to_list()
 
 
+class LoadAll:
+    def __init__(self):
+        self.meter_info = MetersInformation("../resources/dataset_index.csv")
+        self.meter_power = PowerDataLoader("../resources/load_pwr.csv")
+
+
 if __name__ == '__main__':
 
     tarriff_periods = TariffPeriods("../resources/HackTheElectron dataset support data/"
