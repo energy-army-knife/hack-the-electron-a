@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{%  block header %}
+    <script>
+        var percentage_last_month_peak = {{ percentage_last_month_peak }};
+        var percentage_last_month_off_peak = {{ percentage_last_month_off_peak }};
+
+        var power_spent_by_hours = JSON.parse("{{ power_spent_by_hours }}");
+        var power_spent_by_hours_label= JSON.parse("{{ power_spent_by_hours_label }}");
+        var percentage_last_month_super_off_peak = {{ percentage_last_month_super_off_peak }};
+
+    </script>
+{% endblock %}
+
+{% block content %}
+<!-- MAIN CONTENT-->
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-1">Photovoltaic</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="copyright">
+                        <p>Copyright © 2018 Colorlib. All rights reserved. Template by <a href="https://colorlib.com">Colorlib</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

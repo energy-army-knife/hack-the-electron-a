@@ -85,5 +85,10 @@ def analyser(request):
                                       request.POST["date-end"])
 
 
+def pv(request):
+    return display_month_overview(request, get_meter_id_from_query_parm(request), "pv.html",
+                                  "2016-10-01", "2016-10-31")
+
+
 def notifications(request):
     return render(request, 'notifications.html')
