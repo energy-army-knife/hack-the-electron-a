@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^$', views.index, name='index'),
     url(r'^analyser/$', views.analyser, name='analyser'),
+    url(r'^photovoltaic/$', views.pv, name='photovoltaic'),
     url(r'^notifications/$', views.notifications, name='notificatons'),
     url(r'^favicon\.ico$', RedirectView.as_view(url='static/images/favicon.ico')),
 ]
