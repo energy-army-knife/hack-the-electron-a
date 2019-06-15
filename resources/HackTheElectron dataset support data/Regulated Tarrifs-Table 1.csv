@@ -1,4 +1,6 @@
 Contracted Power;Tariff Type;Power Cost eur/day;Peak Periods Energy Cost eur/kwh;Off-Peak periods Energy Cost eur/kwh;Super Off-Peak Energy Cost eur/kwh
+1,15;Simple Tariff;0,0811;0,1447;;
+2,3;Simple Tariff;0,1423;0,1447;;
 3,45;Simple Tariff;0,1645;0,1557;;
 4,6;Simple Tariff;0,2138;0,1557;;
 5,75;Simple Tariff;0,2628;0,1557;;
@@ -7,6 +9,8 @@ Contracted Power;Tariff Type;Power Cost eur/day;Peak Periods Energy Cost eur/kwh
 13,8;Simple Tariff;0,606;0,1559;;
 17,25;Simple Tariff;0,7531;0,1559;;
 20,7;Simple Tariff;0,9001;0,1559;;
+1,15;Time-of-Use two periods;0,1423;0,1875;0,1024;
+2,3;Time-of-Use two periods;0,1423;0,1875;0,1024;
 3,45;Time-of-Use two periods;0,1645;0,1875;0,1024;
 4,6;Time-of-Use two periods;0,2138;0,1875;0,1024;
 5,75;Time-of-Use two periods;0,2628;0,1875;0,1024;
@@ -15,6 +19,8 @@ Contracted Power;Tariff Type;Power Cost eur/day;Peak Periods Energy Cost eur/kwh
 13,8;Time-of-Use two periods;0,606;0,189;0,1025;
 17,25;Time-of-Use two periods;0,7531;0,189;0,1025;
 20,7;Time-of-Use two periods;0,9001;0,189;0,1025;
+1,15;Time-of-Use three periods;0,1423;0,2246;0,1682;0,1024
+2,3;Time-of-Use three periods;0,1423;0,2246;0,1682;0,1024
 3,45;Time-of-Use three periods;0,1645;0,2246;0,1682;0,1024
 4,6;Time-of-Use three periods;0,2138;0,2246;0,1682;0,1024
 5,75;Time-of-Use three periods;0,2628;0,2246;0,1682;0,1024

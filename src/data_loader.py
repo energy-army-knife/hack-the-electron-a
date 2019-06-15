@@ -3,7 +3,7 @@ from typing import List
 import pandas as pd
 
 from src.data_models import BuildingData, TariffCost, MeterContractInformation, TariffType, HourTariffType
-from src.exceptions import BuildingDataLoaderException, TariffDataLoaderException
+from src.exceptions import BuildingDataLoaderException, TariffDataLoaderException, MeterDoesNotExistException
 
 
 class CSVDataLoader:
@@ -110,7 +110,10 @@ class PowerDataLoader(CSVDataLoader):
         self.time = self.data_frame.index
 
     def get_power_meter_id(self, meter_id) -> pd.DataFrame:
-        return self.data_frame[meter_id].to_frame()
+        try:
+            return self.data_frame[meter_id].to_frame()
+        except KeyError:
+            raise MeterDoesNotExistException
 
 
 class HolidayDataLoader(CSVDataLoader):

@@ -27,6 +27,13 @@
                     </div>
                 </div>
             </div>
+            {% if current_tariff != best_tariff %}
+                <div class="alert alert-danger" role="alert">
+                  Your current tariff {{ current_tariff }} is not optimized for your power consumption. If your tariff
+                    had been {{ best_tariff }} in the last two years you would save {{ tariff_savings }} euros. To view detailed information
+                    regarding this subject click <a href="#" class="alert-link">here</a>.
+                </div>
+            {% endif %}
             <div class="row m-t-25">
                 <div class="col-sm-6 col-lg-3">
                     <div class="overview-item overview-item--c1">

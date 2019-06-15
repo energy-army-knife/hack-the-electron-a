@@ -6,55 +6,98 @@ import matplotlib.pyplot as plt
 
 from src.data_models import TariffType
 
-power_loader = PowerDataLoader("../resources/load_pwr.csv")
 
-tarriff_periods = TariffPeriods("../resources/HackTheElectron dataset support data/"
-                                "Tariff-Periods-Table 1.csv")
+class TariffRecommender:
 
-tariff_data_load = TariffDataLoader("../resources/HackTheElectron dataset support data/"
-                                    "Regulated Tarrifs-Table 1.csv")
+    def __init__(self, tariff_data_load: TariffDataLoader, tarriff_periods: TariffPeriods):
+        self.tariff_data_load = tariff_data_load
+        self.tarriff_periods = tarriff_periods
 
-meter_analyse = "meter_2"
+    def get_best_tariff(self, power_data: pd.DataFrame, contracted_power: float) -> (TariffType, dict):
+        costs_tariffs = self.get_costs_by_tariff(power_data, contracted_power)
+        best_tariff = min(costs_tariffs, key=costs_tariffs.get)
+        return best_tariff, costs_tariffs
 
-meter_info = MetersInformation("../resources/dataset_index.csv").get_meter_id_contract_info(meter_analyse)
+    def get_costs_by_tariff(self, power_data: pd.DataFrame, contracted_power: float) -> dict:
 
-meter_0_power = power_loader.get_power_meter_id(meter_analyse)
+        bill_calc = BillingCalculator(power_data, self.tariff_data_load, self.tarriff_periods)
 
-months = [g for n, g in meter_0_power.groupby(pd.TimeGrouper('M'))]
+        costs_tariff = {}
+        for i, tariff in enumerate([TariffType.SIMPLE, TariffType.TWO_PERIOD, TariffType.THREE_PERIOD]):
+            costs_tariff[tariff] = bill_calc.compute_total_cost(contracted_power, tariff).get_value()
 
-result = {}
+        return costs_tariff
 
-# data to plot
-n_groups = 5
+    def get_tariff_billing_by_months(self, power_data: pd.DataFrame, contracted_power: float) -> dict:
+        months = [g for n, g in power_data.groupby(pd.TimeGrouper('M'))]
+        name_months = [month.index[0].strftime("%B-%Y") for month in months]
 
-# create plot
-fig, ax = plt.subplots()
-index = np.arange(n_groups)
-bar_width = 0.14
-opacity = 0.8
+        months_billing = {}
+        for i, month in enumerate(months):
+            months_billing[name_months[i]] = {}
+            for j, tariff in enumerate([TariffType.SIMPLE, TariffType.TWO_PERIOD, TariffType.THREE_PERIOD]):
+                bill = BillingCalculator(month, self.tariff_data_load,
+                                         self.tarriff_periods).compute_total_cost(contracted_power, tariff).get_value()
+                months_billing[name_months[i]][tariff] = bill
 
-color = ["b", "g", "r"]
-legend = ["Simple", "Two-Period", "Three-Period"]
+        return months_billing
 
-for i, tariff in enumerate([TariffType.SIMPLE, TariffType.TWO_PERIOD, TariffType.THREE_PERIOD]):
 
-    result[tariff] = [BillingCalculator(el, tariff_data_load,
-                                        tarriff_periods).compute_total_cost(meter_info.contracted_power,
-                                                                            tariff).get_value() for el in months]
+if __name__ == '__main__':
 
-    rects1 = plt.bar(index + bar_width*i, result[tariff][0:n_groups], bar_width,
-                     alpha=opacity,
-                     color=color[i],
-                     label=legend[i])
-legend = []
-for month in months[0:n_groups]:
-    legend.append(month.index[1].strftime("%B-%Y"))
+    power_loader = PowerDataLoader("../resources/load_pwr.csv")
 
-plt.xlabel('Month')
-plt.ylabel('Cost')
-plt.title('Cost by Month')
-plt.xticks(index + bar_width, legend)
-plt.legend()
+    tarriff_periods = TariffPeriods("../resources/HackTheElectron dataset support data/"
+                                    "Tariff-Periods-Table 1.csv")
 
-plt.tight_layout()
-plt.show()
+    tariff_data_load = TariffDataLoader("../resources/HackTheElectron dataset support data/"
+                                        "Regulated Tarrifs-Table 1.csv")
+
+    tariff_recommender = TariffRecommender(tariff_data_load, tarriff_periods)
+    meters_info = MetersInformation("../resources/dataset_index.csv")
+
+    meters = meters_info.get_all_meters()
+
+    meter_analyse = "meter_64"
+    meter_info = meters_info.get_meter_id_contract_info(meter_analyse)
+    meter_power = power_loader.get_power_meter_id(meter_analyse)
+
+    best_tariff, costs_tariff = tariff_recommender.get_best_tariff(meter_power, meter_info.contracted_power)
+    if best_tariff != meter_info.tariff:
+        print("The best tariff is {0} and not {1}. You should save: {2}.".format(best_tariff, meter_info.tariff,
+                                                                                 costs_tariff[meter_info.tariff]-
+                                                                                 costs_tariff[best_tariff]))
+
+    months_billing_by_tariff = tariff_recommender.get_tariff_billing_by_months(meter_power, meter_info.contracted_power)
+
+    # data to plot
+    n_groups = 25
+    bar_width = 0.14
+    opacity = 0.8
+
+    color = ["b", "g", "r"]
+    legend = ["Simple", "Two-Period", "Three-Period"]
+
+    # create plot
+    fig, ax = plt.subplots()
+    index = np.arange(n_groups)
+
+    for i, tariff in enumerate([TariffType.SIMPLE, TariffType.TWO_PERIOD, TariffType.THREE_PERIOD]):
+
+        tariff_values = [months_billing_by_tariff[el][tariff] for el in months_billing_by_tariff]
+
+        rects1 = plt.bar(index + bar_width*i, tariff_values, bar_width,
+                         alpha=opacity,
+                         color=color[i],
+                         label=legend[i])
+
+    legend = list(months_billing_by_tariff.keys())
+
+    plt.xlabel('Month')
+    plt.ylabel('Cost')
+    plt.title('Cost by Month')
+    plt.xticks(index + bar_width, legend)
+    plt.legend()
+
+    plt.tight_layout()
+    plt.show()

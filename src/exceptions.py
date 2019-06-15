@@ -12,3 +12,7 @@ class TariffHoursException(Exception):
 
 class TariffDoesNotExistException(Exception):
     pass
+
+
+class MeterDoesNotExistException(Exception):
+    pass
