@@ -27,11 +27,23 @@
                     </div>
                 </div>
             </div>
-            {% if current_tariff != best_tariff %}
+            {% if current_tariff != best_tariff and  contracted_power != best_contracted_power%}
                 <div class="alert alert-danger" role="alert">
-                  Your current tariff {{ current_tariff }} is not optimized for your power consumption. If your tariff
-                    had been {{ best_tariff }} in the last two years you would save {{ tariff_savings }} euros. To view detailed information
+                  Your current tariff {{ current_tariff }} and contracted power {{ contracted_power }} is not optimized for your
+                    power consumption. If your tariff and contracted power had been {{ best_tariff }} and
+                    {{ contracted_power }}, respectively, you would save {{ tariff_savings }} euros. To view detailed information
                     regarding this subject click <a href="#" class="alert-link">here</a>.
+                </div>
+
+            {% elif current_tariff != best_tariff %}
+                <div class="alert alert-danger" role="alert">
+                  Your current tariff {{ contracted_power }} is not optimized for your power consumption, it should be {{ best_tariff }}.
+                     To view detailed information regarding this subject click <a href="#" class="alert-link">here</a>.
+                </div>
+            {% elif contracted_power != best_contracted_power %}
+                <div class="alert alert-danger" role="alert">
+                  Your current contracted power {{ contracted_power }} is not optimized for your power consumption, it should be {{ best_contracted_power }}.
+                     To view detailed information regarding this subject click <a href="#" class="alert-link">here</a>.
                 </div>
             {% endif %}
             <div class="row m-t-25">

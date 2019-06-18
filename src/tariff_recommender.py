@@ -12,6 +12,7 @@ class TariffRecommender:
     def __init__(self, tariff_data_load: TariffDataLoader, tarriff_periods: TariffPeriods):
         self.tariff_data_load = tariff_data_load
         self.tarriff_periods = tarriff_periods
+        self.bill_calculator = BillingCalculator(self.tariff_data_load, self.tarriff_periods)
 
     def get_best_tariff(self, power_data: pd.DataFrame, contracted_power: float) -> (TariffType, dict):
         costs_tariffs = self.get_costs_by_tariff(power_data, contracted_power)
@@ -20,11 +21,10 @@ class TariffRecommender:
 
     def get_costs_by_tariff(self, power_data: pd.DataFrame, contracted_power: float) -> dict:
 
-        bill_calc = BillingCalculator(power_data, self.tariff_data_load, self.tarriff_periods)
-
         costs_tariff = {}
         for i, tariff in enumerate([TariffType.SIMPLE, TariffType.TWO_PERIOD, TariffType.THREE_PERIOD]):
-            costs_tariff[tariff] = bill_calc.compute_total_cost(contracted_power, tariff).get_value()
+            costs_tariff[tariff] = self.bill_calculator.compute_total_cost(power_data, contracted_power,
+                                                                           tariff).get_value()
 
         return costs_tariff
 
@@ -36,8 +36,7 @@ class TariffRecommender:
         for i, month in enumerate(months):
             months_billing[name_months[i]] = {}
             for j, tariff in enumerate([TariffType.SIMPLE, TariffType.TWO_PERIOD, TariffType.THREE_PERIOD]):
-                bill = BillingCalculator(month, self.tariff_data_load,
-                                         self.tarriff_periods).compute_total_cost(contracted_power, tariff).get_value()
+                bill = self.bill_calculator.compute_total_cost(month, contracted_power, tariff).get_value()
                 months_billing[name_months[i]][tariff] = bill
 
         return months_billing

@@ -18,21 +18,21 @@ class Bill:
 
 class BillingCalculator:
 
-    def __init__(self, power: pd.DataFrame, tariff_data_loader: TariffDataLoader, tariff_periods: TariffPeriods = None):
+    def __init__(self, tariff_data_loader: TariffDataLoader, tariff_periods: TariffPeriods = None):
 
-        self.power = power
         self.tariff_data_loader = tariff_data_loader
         self.tariff_periods = tariff_periods
-        self.time_peaks_calculator = TimePeakTypesCalculator(self.power)
+        self.time_peaks_calculator = TimePeakTypesCalculator()
 
-    def compute_total_cost(self, contracted_power: float, tariff: TariffType) -> Bill:
+    def compute_total_cost(self, power_data, contracted_power: float, tariff: TariffType) -> Bill:
 
         contract_costs = self.tariff_data_loader.get_tariff_by_contracted_tariff_type(contracted_power, tariff)
 
-        cost_per_days = self.compute_cost_per_days(self.power, contract_costs)
+        cost_per_days = self.compute_cost_per_days(power_data, contract_costs)
         periods_peaks = self.tariff_periods.get_periods_for_tariff(tariff)
         take_into_account_season = tariff == TariffType.THREE_PERIOD
-        times_peaks_distribution = self.time_peaks_calculator.get_power_spent(periods_peaks, take_into_account_season)
+        times_peaks_distribution = self.time_peaks_calculator.get_power_spent(power_data, periods_peaks,
+                                                                              take_into_account_season)
         costs_peaks_distribution = self.tariff_hours_compute(times_peaks_distribution, contract_costs)
 
         return Bill(cost_per_days, times_peaks_distribution, costs_peaks_distribution)
@@ -77,11 +77,14 @@ if __name__ == '__main__':
     meter_contract = meter_info.get_meter_id_contract_info(meter_analyse)
     meter_power_0 = power_loader.get_power_meter_id(meter_analyse)[0:1]
 
-    billing_calculator = BillingCalculator(meter_power_0, tariff_data_load, tarriff_periods)
+    billing_calculator = BillingCalculator(tariff_data_load, tarriff_periods)
 
-    total_cost_simple = billing_calculator.compute_total_cost(meter_contract.contracted_power, TariffType.SIMPLE)
-    total_two_cost = billing_calculator.compute_total_cost(meter_contract.contracted_power, TariffType.TWO_PERIOD)
-    total_three_period = billing_calculator.compute_total_cost(meter_contract.contracted_power, TariffType.THREE_PERIOD)
+    total_cost_simple = billing_calculator.compute_total_cost(meter_power_0, meter_contract.contracted_power,
+                                                              TariffType.SIMPLE)
+    total_two_cost = billing_calculator.compute_total_cost(meter_power_0, meter_contract.contracted_power,
+                                                           TariffType.TWO_PERIOD)
+    total_three_period = billing_calculator.compute_total_cost(meter_power_0, meter_contract.contracted_power,
+                                                               TariffType.THREE_PERIOD)
 
     print("Simple Tariff")
     print("Payed: {0}".format(total_cost_simple.get_value()))

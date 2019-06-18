@@ -21,10 +21,10 @@ class TimePeakTypesCalculator:
                           (WINTER_HOUR_CHANGE_2017, SUMMER_HOUR_CHANGE_2018 - datetime.timedelta(seconds=1)),
                           (WINTER_HOUR_CHANGE_2018, datetime.datetime.now())]}
 
-    def __init__(self, power: pd.DataFrame):
-        self.power_data = power
+    def __init__(self):
+        pass
 
-    def get_power_spent(self, periods_peak_types: pd.DataFrame, take_into_account_season: bool) -> dict:
+    def get_power_spent(self, power_data, periods_peak_types: pd.DataFrame, take_into_account_season: bool) -> dict:
 
         power_spent_by_type = {}
 
@@ -32,7 +32,7 @@ class TimePeakTypesCalculator:
             for season in self.SEASONS:
                 for season_period in self.SEASONS[season]:
                     season_tariff_hours = periods_peak_types[periods_peak_types["Season"] == season]
-                    season_pw = self.power_data.loc[season_period[0]: season_period[1]]
+                    season_pw = power_data.loc[season_period[0]: season_period[1]]
 
                     if season_pw.shape[0] == 0:
                         continue
@@ -45,7 +45,7 @@ class TimePeakTypesCalculator:
                         power_spent_by_type[peak_type] += peaks_result[peak_type]
             return power_spent_by_type
         else:
-            return self._get_power_spent_by_type(self.power_data, periods_peak_types)
+            return self._get_power_spent_by_type(power_data, periods_peak_types)
 
     @staticmethod
     def _get_power_spent_by_type(power_data: pd.DataFrame, times_peak_types: pd.DataFrame):
