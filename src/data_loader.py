@@ -2,6 +2,7 @@ from typing import List
 
 import pandas as pd
 
+from electron_django import settings
 from src.data_models import BuildingData, TariffCost, MeterContractInformation, TariffType, HourTariffType
 from src.exceptions import BuildingDataLoaderException, TariffDataLoaderException, MeterDoesNotExistException
 
@@ -174,16 +175,16 @@ class LoadAll:
 
 if __name__ == '__main__':
 
-    tarriff_periods = TariffPeriods("../resources/HackTheElectron dataset support data/"
+    tarriff_periods = TariffPeriods(settings.RESOURCES + "/HackTheElectron dataset support data/"
                                     "Tariff-Periods-Table 1.csv")
 
     tarriff_periods_tariff_2 = tarriff_periods.get_periods_for_tariff(TariffType.TWO_PERIOD)
 
-    meter_info = MetersInformation("../resources/dataset_index.csv")
+    meter_info = MetersInformation(settings.RESOURCES + "/dataset_index.csv")
 
     meter_analyse = "meter_0"
 
-    power_loader = PowerDataLoader("../resources/load_pwr.csv")
+    power_loader = PowerDataLoader(settings.RESOURCES + "/load_pwr.csv")
 
     info_meter_0 = power_loader.get_power_meter_id(meter_analyse)
     meter_contract = meter_info.get_meter_id_contract_info(meter_analyse)
@@ -197,13 +198,13 @@ if __name__ == '__main__':
     print("Stop")
     # print(two_period_time)
 
-    building_data_loader = BuildingDataLoader("../resources/HackTheElectron dataset support data/"
+    building_data_loader = BuildingDataLoader(settings.RESOURCES + "/HackTheElectron dataset support data/"
                                               "Building Info-Table 1.csv")
 
-    tariffDataLoader = TariffDataLoader("../resources/HackTheElectron dataset support data/"
+    tariffDataLoader = TariffDataLoader(settings.RESOURCES + "/HackTheElectron dataset support data/"
                                         "Regulated Tarrifs-Table 1.csv")
 
-    holiday_loader = HolidayDataLoader("../resources/HackTheElectron dataset support data/"
+    holiday_loader = HolidayDataLoader(settings.RESOURCES + "/HackTheElectron dataset support data/"
                                        "Holiday-Table 1.csv")
 
     holidays = holiday_loader.get_holidays()

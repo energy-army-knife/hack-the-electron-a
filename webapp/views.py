@@ -71,7 +71,7 @@ def get_parameters_period_overview(meter_id, period_start, period_end):
                                                    best_tariff)
 
     return {"contracted_power": meter_info.contracted_power,
-                                       "bill": round(bill.get_value(), 2),
+                                       "bill": round(bill.get_total(), 2),
                                        "mean_load": round(power_loader_meter.mean().values[0] / 1000, 2),
                                        "peak_load": round(power_loader_meter.max().values[0] / 1000, 2),
                                        "meter_id": meter_id,
@@ -87,7 +87,7 @@ def get_parameters_period_overview(meter_id, period_start, period_end):
                                        "period_end": period_end,
                                        "best_tariff": to_string_tariff(best_tariff),
                                        "current_tariff": to_string_tariff(meter_info.tariff),
-                                       "tariff_savings": bill_total.get_value() - bill_best_case.get_value(),
+                                       "tariff_savings": bill_total.get_total() - bill_best_case.get_total(),
                                        "best_contracted_power": best_contracted_power}
 
 

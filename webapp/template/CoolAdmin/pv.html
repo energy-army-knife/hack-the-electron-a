@@ -2,15 +2,6 @@
 {% load static %}
 
 {%  block header %}
-    <script>
-        var percentage_last_month_peak = {{ percentage_last_month_peak }};
-        var percentage_last_month_off_peak = {{ percentage_last_month_off_peak }};
-
-        var power_spent_by_hours = JSON.parse("{{ power_spent_by_hours }}");
-        var power_spent_by_hours_label= JSON.parse("{{ power_spent_by_hours_label }}");
-        var percentage_last_month_super_off_peak = {{ percentage_last_month_super_off_peak }};
-
-    </script>
 {% endblock %}
 
 {% block content %}

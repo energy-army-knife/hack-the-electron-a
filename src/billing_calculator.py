@@ -1,7 +1,8 @@
 import pandas as pd
 
+from electron_django import settings
 from src.data_loader import TariffPeriods, TariffDataLoader, PowerDataLoader, MetersInformation
-from src.data_models import TariffCost, TariffType, HourTariffType, MeterContractInformation
+from src.data_models import TariffCost, TariffType, HourTariffType
 from src.exceptions import TariffHoursException
 from src.time_peak_type_calculator import TimePeakTypesCalculator
 
@@ -12,8 +13,11 @@ class Bill:
         self.times_peaks_distribution = times_peaks_distribution
         self.costs_peaks_distribution = costs_peaks_distribution
 
-    def get_value(self) -> float:
+    def get_total(self) -> float:
         return sum(self.costs_peaks_distribution.values()) + self.costs_per_day
+
+    def get_cost_without_days_cut(self):
+        return sum(self.costs_peaks_distribution.values())
 
 
 class BillingCalculator:
@@ -61,15 +65,15 @@ class BillingCalculator:
 
 
 if __name__ == '__main__':
-    power_loader = PowerDataLoader("../resources/load_pwr.csv")
+    power_loader = PowerDataLoader(settings.RESOURCES + "/load_pwr.csv")
 
-    tarriff_periods = TariffPeriods("../resources/HackTheElectron dataset support data/"
+    tarriff_periods = TariffPeriods(settings.RESOURCES + "/HackTheElectron dataset support data/"
                                     "Tariff-Periods-Table 1.csv")
 
-    tariff_data_load = TariffDataLoader("../resources/HackTheElectron dataset support data/"
+    tariff_data_load = TariffDataLoader(settings.RESOURCES + "/HackTheElectron dataset support data/"
                                         "Regulated Tarrifs-Table 1.csv")
 
-    meter_info = MetersInformation("../resources/dataset_index.csv")
+    meter_info = MetersInformation(settings.RESOURCES + "/dataset_index.csv")
 
     meter_analyse = "meter_5"
 
@@ -87,12 +91,12 @@ if __name__ == '__main__':
                                                                TariffType.THREE_PERIOD)
 
     print("Simple Tariff")
-    print("Payed: {0}".format(total_cost_simple.get_value()))
+    print("Payed: {0}".format(total_cost_simple.get_total()))
 
     print("Two Tariff")
-    print("Payed: {0}".format(total_two_cost.get_value()))
+    print("Payed: {0}".format(total_two_cost.get_total()))
 
     print("Three Period Tariff")
-    print("Payed: {0}".format(total_three_period.get_value()))
+    print("Payed: {0}".format(total_three_period.get_total()))
 
 

@@ -24,7 +24,7 @@ class TariffRecommender:
         costs_tariff = {}
         for i, tariff in enumerate([TariffType.SIMPLE, TariffType.TWO_PERIOD, TariffType.THREE_PERIOD]):
             costs_tariff[tariff] = self.bill_calculator.compute_total_cost(power_data, contracted_power,
-                                                                           tariff).get_value()
+                                                                           tariff).get_total()
 
         return costs_tariff
 
@@ -36,7 +36,7 @@ class TariffRecommender:
         for i, month in enumerate(months):
             months_billing[name_months[i]] = {}
             for j, tariff in enumerate([TariffType.SIMPLE, TariffType.TWO_PERIOD, TariffType.THREE_PERIOD]):
-                bill = self.bill_calculator.compute_total_cost(month, contracted_power, tariff).get_value()
+                bill = self.bill_calculator.compute_total_cost(month, contracted_power, tariff).get_total()
                 months_billing[name_months[i]][tariff] = bill
 
         return months_billing
