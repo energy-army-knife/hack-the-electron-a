@@ -28,11 +28,12 @@ def plot_var(data, runtime=0, filename='filename', extension='png', ylabel='Load
     if runtime:
         buf = BytesIO()
         fig.savefig(buf, format=extension, bbox_inches='tight')
-        image_string = base64.b64encode(buf.getvalue())
+        plt.close()
+        image_string = base64.b64encode(buf.getvalue()).decode('ascii')
         return image_string
     else:
         fig.savefig("{}/{}.{}".format(PLOT_PATH, filename, extension), bbox_inches='tight')
-    plt.close()
+        plt.close()
 
 
 def plot_hist(variable, filename, extension='png', bins=50, xlabel='', ylabel='', range=(), legend_name=''):
