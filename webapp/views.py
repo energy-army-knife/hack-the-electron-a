@@ -1,9 +1,11 @@
+import datetime
+
 from django.shortcuts import render
 
 from electron_django import settings
 from src.billing_calculator import BillingCalculator
 from src.data_loader import MetersInformation, PowerDataLoader, TariffPeriods, TariffDataLoader, CSVDataLoader
-from src.data_models import HourTariffType
+from src.data_models import HourTariffType, TariffType
 from src.data_utils import filter_power_by_date, to_string_tariff
 from flask import json
 
@@ -15,14 +17,19 @@ meters_info = MetersInformation(settings.RESOURCES + "/dataset_index.csv")
 power_loader = PowerDataLoader(settings.RESOURCES + "/load_pwr.csv")
 tarriff_periods = TariffPeriods(settings.RESOURCES + "/HackTheElectron dataset support data/Tariff-Periods-Table 1.csv")
 tariff_data_load = TariffDataLoader(settings.RESOURCES + "/HackTheElectron dataset support data/"
+
                                                          "Regulated Tarrifs-Table 1.csv")
 
 pv_power = CSVDataLoader(settings.RESOURCES + "/pv_pwr.csv", parse_dates=['Date']).data_frame.set_index('Date')
 
 calculator = BillingCalculator(tariff_data_load, tarriff_periods)
+recommender_tariff = TariffRecommender(tariff_data_load, tarriff_periods)
 
-MONTH_START_DEFAULT = "2016-10-01"
-MONTH_END_DEFAULT = "2016-10-31"
+TODAY = datetime.datetime(2018, 9, 15)
+START_MONTH = TODAY.replace(day=1)
+
+PREVIOUS_MONTH_END = START_MONTH - datetime.timedelta(days=1)
+PREVIOUS_MONTH_START = PREVIOUS_MONTH_END.replace(day=1)
 
 
 def get_meter_id_from_query_parm(request):
@@ -32,12 +39,13 @@ def get_meter_id_from_query_parm(request):
         return request.GET["meter"]
 
 
-# Create your views here.
-def index(request):
-    meter = get_meter_id_from_query_parm(request)
-    param = get_parameters_period_overview(meter, MONTH_START_DEFAULT, MONTH_END_DEFAULT)
-    param["active_tab_dashboard"] = "class=active has-sub"
-    return render(request, 'index.html', param)
+def get_name_tariff(tariff: TariffType):
+    if tariff == TariffType.SIMPLE:
+        return "Simple"
+    elif tariff == TariffType.TWO_PERIOD:
+        return "Two-Periods"
+    elif tariff == TariffType.THREE_PERIOD:
+        return "Three-Period"
 
 
 def get_parameters_period_overview(meter_id, period_start, period_end):
@@ -48,10 +56,13 @@ def get_parameters_period_overview(meter_id, period_start, period_end):
     power_loader_meter_hours_minuts = df_power_loader_meter_hours_minuts.values.flatten()
 
     bill = calculator.compute_total_cost(power_loader_meter, meter_info.contracted_power, meter_info.tariff)
-    percentages_peak_type = {HourTariffType.PEAK: 0, HourTariffType.OFF_PEAK: 0, HourTariffType.SUPER_OFF_PEAK: 0}
+    percentages_peak_type_hours = {HourTariffType.PEAK: 0, HourTariffType.OFF_PEAK: 0, HourTariffType.SUPER_OFF_PEAK: 0}
+    percentages_peak_type_spent = {HourTariffType.PEAK: 0, HourTariffType.OFF_PEAK: 0, HourTariffType.SUPER_OFF_PEAK: 0}
 
-    for peak_type in bill.costs_peaks_distribution:
-        percentages_peak_type[peak_type] = round(
+    for peak_type in bill.times_peaks_distribution:
+        percentages_peak_type_hours[peak_type] = round(
+            bill.times_peaks_distribution[peak_type] / sum(bill.times_peaks_distribution.values()), 2)
+        percentages_peak_type_spent[peak_type] = round(
             bill.costs_peaks_distribution[peak_type] / sum(bill.costs_peaks_distribution.values()), 2)
 
     recommender_tariff = TariffRecommender(tariff_data_load, tarriff_periods)
@@ -77,9 +88,13 @@ def get_parameters_period_overview(meter_id, period_start, period_end):
             "peak_load": round(power_loader_meter.max().values[0] / 1000, 2),
             "meter_id": meter_id,
             "tariff": meter_info.tariff.value,
-            "percentage_last_month_peak": percentages_peak_type[HourTariffType.PEAK],
-            "percentage_last_month_off_peak": percentages_peak_type[HourTariffType.OFF_PEAK],
-            "percentage_last_month_super_off_peak": percentages_peak_type[
+            "percentage_last_month_peak": percentages_peak_type_hours[HourTariffType.PEAK],
+            "percentage_last_month_off_peak": percentages_peak_type_hours[HourTariffType.OFF_PEAK],
+            "percentage_last_month_super_off_peak": percentages_peak_type_hours[
+                HourTariffType.SUPER_OFF_PEAK],
+            "percentage_last_month_peak_cost": percentages_peak_type_spent[HourTariffType.PEAK],
+            "percentage_last_month_off_peak_cost": percentages_peak_type_spent[HourTariffType.OFF_PEAK],
+            "percentage_last_month_super_off_peak_cost": percentages_peak_type_spent[
                 HourTariffType.SUPER_OFF_PEAK],
             "power_spent_by_hours": json.dumps(list(power_loader_meter_hours_minuts)),
             "power_spent_by_hours_label": json.dumps(list(range(0, 24))),
@@ -92,18 +107,46 @@ def get_parameters_period_overview(meter_id, period_start, period_end):
             "best_contracted_power": best_contracted_power}
 
 
+# Create your views here.
+def index(request):
+    meter_id = get_meter_id_from_query_parm(request)
+    meter_power = power_loader.get_power_meter_id(meter_id)
+    meter_info = meters_info.get_meter_id_contract_info(meter_id)
+
+    power_period_month = filter_power_by_date(meter_power, str(START_MONTH.date()), str(TODAY.date()))
+    billing_period_month = round(calculator.compute_total_cost(power_period_month, meter_info.contracted_power,
+                                                         meter_info.tariff).get_total(), 2)
+
+    same_period_last_year_start = START_MONTH.replace(year=START_MONTH.year - 1)
+    same_period_last_year_today = same_period_last_year_start.replace(day=TODAY.day)
+
+    power_period_month_last_year = filter_power_by_date(meter_power, str(same_period_last_year_start.date()),
+                                                        str(same_period_last_year_today.date()))
+    billing_period_month_last_year = round(calculator.compute_total_cost(power_period_month_last_year,
+                                                                   meter_info.contracted_power,
+                                                                   meter_info.tariff).get_total(), 2)
+
+    param = get_parameters_period_overview(meter_id, PREVIOUS_MONTH_START, PREVIOUS_MONTH_END)
+    param["active_tab_dashboard"] = "class=active has-sub"
+    param["billing_period_month_last_year"] = billing_period_month_last_year
+    param["billing_period_month"] = billing_period_month
+    param["today"] = TODAY
+    return render(request, 'index.html', param)
+
+
 def analyser(request):
     if request.method == "GET":
 
         meter = get_meter_id_from_query_parm(request)
-        param = get_parameters_period_overview(meter, MONTH_START_DEFAULT, MONTH_END_DEFAULT)
+        param = get_parameters_period_overview(meter, PREVIOUS_MONTH_START, PREVIOUS_MONTH_END)
         param["active_tab_analyser"] = "class=active has-sub"
-
+        param["today"] = TODAY
     else:
 
         param = get_parameters_period_overview(request.POST["meter_id"], request.POST["date-start"],
                                                request.POST["date-end"])
         param["active_tab_analyser"] = "class=active has-sub"
+        param["today"] = TODAY
 
     return render(request, "tariff_analyser.html", param)
 
@@ -119,14 +162,16 @@ def pv(request):
                                                            runtime=1, legend_name=['house load',
                                                                                    f'load from {n_panels} panels']),
                                        "all_meters": meters_info.get_all_meters(),
-                                       "meter_id": meter_id})
+                                       "meter_id": meter_id,
+                                       "today": TODAY})
 
 
 def device_simulator(request):
     meter_id = get_meter_id_from_query_parm(request)
     return render(request, "device_simulator.html", {"active_tab_device_simulator": "class=active has-sub",
                                                      "all_meters": meters_info.get_all_meters(),
-                                                     "meter_id": meter_id})
+                                                     "meter_id": meter_id,
+                                                     "today": TODAY})
 
 
 def contract_subscription(request):
@@ -151,11 +196,11 @@ def contract_subscription(request):
     saving_no_adj = round(current_price - calculator.compute_total_cost(meter_power, best_contracted_power,
                                                                         meter_info.tariff).get_total(), 2)
 
-    saving_small_adj = round(current_price-calculator.compute_total_cost(meter_power, contracted_power_perc_small,
-                                                                         meter_info.tariff).get_total(), 2)
+    saving_small_adj = round(current_price - calculator.compute_total_cost(meter_power, contracted_power_perc_small,
+                                                                           meter_info.tariff).get_total(), 2)
 
-    saving_some_adj = round(current_price-calculator.compute_total_cost(meter_power, contracted_power_perc_some,
-                                                                        meter_info.tariff).get_total(), 2)
+    saving_some_adj = round(current_price - calculator.compute_total_cost(meter_power, contracted_power_perc_some,
+                                                                          meter_info.tariff).get_total(), 2)
 
     result = plot_var(meter_power, runtime=1, threshold=[a*kW for a in [meter_info.contracted_power,
                                                          best_contracted_power,
@@ -174,6 +219,35 @@ def contract_subscription(request):
                                                           "meter_id": meter_id,
                                                           "result": result
                                                           })
+
+
+def tariff_subscription(request):
+    meter_id = get_meter_id_from_query_parm(request)
+    meter_power = power_loader.get_power_meter_id(meter_id)
+    meter_info = meters_info.get_meter_id_contract_info(meter_id)
+
+    current_price = calculator.compute_total_cost(meter_power, meter_info.contracted_power,
+                                                  meter_info.tariff).get_total()
+
+    # Recommend the best tariff taken into account the two years info
+    best_tariff, costs_tariffs = recommender_tariff.get_best_tariff(power_loader.get_power_meter_id(meter_id),
+                                                                    meter_info.contracted_power)
+
+    result = recommender_tariff.plot_tariffs_by_month(meter_power, meter_info.contracted_power)
+
+    return render(request, "tariff_subscription.html", {"active_tariff_subscription": "class=active has-sub",
+                                                        "all_meters": meters_info.get_all_meters(),
+                                                        "current_tariff": get_name_tariff(meter_info.tariff),
+                                                        "meter_id": meter_id,
+                                                        "simple_tariff_savings": round(
+                                                            current_price - costs_tariffs[TariffType.SIMPLE], 2),
+                                                        "two_tariff_savings": round(
+                                                            current_price - costs_tariffs[TariffType.TWO_PERIOD], 2),
+                                                        "three_tariff_savings": round(
+                                                            current_price - costs_tariffs[TariffType.THREE_PERIOD], 2),
+                                                        "result": result,
+                                                        "today": TODAY
+                                                        })
 
 
 def notifications(request):

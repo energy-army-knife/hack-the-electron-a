@@ -10,6 +10,10 @@
         var power_spent_by_hours_label= JSON.parse("{{ power_spent_by_hours_label }}");
         var percentage_last_month_super_off_peak = {{ percentage_last_month_super_off_peak }};
 
+        var percentage_last_month_peak_cost = {{ percentage_last_month_peak_cost }};
+        var percentage_last_month_off_peak_cost = {{ percentage_last_month_off_peak_cost }};
+        var percentage_last_month_super_off_peak_cost = {{ percentage_last_month_super_off_peak_cost }};
+
     </script>
 {% endblock %}
 
@@ -23,7 +27,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="overview-wrap">
-                        <h2 class="title-1">overview</h2>
+                        <h2 class="title-1">Notifications</h2>
                     </div>
                 </div>
             </div>
@@ -46,6 +50,25 @@
                      To view detailed information regarding this subject click <a href="#" class="alert-link">here</a>.
                 </div>
             {% endif %}
+
+            {% if billing_period_month_last_year < billing_period_month%}
+                <div class="alert alert-danger" role="alert">
+                  You are expending more this month than in same period last year! Your current bill is
+                    {{ billing_period_month }}€ and in the same period last year was {{ billing_period_month_last_year }}€.
+                </div>
+            {% elif billing_period_month_last_year > billing_period_month %}
+                <div class="alert alert-success" role="alert">
+                  Congratulations! You are expending less this month than in same period last year! Your current bill is
+                    {{ billing_period_month }}€ and in the same period last year was {{ billing_period_month_last_year }}€.
+                </div>
+            {% endif %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-1">Previous Month Overview</h2>
+                    </div>
+                </div>
+            </div>
             <div class="row m-t-25">
                 <div class="col-sm-6 col-lg-3">
                     <div class="overview-item overview-item--c1">
@@ -122,7 +145,7 @@
                         <div class="au-card-inner">
                             <h3 class="title-2 tm-b-5">Percentage by tariff type</h3>
                             <div class="row no-gutters">
-                                <div class="col-xl-6">
+                                <div class="col-xl-4">
                                     <div class="chart-note-wrap">
                                         <div class="chart-note mr-0 d-block">
                                             <span class="dot dot--blue"></span>
@@ -142,9 +165,14 @@
                                         {% endif %}
                                     </div>
                                 </div>
-                                <div class="col-xl-6">
+                                <div class="col-xl-4">
                                     <div class="percent-chart">
                                         <canvas id="percent-chart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-xl-4">
+                                    <div class="percent-chart">
+                                        <canvas id="percent-chart-2"></canvas>
                                     </div>
                                 </div>
                             </div>

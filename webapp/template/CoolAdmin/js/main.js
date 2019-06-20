@@ -390,6 +390,66 @@ $(document).ready(function() {
           }
         });
       }
+      // Percent Chart
+      var ctx2 = document.getElementById("percent-chart-2");
+      if (ctx2) {
+        ctx2.height = 280;
+        var myChart = new Chart(ctx2, {
+          type: 'doughnut',
+          data: {
+            datasets: [
+              {
+                label: "My First dataset",
+                data: [percentage_last_month_peak_cost, percentage_last_month_off_peak_cost,
+                  percentage_last_month_super_off_peak_cost],
+                backgroundColor: [
+                  '#00b5e9',
+                  '#fa4251',
+                  '#00ad5f'
+                ],
+                hoverBackgroundColor: [
+                  '#00b5e9',
+                  '#fa4251',
+                  '#00ad5f'
+
+                ],
+                borderWidth: [
+                  0, 0, 0
+                ],
+                hoverBorderColor: [
+                  'transparent',
+                  'transparent',
+                  'transparent'
+                ]
+              }
+            ],
+            labels: [
+              'Peak',
+              'Off-Peak',
+              'Super-Peak'
+            ]
+          },
+          options: {
+            maintainAspectRatio: false,
+            responsive: true,
+            cutoutPercentage: 55,
+            animation: {
+              animateScale: true,
+              animateRotate: true
+            },
+            legend: {
+              display: false
+            },
+            tooltips: {
+              titleFontFamily: "Poppins",
+              xPadding: 15,
+              yPadding: 10,
+              caretPadding: 0,
+              bodyFontSize: 16
+            }
+          }
+        });
+      }
 
     } catch (error) {
       console.log(error);

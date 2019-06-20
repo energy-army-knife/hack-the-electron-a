@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{%  block header %}
+    <style>
+    .title-price{
+        color: rgba(0, 0, 0, 0.6);
+        text-align: center;
+        margin-bottom: 20px;
+        margin-top: 20px;
+    }
+
+    .title-card{
+        text-align:center;
+        font-size: x-large;
+    }
+    .title-current-tariff{
+        font-size: 20px;
+        color: rgba(58, 114, 188, 0.94);
+        font-family: inherit;
+    }
+
+    </style>
+
+
+{% endblock %}
+
+
+{% block content %}
+
+<!-- MAIN CONTENT-->
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row" style="margin-bottom: 20px">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h1 class="title-1">Tariff</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-bottom: 20px">
+                <div class="col-md-12" style="display: flex">
+                    <h2 class="title-current-tariff" style="margin-right: 5px">Current Tariff:</h2><h4> {{ current_tariff }}</h4>
+                </div>
+            </div>
+            <div class="card-deck">
+                <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+                  <div class="card-header title-card">Simple</div>
+                  <div class="card-body">
+                    <h1 class="title-price">{{ simple_tariff_savings }}€</h1>
+                    <p class="card-text">BLABLABLA</p>
+                  </div>
+                </div>
+                <div class="card text-white bg-warning mb-3" style="max-width: 18rem;">
+                  <div class="card-header title-card">Two-Periods</div>
+                  <div class="card-body">
+                    <h1 class="title-price">{{ two_tariff_savings }}€</h1>
+                    <p class="card-text">BLABLABLA</p>
+                  </div>
+                </div>
+                <div class="card text-white bg-info mb-3" style="max-width: 18rem;">
+                  <div class="card-header title-card">Three-Periods</div>
+                  <div class="card-body">
+                    <h1 class="title-price">{{ three_tariff_savings }}€</h1>
+                    <p class="card-text">BLABLABLA</p>
+                  </div>
+                </div>
+            </div>
+            <div>
+                <img src="data:image/png;base64,{{ result }}" alt="tariffs">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END MAIN CONTENT-->
+{% endblock %}
