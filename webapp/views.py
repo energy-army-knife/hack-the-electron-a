@@ -149,7 +149,10 @@ def contract_subscription(request):
     saving_some_adj = round(current_price-calculator.compute_total_cost(meter_power, contracted_power_perc_some,
                                                                         meter_info.tariff).get_total(), 2)
 
-    result = plot_var(meter_power, runtime=1, threshold=best_contracted_power * kW)
+    result = plot_var(meter_power, runtime=1, threshold=[a*kW for a in [meter_info.contracted_power,
+                                                         best_contracted_power,
+                                                         contracted_power_perc_small,
+                                                         contracted_power_perc_some]])
 
     return render(request, "contract_subscription.html", {"active_contract_subscription": "class=active has-sub",
                                                           "no_adjustment_price": saving_no_adj,

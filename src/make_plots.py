@@ -23,7 +23,10 @@ def plot_var(data, runtime=0, filename='filename', extension='png', ylabel='Load
     if len(legend_name) > 0:
         plt.legend(legend_name)
     if threshold:
-        plt.axhline(threshold, color='red', lw=2)
+        if not isinstance(threshold, list):
+            threshold = [threshold]
+        for t in threshold:
+            plt.axhline(t, color='red', lw=2)
     plt.grid(axis='y', alpha=0.5)
     if runtime:
         buf = BytesIO()
