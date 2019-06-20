@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{%  block header %}
+    <style>
+    .title-price{
+        color: rgba(0, 0, 0, 0.6);
+        text-align: center;
+        margin-bottom: 20px;
+        margin-top: 20px;
+    }
+
+    .title-card{
+        text-align:center;
+        font-size: x-large;
+    }
+
+    </style>
+
+
+{% endblock %}
+
+
+{% block content %}
+
+<!-- MAIN CONTENT-->
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row" style="margin-bottom: 20px">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-1">Contract</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="card-deck">
+                <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+                  <div class="card-header title-card">No Adjustment</div>
+                  <div class="card-body">
+                    <h1 class="title-price">{{ no_adjustment_price }}€</h1>
+                    <p class="card-text">You do not have to adjust your current habits! This contracted power is greater
+                        than your maximum registered power!</p>
+                  </div>
+                </div>
+                <div class="card text-white bg-warning mb-3" style="max-width: 18rem;">
+                  <div class="card-header title-card">Small Adjustment</div>
+                  <div class="card-body">
+                    <h1 class="title-price">{{ small_adjustment_price }}€</h1>
+                    <p class="card-text">This contracted power is bellow the maximum registered in two years. Besides you
+                    only surpass the limit {{percentil_small_adjustment}} of the times! Do your think you change you habits and save money?</p>
+                  </div>
+                </div>
+                <div class="card text-white bg-info mb-3" style="max-width: 18rem;">
+                  <div class="card-header title-card">Routine Changer</div>
+                  <div class="card-body">
+                    <h1 class="title-price">{{ medium_adjustment_price }}€</h1>
+                    <p class="card-text">With a little bit more effort you can lower your bill! Currently you cross the
+                        limit {{percentil_some_adjustments }} , are you willing to change tour routine to save money?</p>
+                  </div>
+                </div>
+            </div>
+            <div>
+                <img src="data:image/png;base64,{{ result }}">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END MAIN CONTENT-->
+{% endblock %}

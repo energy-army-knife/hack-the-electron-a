@@ -801,7 +801,7 @@ $(document).ready(function() {
             defaultFontFamily: 'Poppins',
             datasets: [{
               data: power_spent_by_hours,
-              label: "Power Spent",
+              label: "Power Spent [kW]",
               backgroundColor: 'rgba(0,103,255,.15)',
               borderColor: 'rgba(0,103,255,0.5)',
               borderWidth: 3.5,
@@ -857,7 +857,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Power Spent',
+                  labelString: 'Power Spent [kW]',
                   fontFamily: "Poppins"
                 },
                 ticks: {

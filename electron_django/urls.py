@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^analyser/$', views.analyser, name='analyser'),
     url(r'^photovoltaic/$', views.pv, name='photovoltaic'),
     url(r'^device_simulator/$', views.device_simulator, name='device_simulator'),
+    url(r'^contract_subscription/$', views.contract_subscription, name='contract_subscription'),
     url(r'^notifications/$', views.notifications, name='notificatons'),
     url(r'^favicon\.ico$', RedirectView.as_view(url='static/images/favicon.ico')),
 ]
