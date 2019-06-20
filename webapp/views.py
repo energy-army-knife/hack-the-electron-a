@@ -114,6 +114,8 @@ def index(request):
     meter_info = meters_info.get_meter_id_contract_info(meter_id)
 
     power_period_month = filter_power_by_date(meter_power, str(START_MONTH.date()), str(TODAY.date()))
+    power_period_month_grouped_days = power_period_month.groupby(power_period_month.index.strftime('%D')).sum().values.flatten()
+
     billing_period_month = round(calculator.compute_total_cost(power_period_month, meter_info.contracted_power,
                                                          meter_info.tariff).get_total(), 2)
 
@@ -122,6 +124,8 @@ def index(request):
 
     power_period_month_last_year = filter_power_by_date(meter_power, str(same_period_last_year_start.date()),
                                                         str(same_period_last_year_today.date()))
+    power_grouped_days_last_year = power_period_month_last_year.groupby(power_period_month_last_year.index.strftime('%D')).sum().values.flatten()
+
     billing_period_month_last_year = round(calculator.compute_total_cost(power_period_month_last_year,
                                                                    meter_info.contracted_power,
                                                                    meter_info.tariff).get_total(), 2)
@@ -129,9 +133,15 @@ def index(request):
     param = get_parameters_period_overview(meter_id, PREVIOUS_MONTH_START, PREVIOUS_MONTH_END)
     param["active_tab_dashboard"] = "class=active has-sub"
     param["billing_period_month_last_year"] = billing_period_month_last_year
+    param["billing_period_month_last_year_label"] = same_period_last_year_start.strftime("%m-%Y")
     param["billing_period_month"] = billing_period_month
-    param["today"] = TODAY
-    return render(request, 'index.html', param)
+    param["billing_period_month_label"] = TODAY.strftime("%m-%Y")
+    param["plot_current_month"] = json.dumps(list(power_period_month_grouped_days))
+    param["plot_last_year_month"] = json.dumps(list(power_grouped_days_last_year))
+    param["plot_axes"] = json.dumps(list(range(1, TODAY.day+1)))
+    param["today"] = TODAY.date()
+    param["start_month"] = START_MONTH.date()
+    return render(request, 'index_2.html', param)
 
 
 def analyser(request):
@@ -211,6 +221,7 @@ def contract_subscription(request):
                                                           "no_adjustment_price": saving_no_adj,
                                                           "small_adjustment_price": saving_small_adj,
                                                           "medium_adjustment_price": saving_some_adj,
+                                                          "current_contract": meter_info.contracted_power,
                                                           "percentil_small_adjustment": round(
                                                               100 - percentil_small_adjustment, 3),
                                                           "percentil_some_adjustments": round(

@@ -751,18 +751,18 @@ $(document).ready(function() {
 
     try {
       //Sales chart
-      var ctx = document.getElementById("sales-chart");
+      var ctx = document.getElementById("overview-month-chart");
       if (ctx) {
         ctx.height = 150;
         var myChart = new Chart(ctx, {
           type: 'line',
           data: {
-            labels: ["2010", "2011", "2012", "2013", "2014", "2015", "2016"],
+            labels: plot_axes,
             type: 'line',
             defaultFontFamily: 'Poppins',
             datasets: [{
-              label: "Foods",
-              data: [0, 30, 10, 120, 50, 63, 10],
+              label: "Sep-2018",
+              data: plot_current_month,
               backgroundColor: 'transparent',
               borderColor: 'rgba(220,53,69,0.75)',
               borderWidth: 3,
@@ -771,8 +771,8 @@ $(document).ready(function() {
               pointBorderColor: 'transparent',
               pointBackgroundColor: 'rgba(220,53,69,0.75)',
             }, {
-              label: "Electronics",
-              data: [0, 50, 40, 80, 40, 79, 120],
+              label: "Sep-2017",
+              data: plot_last_year_month,
               backgroundColor: 'transparent',
               borderColor: 'rgba(40,167,69,0.75)',
               borderWidth: 3,
@@ -941,27 +941,19 @@ $(document).ready(function() {
       //bar chart
       var ctx = document.getElementById("barChart");
       if (ctx) {
-        ctx.height = 200;
+        ctx.height = 500;
         var myChart = new Chart(ctx, {
           type: 'bar',
           defaultFontFamily: 'Poppins',
           data: {
-            labels: ["January", "February", "March", "April", "May", "June", "July"],
+            labels: [last_year_cost_label, current_cost_label],
             datasets: [
               {
-                label: "My First dataset",
-                data: [65, 59, 80, 81, 56, 55, 40],
+                label: "Cost",
+                data: [last_year_cost, current_cost],
                 borderColor: "rgba(0, 123, 255, 0.9)",
                 borderWidth: "0",
                 backgroundColor: "rgba(0, 123, 255, 0.5)",
-                fontFamily: "Poppins"
-              },
-              {
-                label: "My Second dataset",
-                data: [28, 48, 40, 19, 86, 27, 90],
-                borderColor: "rgba(0,0,0,0.09)",
-                borderWidth: "0",
-                backgroundColor: "rgba(0,0,0,0.07)",
                 fontFamily: "Poppins"
               }
             ]

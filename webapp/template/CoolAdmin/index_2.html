@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{%  block header %}
+    <script>
+        var percentage_last_month_peak = {{ percentage_last_month_peak }};
+        var percentage_last_month_off_peak = {{ percentage_last_month_off_peak }};
+
+        var power_spent_by_hours = JSON.parse("{{ power_spent_by_hours }}");
+        var power_spent_by_hours_label= JSON.parse("{{ power_spent_by_hours_label }}");
+        var percentage_last_month_super_off_peak = {{ percentage_last_month_super_off_peak }};
+
+        var percentage_last_month_peak_cost = {{ percentage_last_month_peak_cost }};
+        var percentage_last_month_off_peak_cost = {{ percentage_last_month_off_peak_cost }};
+        var percentage_last_month_super_off_peak_cost = {{ percentage_last_month_super_off_peak_cost }};
+
+        var plot_current_month = JSON.parse("{{ plot_current_month }}");
+        var plot_last_year_month = JSON.parse("{{ plot_last_year_month }}");
+        var plot_axes = JSON.parse("{{ plot_axes }}");
+
+        var current_cost = {{ billing_period_month }};
+        var current_cost_label = "{{ billing_period_month_label }}";
+        var last_year_cost = {{ billing_period_month_last_year }};
+        var last_year_cost_label = "{{ billing_period_month_last_year_label }}";
+
+
+    </script>
+{% endblock %}
+
+
+{% block content %}
+
+<!-- MAIN CONTENT-->
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid" >
+            <div class="row">
+                <div class="card bg-light mb-3" style="width: 22.2rem;">
+                  <div class="card-header">Current Bill</div>
+                  <div class="card-body">
+                    <h5 class="card-title"></h5>
+                    <div class="row no-gutters">
+                        <div class="col-xl-4">
+                            <div class="chart-note-wrap">
+                                <div class="chart-note mr-0 d-block">
+                                    <span class="dot dot--blue"></span>
+                                    <span>Peak</span>
+                                </div>
+                                {% if tariff > 1 %}
+                                    <div class="chart-note mr-0 d-block">
+                                        <span class="dot dot--red"></span>
+                                        <span>Off-Peak</span>
+                                    </div>
+                                {% endif %}
+                                {% if tariff > 2 %}
+                                    <div class="chart-note mr-0 d-block">
+                                        <span class="dot dot--green"></span>
+                                        <span>Super-Off-Peak</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-xl-8">
+                            <div class="percent-chart">
+                                <canvas id="percent-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                  </div>
+                </div>
+                <div class="card bg-light mb-3" style="width: 22.2rem;">
+                  <div class="card-header">Header</div>
+                  <div class="card-body">
+                    <h5 class="card-title">Light card title</h5>
+                     <div class="col-xl-8">
+                            <canvas id="barChart"></canvas>
+                        </div>
+                  </div>
+                </div>
+                <div class="card bg-light mb-3" style="max-width: 22.2rem;">
+                  <div class="card-header">Header</div>
+                  <div class="card-body">
+                    <h5 class="card-title">Light card title</h5>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                  </div>
+                </div>
+
+            </div>
+
+            <div class="row" style="margin-top: 50px">
+                <div class="col-lg-8">
+                    <div class="au-card m-b-30">
+                        <div class="au-card-inner">
+                            <h3 class="title-2 m-b-40">{{ start_month }}-{{ today }}</h3>
+                            <canvas id="overview-month-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    {% if current_tariff != best_tariff and  contracted_power != best_contracted_power%}
+                        <div class="alert alert-danger" role="alert">
+                          Your current tariff {{ current_tariff }} and contracted power {{ contracted_power }} is not optimized for your
+                            power consumption. If your tariff and contracted power had been {{ best_tariff }} and
+                            {{ contracted_power }}, respectively, you would save {{ tariff_savings }} euros. To view detailed information
+                            regarding this subject click <a href="#" class="alert-link">here</a>.
+                        </div>
+
+                    {% elif current_tariff != best_tariff %}
+                        <div class="alert alert-danger" role="alert">
+                          Your current tariff {{ contracted_power }} is not optimized for your power consumption, it should be {{ best_tariff }}.
+                             To view detailed information regarding this subject click <a href="#" class="alert-link">here</a>.
+                        </div>
+                    {% elif contracted_power != best_contracted_power %}
+                        <div class="alert alert-danger" role="alert">
+                          Your current contracted power {{ contracted_power }} is not optimized for your power consumption, it should be {{ best_contracted_power }}.
+                             To view detailed information regarding this subject click <a href="#" class="alert-link">here</a>.
+                        </div>
+                    {% endif %}
+
+                    {% if billing_period_month_last_year < billing_period_month%}
+                        <div class="alert alert-danger" role="alert">
+                          You are expending more this month than in same period last year! Your current bill is
+                            {{ billing_period_month }}€ and in the same period last year was {{ billing_period_month_last_year }}€.
+                        </div>
+                    {% elif billing_period_month_last_year > billing_period_month %}
+                        <div class="alert alert-success" role="alert">
+                          Congratulations! You are expending less this month than in same period last year! Your current bill is
+                            {{ billing_period_month }}€ and in the same period last year was {{ billing_period_month_last_year }}€.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END MAIN CONTENT-->
+{% endblock %}
