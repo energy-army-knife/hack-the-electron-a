@@ -76,7 +76,7 @@ if __name__ == '__main__':
 
     # plot meter 0
     meter = 'meter_0'
-    plot_var(meter_power[meter], filename='meter_0_power', threshold=meter_contract[meter]*kW)
-
+    string = plot_var(meter_power[meter], runtime=1, threshold=meter_contract[meter]*kW)
+    print(string)
     # check runtime
     print(datetime.now() - start)

@@ -1,3 +1,6 @@
+from io import BytesIO
+import base64
+
 import matplotlib.pyplot as plt
 import matplotlib
 
@@ -5,7 +8,7 @@ matplotlib.rcParams.update({'font.size': 20})
 PLOT_PATH = '../output/'
 
 
-def plot_var(data, filename, extension='png', ylabel='Load [kW]', legend_name=(), xlabel='', threshold=0):
+def plot_var(data, runtime=0, filename='filename', extension='png', ylabel='Load [kW]', legend_name=(), xlabel='', threshold=0):
     """saves image with plots from each column in Dataframe"""
 
     fig = plt.figure(figsize=(15, 10))
@@ -22,7 +25,13 @@ def plot_var(data, filename, extension='png', ylabel='Load [kW]', legend_name=()
     if threshold:
         plt.axhline(threshold, color='red', lw=2)
     plt.grid(axis='y', alpha=0.5)
-    fig.savefig("{}/{}.{}".format(PLOT_PATH, filename, extension), bbox_inches='tight')
+    if runtime:
+        buf = BytesIO()
+        fig.savefig(buf, format=extension, bbox_inches='tight')
+        image_string = base64.b64encode(buf.getvalue())
+        return image_string
+    else:
+        fig.savefig("{}/{}.{}".format(PLOT_PATH, filename, extension), bbox_inches='tight')
     plt.close()
 
 
