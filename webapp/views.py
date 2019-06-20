@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 from electron_django import settings
 from src.billing_calculator import BillingCalculator
-from src.data_loader import MetersInformation, PowerDataLoader, TariffPeriods, TariffDataLoader
+from src.data_loader import MetersInformation, PowerDataLoader, TariffPeriods, TariffDataLoader, CSVDataLoader
 from src.data_models import HourTariffType
 from src.data_utils import filter_power_by_date, to_string_tariff
 from flask import json
@@ -15,8 +15,9 @@ meters_info = MetersInformation(settings.RESOURCES + "/dataset_index.csv")
 power_loader = PowerDataLoader(settings.RESOURCES + "/load_pwr.csv")
 tarriff_periods = TariffPeriods(settings.RESOURCES + "/HackTheElectron dataset support data/Tariff-Periods-Table 1.csv")
 tariff_data_load = TariffDataLoader(settings.RESOURCES + "/HackTheElectron dataset support data/"
-
                                                          "Regulated Tarrifs-Table 1.csv")
+
+pv_power = CSVDataLoader(settings.RESOURCES + "/pv_pwr.csv", parse_dates=['Date']).data_frame.set_index('Date')
 
 calculator = BillingCalculator(tariff_data_load, tarriff_periods)
 
@@ -109,7 +110,14 @@ def analyser(request):
 
 def pv(request):
     meter_id = get_meter_id_from_query_parm(request)
+    meter_power = power_loader.get_power_meter_id(meter_id)
+
+    n_panels = int(meter_power[meter_power != 0].mean().values[0] / pv_power.mean().values[0])
+
     return render(request, "pv.html", {"active_tab_photovoltaic": "class=active has-sub",
+                                       "plot_pv": plot_var([meter_power, n_panels*pv_power],
+                                                           runtime=1, legend_name=['house load',
+                                                                                   f'load from {n_panels} panels']),
                                        "all_meters": meters_info.get_all_meters(),
                                        "meter_id": meter_id})
 
