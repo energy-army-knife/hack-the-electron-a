@@ -47,26 +47,29 @@
                     <h2 class="title-current-contract" style="margin-right: 5px">Current Contract: </h2> {{ current_contract }}
                 </div>
             </div>
-            {% if no_adjustment_price > 0 and small_adjustment_price > 0 and medium_adjustment_price > 0 %}
+            {% if no_adjustment_price == 0 and small_adjustment_price == 0 and medium_adjustment_price == 0 %}
             <div class="alert alert-success" role="alert">
                   Congratulations! Your contracted power fits your routine habits perfectly, You do not need to change it.
             </div>
-            {% elif no_adjustment_price < 0 %}
+            {% elif no_adjustment_price < 0 and small_adjustment_price < 0 and medium_adjustment_price <= 0%}
                 <div class="alert alert-danger" role="alert">
                   Warning! You need a contracted power greater than what you have. Do you think you can change your
                     habits? You do need to increase your contracted power (it will cost you {{ no_adjustment_price }})?
                 </div>
-            {% elif no_adjustment_price > 0 %}
-                <div class="card-deck">
-                    <div class="card text-white mb-3" style="max-width: 18rem; background-color: rgba(25,133,0,0.34)">
-                      <div class="card-header title-card">Smart</div>
-                      <div class="card-body">
-                        <h1 class="title-price">{{ no_adjustment_price }}€</h1>
-                        <p class="card-text">You do not have to adjust your current habits! This contracted power is greater
-                            than your maximum registered power!</p>
-                      </div>
-                    </div>
-            {% elif small_adjustment_price > 0 and no_adjustment_price != medium_adjustment_price%}
+            {% endif %}
+
+            <div class="card-deck">
+            {% if no_adjustment_price > 0%}
+                <div class="card text-white mb-3" style="max-width: 18rem; background-color: rgba(25,133,0,0.34)">
+                  <div class="card-header title-card">Smart</div>
+                  <div class="card-body">
+                    <h1 class="title-price">{{ no_adjustment_price }}€</h1>
+                    <p class="card-text">You do not have to adjust your current habits! This contracted power is greater
+                        than your maximum registered power!</p>
+                  </div>
+                </div>
+            {% endif %}
+            {% if small_adjustment_price > 0 and no_adjustment_price != medium_adjustment_price%}
 
                 <div class="card text-white mb-3" style="max-width: 18rem; background-color: rgba(25,133,0,0.66)">
                   <div class="card-header title-card">Eco</div>
@@ -76,8 +79,8 @@
                     only surpass the limit {{percentil_small_adjustment}} of the times! Do your think you change you habits and save money?</p>
                   </div>
                 </div>
-
-            {% elif medium_adjustment_price > 0 and small_adjustment_price != medium_adjustment_price%}
+            {% endif %}
+            {% if medium_adjustment_price > 0 and small_adjustment_price != medium_adjustment_price%}
                     <div class="card text-white mb-3" style="max-width: 18rem; background-color: #198500">
                       <div class="card-header title-card">Super saving</div>
                       <div class="card-body">
@@ -86,8 +89,9 @@
                             limit {{percentil_some_adjustments }} , are you willing to change tour routine to save money?</p>
                       </div>
                     </div>
-                </div>
+
             {% endif %}
+            </div>
             <div>
                 <img src="data:image/png;base64,{{ result }}">
             </div>

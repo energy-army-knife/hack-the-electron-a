@@ -52,8 +52,11 @@ def get_parameters_period_overview(meter_id, period_start, period_end):
     meter_info = meters_info.get_meter_id_contract_info(meter_id)
     power_loader_meter = filter_power_by_date(power_loader.get_power_meter_id(meter_id), period_start, period_end)
 
-    df_power_loader_meter_hours_minuts = power_loader_meter.groupby(power_loader_meter.index.strftime('%H')).sum()
-    power_loader_meter_hours_minuts = df_power_loader_meter_hours_minuts.values.flatten()
+    df_power_loader_meter_hours_minuts_sum = power_loader_meter.groupby(power_loader_meter.index.strftime('%H')).sum()
+    power_loader_meter_hours_minuts_sum = df_power_loader_meter_hours_minuts_sum.values.flatten()
+
+    df_power_loader_meter_hours_max = power_loader_meter.groupby(power_loader_meter.index.strftime('%H')).max()
+    power_loader_meter_hours_max = df_power_loader_meter_hours_max.values.flatten()
 
     bill = calculator.compute_total_cost(power_loader_meter, meter_info.contracted_power, meter_info.tariff)
     percentages_peak_type_hours = {HourTariffType.PEAK: 0, HourTariffType.OFF_PEAK: 0, HourTariffType.SUPER_OFF_PEAK: 0}
@@ -96,7 +99,8 @@ def get_parameters_period_overview(meter_id, period_start, period_end):
             "percentage_last_month_off_peak_cost": percentages_peak_type_spent[HourTariffType.OFF_PEAK],
             "percentage_last_month_super_off_peak_cost": percentages_peak_type_spent[
                 HourTariffType.SUPER_OFF_PEAK],
-            "power_spent_by_hours": json.dumps(list(power_loader_meter_hours_minuts)),
+            "power_loader_meter_hours_max": json.dumps(list(power_loader_meter_hours_max / 1000)),
+            "power_spent_by_hours": json.dumps(list(power_loader_meter_hours_minuts_sum / 1000)),
             "power_spent_by_hours_label": json.dumps(list(range(0, 24))),
             "all_meters": meters_info.get_all_meters(),
             "period_start": period_start,
@@ -114,21 +118,23 @@ def index(request):
     meter_info = meters_info.get_meter_id_contract_info(meter_id)
 
     power_period_month = filter_power_by_date(meter_power, str(START_MONTH.date()), str(TODAY.date()))
-    power_period_month_grouped_days = power_period_month.groupby(power_period_month.index.strftime('%D')).sum().values.flatten()
+    power_period_month_grouped_days = power_period_month.groupby(
+        power_period_month.index.strftime('%D')).sum().values.flatten()
 
     billing_period_month = round(calculator.compute_total_cost(power_period_month, meter_info.contracted_power,
-                                                         meter_info.tariff).get_total(), 2)
+                                                               meter_info.tariff).get_total(), 2)
 
     same_period_last_year_start = START_MONTH.replace(year=START_MONTH.year - 1)
     same_period_last_year_today = same_period_last_year_start.replace(day=TODAY.day)
 
     power_period_month_last_year = filter_power_by_date(meter_power, str(same_period_last_year_start.date()),
                                                         str(same_period_last_year_today.date()))
-    power_grouped_days_last_year = power_period_month_last_year.groupby(power_period_month_last_year.index.strftime('%D')).sum().values.flatten()
+    power_grouped_days_last_year = power_period_month_last_year.groupby(
+        power_period_month_last_year.index.strftime('%D')).sum().values.flatten()
 
     billing_period_month_last_year = round(calculator.compute_total_cost(power_period_month_last_year,
-                                                                   meter_info.contracted_power,
-                                                                   meter_info.tariff).get_total(), 2)
+                                                                         meter_info.contracted_power,
+                                                                         meter_info.tariff).get_total(), 2)
 
     param = get_parameters_period_overview(meter_id, PREVIOUS_MONTH_START, PREVIOUS_MONTH_END)
     param["active_tab_dashboard"] = "class=active has-sub"
@@ -136,9 +142,9 @@ def index(request):
     param["billing_period_month_last_year_label"] = same_period_last_year_start.strftime("%m-%Y")
     param["billing_period_month"] = billing_period_month
     param["billing_period_month_label"] = TODAY.strftime("%m-%Y")
-    param["plot_current_month"] = json.dumps(list(power_period_month_grouped_days))
-    param["plot_last_year_month"] = json.dumps(list(power_grouped_days_last_year))
-    param["plot_axes"] = json.dumps(list(range(1, TODAY.day+1)))
+    param["plot_current_month"] = json.dumps(list(power_period_month_grouped_days / 1000))
+    param["plot_last_year_month"] = json.dumps(list(power_grouped_days_last_year / 1000))
+    param["plot_axes"] = json.dumps(list(range(1, TODAY.day + 1)))
     param["today"] = TODAY.date()
     param["start_month"] = START_MONTH.date()
     return render(request, 'index_2.html', param)
@@ -168,7 +174,7 @@ def pv(request):
     n_panels = int(meter_power[meter_power != 0].mean().values[0] / pv_power.mean().values[0])
 
     return render(request, "pv.html", {"active_tab_photovoltaic": "class=active has-sub",
-                                       "plot_pv": plot_var([meter_power, n_panels*pv_power],
+                                       "plot_pv": plot_var([meter_power, n_panels * pv_power],
                                                            runtime=1, legend_name=['house load',
                                                                                    f'load from {n_panels} panels']),
                                        "all_meters": meters_info.get_all_meters(),
@@ -212,10 +218,10 @@ def contract_subscription(request):
     saving_some_adj = round(current_price - calculator.compute_total_cost(meter_power, contracted_power_perc_some,
                                                                           meter_info.tariff).get_total(), 2)
 
-    result = plot_var(meter_power, runtime=1, threshold=[a*kW for a in [meter_info.contracted_power,
-                                                         best_contracted_power,
-                                                         contracted_power_perc_small,
-                                                         contracted_power_perc_some]])
+    result = plot_var(meter_power, runtime=1, threshold=[a * kW for a in [meter_info.contracted_power,
+                                                                          best_contracted_power,
+                                                                          contracted_power_perc_small,
+                                                                          contracted_power_perc_some]])
 
     return render(request, "contract_subscription.html", {"active_contract_subscription": "class=active has-sub",
                                                           "no_adjustment_price": saving_no_adj,

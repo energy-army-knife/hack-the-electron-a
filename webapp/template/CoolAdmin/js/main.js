@@ -334,13 +334,13 @@ $(document).ready(function() {
       // Percent Chart
       var ctx = document.getElementById("percent-chart");
       if (ctx) {
-        ctx.height = 280;
+        ctx.height = 200;
         var myChart = new Chart(ctx, {
-          type: 'doughnut',
+          type: 'pie',
           data: {
             datasets: [
               {
-                label: "My First dataset",
+                label: "Hours distribution",
                 data: [percentage_last_month_peak, percentage_last_month_off_peak, percentage_last_month_super_off_peak],
                 backgroundColor: [
                   '#00b5e9',
@@ -354,7 +354,30 @@ $(document).ready(function() {
 
                 ],
                 borderWidth: [
-                  0, 0, 0
+                  5, 5, 5
+                ],
+                hoverBorderColor: [
+                  'transparent',
+                  'transparent',
+                  'transparent'
+                ]
+              },
+                {
+                label: "Cost distribution",
+                data: [percentage_last_month_peak_cost, percentage_last_month_off_peak_cost, percentage_last_month_super_off_peak_cost],
+                backgroundColor: [
+                  '#00b5e9',
+                  '#fa4251',
+                  '#00ad5f'
+                ],
+                hoverBackgroundColor: [
+                  '#00b5e9',
+                  '#fa4251',
+                  '#00ad5f'
+
+                ],
+                borderWidth: [
+                  5, 5, 5
                 ],
                 hoverBorderColor: [
                   'transparent',
@@ -372,7 +395,6 @@ $(document).ready(function() {
           options: {
             maintainAspectRatio: false,
             responsive: true,
-            cutoutPercentage: 55,
             animation: {
               animateScale: true,
               animateRotate: true
@@ -395,7 +417,7 @@ $(document).ready(function() {
       if (ctx2) {
         ctx2.height = 280;
         var myChart = new Chart(ctx2, {
-          type: 'doughnut',
+          type: 'pie',
           data: {
             datasets: [
               {
@@ -697,6 +719,7 @@ $(document).ready(function() {
                 data: [60, 40],
                 backgroundColor: [
                   '#00b5e9',
+                  '#00b5e9',
                   '#fa4251'
                 ],
                 hoverBackgroundColor: [
@@ -850,6 +873,96 @@ $(document).ready(function() {
     try {
 
       //Team chart
+      var ctx = document.getElementById("power-mean-month");
+      if (ctx) {
+        ctx.height = 150;
+        var myChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: power_spent_by_hours_label,
+            type: 'line',
+            defaultFontFamily: 'Poppins',
+            datasets: [{
+              data: power_loader_meter_hours_max,
+              label: "Maximum Power Spent [kW]",
+              backgroundColor: 'rgba(0,103,255,.15)',
+              borderColor: 'rgba(0,103,255,0.5)',
+              borderWidth: 3.5,
+              pointStyle: 'circle',
+              pointRadius: 5,
+              pointBorderColor: 'transparent',
+              pointBackgroundColor: 'rgba(0,103,255,0.5)',
+            },]
+          },
+          options: {
+            responsive: true,
+            tooltips: {
+              mode: 'index',
+              titleFontSize: 12,
+              titleFontColor: '#000',
+              bodyFontColor: '#000',
+              backgroundColor: '#fff',
+              titleFontFamily: 'Poppins',
+              bodyFontFamily: 'Poppins',
+              cornerRadius: 3,
+              intersect: false,
+            },
+            legend: {
+              display: false,
+              position: 'top',
+              labels: {
+                usePointStyle: true,
+                fontFamily: 'Poppins',
+              },
+
+
+            },
+            scales: {
+              xAxes: [{
+                display: true,
+                gridLines: {
+                  display: false,
+                  drawBorder: false
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Day of the Month'
+                },
+                ticks: {
+                  fontFamily: "Poppins"
+                }
+              }],
+              yAxes: [{
+                display: true,
+                gridLines: {
+                  display: false,
+                  drawBorder: false
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Maximum Power Spent [kW]',
+                  fontFamily: "Poppins"
+                },
+                ticks: {
+                  fontFamily: "Poppins"
+                }
+              }]
+            },
+            title: {
+              display: false,
+            }
+          }
+        });
+      }
+
+
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
+
+      //Team chart
       var ctx = document.getElementById("team-chart");
       if (ctx) {
         ctx.height = 150;
@@ -941,7 +1054,7 @@ $(document).ready(function() {
       //bar chart
       var ctx = document.getElementById("barChart");
       if (ctx) {
-        ctx.height = 500;
+        ctx.height = 380;
         var myChart = new Chart(ctx, {
           type: 'bar',
           defaultFontFamily: 'Poppins',
@@ -960,11 +1073,7 @@ $(document).ready(function() {
           },
           options: {
             legend: {
-              position: 'top',
-              labels: {
-                fontFamily: 'Poppins'
-              }
-
+              display: false
             },
             scales: {
               xAxes: [{
