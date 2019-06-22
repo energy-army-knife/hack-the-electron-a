@@ -1,0 +1,220 @@
+meter_id;tariff;n_phases;ctrct_pw
+meter_0;Time-Of-Use Two Periods ;T ;20.7
+meter_1;Time-Of-Use Two Periods ;T ;20.7
+meter_2;Simple Tariff ;M ;4.6
+meter_3;Simple Tariff ;M ;3.45
+meter_4;Simple Tariff ;T ;6.9
+meter_5;Simple Tariff ;T ;6.9
+meter_6;Time-Of-Use Two Periods ;M ;4.6
+meter_7;Simple Tariff ;T ;10.35
+meter_8;Simple Tariff ;T ;20.7
+meter_9;Simple Tariff ;T ;20.7
+meter_10;Simple Tariff ;T ;6.9
+meter_11;Simple Tariff ;M ;6.9
+meter_12;Simple Tariff ;T ;13.8
+meter_13;Simple Tariff ;T ;4.6
+meter_14;Simple Tariff ;T ;17.25
+meter_15;Simple Tariff ;T ;13.8
+meter_16;Simple Tariff ;M ;6.9
+meter_17;Simple Tariff ;T ;13.8
+meter_18;Time-Of-Use Two Periods ;T ;10.35
+meter_19;Simple Tariff ;M ;6.9
+meter_20;Simple Tariff ;M ;6.9
+meter_21;Time-Of-Use Two Periods ;T ;10.35
+meter_22;Simple Tariff ;T ;10.35
+meter_23;Simple Tariff ;M ;6.9
+meter_24;Simple Tariff ;T ;13.8
+meter_25;Simple Tariff ;M ;3.45
+meter_26;Time-Of-Use Two Periods ;T ;6.9
+meter_27;Time-Of-Use Three Periods ;T ;20.7
+meter_28;Simple Tariff ;T ;3.45
+meter_29;Time-Of-Use Two Periods ;T ;3.45
+meter_30;Time-Of-Use Three Periods ;M ;6.9
+meter_31;Simple Tariff ;M ;3.45
+meter_32;Simple Tariff ;T ;20.7
+meter_33;Simple Tariff ;T ;17.25
+meter_34;Simple Tariff ;M ;4.6
+meter_35;Simple Tariff ;T ;20.7
+meter_36;Simple Tariff ;M ;6.9
+meter_37;Simple Tariff ;T ;20.7
+meter_38;Simple Tariff ;T ;10.35
+meter_39;Time-Of-Use Three Periods ;T ;3.45
+meter_40;Time-Of-Use Two Periods ;T ;20.7
+meter_41;Simple Tariff ;T ;6.9
+meter_42;Time-Of-Use Two Periods ;M ;6.9
+meter_43;Time-Of-Use Two Periods ;T ;20.7
+meter_44;Time-Of-Use Two Periods ;T ;17.25
+meter_45;Simple Tariff ;M ;6.9
+meter_46;Simple Tariff ;T ;13.8
+meter_47;Simple Tariff ;M ;3.45
+meter_48;Time-Of-Use Two Periods ;T ;17.25
+meter_49;Simple Tariff ;M ;4.6
+meter_50;Simple Tariff ;T ;13.8
+meter_51;Simple Tariff ;T ;13.8
+meter_52;Simple Tariff ;M ;4.6
+meter_53;Simple Tariff ;M ;10.35
+meter_54;Time-Of-Use Two Periods ;T ;17.25
+meter_55;Time-Of-Use Three Periods ;T ;6.9
+meter_56;Simple Tariff ;M ;6.9
+meter_57;Simple Tariff ;T ;6.9
+meter_58;Simple Tariff ;T ;6.9
+meter_59;Time-Of-Use Three Periods ;T ;6.9
+meter_60;Time-Of-Use Two Periods ;T ;6.9
+meter_61;Simple Tariff ;T ;13.8
+meter_62;Simple Tariff ;T ;6.9
+meter_63;Simple Tariff ;T ;20.7
+meter_64;Time-Of-Use Three Periods ;T ;20.7
+meter_65;Simple Tariff ;M ;6.9
+meter_66;Simple Tariff ;T ;20.7
+meter_67;Simple Tariff ;T ;20.7
+meter_68;Time-Of-Use Three Periods ;M ;6.9
+meter_69;Time-Of-Use Two Periods ;M ;10.35
+meter_70;Simple Tariff ;T ;17.25
+meter_71;Simple Tariff ;M ;3.45
+meter_72;Simple Tariff ;T ;20.7
+meter_73;Time-Of-Use Three Periods ;M ;6.9
+meter_74;Simple Tariff ;T ;10.35
+meter_75;Simple Tariff ;T ;3.45
+meter_76;Simple Tariff ;M ;6.9
+meter_77;Simple Tariff ;T ;6.9
+meter_78;Simple Tariff ;T ;17.25
+meter_79;Time-Of-Use Two Periods ;M ;6.9
+meter_80;Time-Of-Use Two Periods ;T ;13.8
+meter_81;Simple Tariff ;M ;3.45
+meter_82;Time-Of-Use Two Periods ;T ;17.25
+meter_83;Time-Of-Use Two Periods ;M ;3.45
+meter_84;Simple Tariff ;M ;6.9
+meter_85;Simple Tariff ;M ;6.9
+meter_86;Simple Tariff ;T ;20.7
+meter_87;Time-Of-Use Two Periods ;M ;3.45
+meter_88;Simple Tariff ;M ;6.9
+meter_89;Time-Of-Use Two Periods ;M ;3.45
+meter_90;Time-Of-Use Two Periods ;T ;10.35
+meter_91;Simple Tariff ;M ;3.45
+meter_92;Time-Of-Use Two Periods ;T ;10.35
+meter_93;Simple Tariff ;T ;6.9
+meter_94;Time-Of-Use Three Periods ;T ;10.35
+meter_95;Time-Of-Use Three Periods ;M ;4.6
+meter_96;Simple Tariff ;M ;6.9
+meter_97;Simple Tariff ;M ;4.6
+meter_98;Time-Of-Use Two Periods ;T ;10.35
+meter_99;Simple Tariff ;M ;3.45
+meter_100;Simple Tariff ;T ;20.7
+meter_101;Simple Tariff ;M ;5.75
+meter_102;Simple Tariff ;T ;17.25
+meter_103;Simple Tariff ;M ;13.8
+meter_104;Simple Tariff ;T ;6.9
+meter_105;Simple Tariff ;M ;3.45
+meter_106;Simple Tariff ;M ;6.9
+meter_107;Simple Tariff ;T ;3.45
+meter_108;Simple Tariff ;T ;10.35
+meter_109;Time-Of-Use Three Periods;M ;6.9
+meter_110;Simple Tariff ;T ;13.8
+meter_111;Simple Tariff ;T ;20.7
+meter_112;Time-Of-Use Three Periods ;M ;6.9
+meter_113;Time-Of-Use Three Periods ;T ;10.35
+meter_114;Time-Of-Use Three Periods ;T ;20.7
+meter_115;Simple Tariff ;T ;6.9
+meter_116;Time-Of-Use Two Periods ;T ;17.25
+meter_117;Time-Of-Use Two Periods ;T ;20.7
+meter_118;Simple Tariff ;M ;3.45
+meter_119;Simple Tariff ;M ;3.45
+meter_120;Time-Of-Use Two Periods ;T ;13.8
+meter_121;Simple Tariff ;M ;5.75
+meter_122;Time-Of-Use Two Periods ;T ;13.8
+meter_123;Simple Tariff ;T ;10.35
+meter_124;Simple Tariff ;T ;17.25
+meter_125;Simple Tariff ;M ;3.45
+meter_126;Time-Of-Use Two Periods ;T ;13.8
+meter_127;Time-Of-Use Two Periods ;M ;10.35
+meter_128;Time-Of-Use Two Periods ;T ;13.8
+meter_129;Time-Of-Use Two Periods;M ;3.45
+meter_130;Time-Of-Use Three Periods ;M ;3.45
+meter_131;Simple Tariff ;T ;20.7
+meter_132;Simple Tariff ;T ;20.7
+meter_133;Simple Tariff ;M ;3.45
+meter_134;Simple Tariff ;T ;10.35
+meter_135;Simple Tariff ;M ;6.9
+meter_136;Simple Tariff ;M ;3.45
+meter_137;Simple Tariff ;M ;6.9
+meter_138;Simple Tariff ;M ;3.45
+meter_139;Simple Tariff ;T ;13.8
+meter_140;Simple Tariff ;M ;3.45
+meter_141;Simple Tariff ;M ;6.9
+meter_142;Simple Tariff ;T ;10.35
+meter_143;Time-Of-Use Two Periods ;T ;10.35
+meter_144;Simple Tariff ;M ;6.9
+meter_145;Simple Tariff ;M ;6.9
+meter_146;Simple Tariff ;T ;20.7
+meter_147;Time-Of-Use Two Periods ;T ;13.8
+meter_148;Time-Of-Use Three Periods ;M ;3.45
+meter_149;Simple Tariff ;M ;3.45
+meter_150;Simple Tariff ;M ;6.9
+meter_151;Simple Tariff ;M ;3.45
+meter_152;Simple Tariff ;M ;4.6
+meter_153;Simple Tariff ;T ;13.8
+meter_154;Simple Tariff ;M ;3.45
+meter_155;Simple Tariff ;M ;6.9
+meter_156;Time-Of-Use Three Periods ;T ;10.35
+meter_157;Simple Tariff ;T ;20.7
+meter_158;Simple Tariff ;M ;6.9
+meter_159;Simple Tariff ;M ;13.8
+meter_160;Simple Tariff ;M ;6.9
+meter_161;Simple Tariff ;M ;6.9
+meter_162;Simple Tariff ;M ;3.45
+meter_163;Simple Tariff ;T ;6.9
+meter_164;Simple Tariff ;M ;20.7
+meter_165;Simple Tariff ;M ;5.75
+meter_166;Simple Tariff ;T ;6.9
+meter_167;Simple Tariff ;M ;3.45
+meter_168;Simple Tariff ;M ;6.9
+meter_169;Time-Of-Use Two Periods ;T ;10.35
+meter_170;Simple Tariff ;T ;20.7
+meter_171;Simple Tariff ;T ;6.9
+meter_172;Simple Tariff ;M ;6.9
+meter_173;Time-Of-Use Two Periods ;T ;10.35
+meter_174;Time-Of-Use Two Periods ;T ;20.7
+meter_175;Simple Tariff ;T ;6.9
+meter_176;Simple Tariff ;T ;10.35
+meter_177;Time-Of-Use Two Periods ;T ;20.7
+meter_178;Simple Tariff ;M ;10.35
+meter_179;Time-Of-Use Two Periods ;T ;13.8
+meter_180;Time-Of-Use Two Periods ;M ;6.9
+meter_181;Simple Tariff ;T ;3.45
+meter_182;Time-Of-Use Three Periods ;T ;6.9
+meter_183;Simple Tariff ;T ;20.7
+meter_184;Simple Tariff ;T ;20.7
+meter_185;Simple Tariff ;T ;6.9
+meter_186;Simple Tariff ;T ;10.35
+meter_187;Time-Of-Use Two Periods ;T ;13.8
+meter_188;Simple Tariff ;T ;3.45
+meter_189;Simple Tariff ;M ;6.9
+meter_190;Simple Tariff ;T ;10.35
+meter_191;Time-Of-Use Two Periods ;T ;13.8
+meter_192;Simple Tariff ;M ;6.9
+meter_193;Simple Tariff ;M ;6.9
+meter_194;Simple Tariff ;M ;4.6
+meter_195;Time-Of-Use Two Periods ;T ;17.25
+meter_196;Simple Tariff ;M ;6.9
+meter_197;Simple Tariff ;M ;4.6
+meter_198;Time-Of-Use Two Periods ;T ;20.7
+meter_199;Simple Tariff ;T ;13.8
+meter_200;Time-Of-Use Three Periods ;T ;13.8
+meter_201;Time-Of-Use Three Periods ;T ;3.45
+meter_202;Time-Of-Use Three Periods ;T ;13.8
+meter_203;Simple Tariff ;M ;3.45
+meter_204;Simple Tariff ;M ;6.9
+meter_205;Simple Tariff ;T ;3.45
+meter_206;Simple Tariff ;M ;3.45
+meter_207;Time-Of-Use Two Periods ;T ;13.8
+meter_208;Simple Tariff ;T ;13.8
+meter_209;Simple Tariff ;M ;6.9
+meter_210;Simple Tariff ;M ;10.35
+meter_211;Time-Of-Use Two Periods ;M ;3.45
+meter_212;Time-Of-Use Two Periods ;T ;17.25
+meter_213;Simple Tariff ;M ;3.45
+meter_214;Time-Of-Use Three Periods ;M ;3.45
+meter_215;Simple Tariff ;M ;3.45
+meter_216;Simple Tariff ;T ;13.8
+meter_217;Time-Of-Use Three Periods ;T ;20.7
+meter_218;Simple Tariff ;M ;1.15
