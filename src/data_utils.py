@@ -1,3 +1,5 @@
+import datetime
+
 import pandas as pd
 
 from src.data_models import TariffType
@@ -12,7 +14,9 @@ def to_string_tariff(tariff: TariffType):
         return "Three Period"
 
 
-def filter_power_by_date(power_data: pd.DataFrame, start_datetime: str = None, end_datetime: str = None) -> pd.DataFrame:
+def filter_power_by_date(power_data: pd.DataFrame, start_datetime: datetime = None,
+                         end_datetime: datetime = None) -> pd.DataFrame:
+
     if start_datetime and end_datetime is None:
         return power_data
 

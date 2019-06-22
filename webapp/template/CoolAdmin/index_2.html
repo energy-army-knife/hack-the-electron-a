@@ -65,7 +65,8 @@
                         <div class="au-card"  style="height: 100%">
                             <div class="au-card-inner">
                                 <div class="plot-position">
-                                    {% if billing_period_month_last_year < billing_period_month%}
+                                    {% if percentage_bill == 0 %}
+                                    {% elif billing_period_month_last_year < billing_period_month%}
                                     <div style="margin: auto; width: 30%; display: flex">
                                         <img src="{% static "images/icon/up.png" %}" alt="Billing is higher" style="padding-right: 10px; height: 35px">
                                         <h1 style="color: #ff1a00">{{ percentage_bill }}%</h1>

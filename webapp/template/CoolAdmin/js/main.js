@@ -819,7 +819,7 @@ $(document).ready(function() {
               intersect: false,
             },
             legend: {
-              display: false,
+              display: true,
               labels: {
                 usePointStyle: true,
                 fontFamily: 'Poppins',

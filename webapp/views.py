@@ -8,6 +8,7 @@ from src.billing_calculator import BillingCalculator
 from src.data_loader import MetersInformation, PowerDataLoader, TariffPeriods, TariffDataLoader, CSVDataLoader
 from src.data_models import HourTariffType, TariffType
 from src.data_utils import filter_power_by_date, to_string_tariff
+from src.make_plots import plot_var
 
 from src.recommend_contract import recommend_contract
 from src.tariff_recommender import TariffRecommender
@@ -78,7 +79,9 @@ def get_power_grouped_by_days(power_data: pd.DataFrame) -> pd.DataFrame:
 
 def get_parameters_period_overview(meter_id: str, period_start: datetime, period_end: datetime):
     meter_info = meters_info.get_meter_id_contract_info(meter_id)
+
     power_loader_meter = filter_power_by_date(power_loader.get_power_meter_id(meter_id), period_start, period_end)
+    power_loader_meter_all_period = filter_power_by_date(power_loader.get_power_meter_id(meter_id), end_datetime=TODAY)
 
     df_power_loader_meter_hours_minuts_sum = power_loader_meter.groupby(power_loader_meter.index.strftime('%H')).sum()
     power_loader_meter_hours_minuts_sum = df_power_loader_meter_hours_minuts_sum.values.flatten()
@@ -99,14 +102,14 @@ def get_parameters_period_overview(meter_id: str, period_start: datetime, period
     recommender_tariff = TariffRecommender(tariff_data_load, tarriff_periods)
 
     # Recommend the best tariff taken into account the two years info
-    best_tariff, costs_tariffs = recommender_tariff.get_best_tariff(power_loader.get_power_meter_id(meter_id),
+    best_tariff, costs_tariffs = recommender_tariff.get_best_tariff(power_loader_meter_all_period,
                                                                     meter_info.contracted_power)
 
-    bill_total = calculator.compute_total_cost(power_loader.get_power_meter_id(meter_id), meter_info.contracted_power,
+    bill_total = calculator.compute_total_cost(power_loader_meter_all_period, meter_info.contracted_power,
                                                meter_info.tariff)
-    best_contracted_power = recommend_contract(power_loader.get_power_meter_id(meter_id))
+    best_contracted_power = recommend_contract(power_loader_meter_all_period)
 
-    bill_best_case = calculator.compute_total_cost(power_loader.get_power_meter_id(meter_id), best_contracted_power,
+    bill_best_case = calculator.compute_total_cost(power_loader_meter_all_period, best_contracted_power,
                                                    best_tariff)
 
     max_power_registered = min(round(power_loader_meter.max().values[0] / 1000, 2), meter_info.contracted_power)
@@ -116,8 +119,8 @@ def get_parameters_period_overview(meter_id: str, period_start: datetime, period
     same_period_last_year_start = period_start.replace(year=period_start.year - 1)
     same_period_last_year_end = period_end.replace(year=period_end.year-1)
 
-    power_period_last_year = filter_power_by_date(power_loader.get_power_meter_id(meter_id), str(same_period_last_year_start.date()),
-                                                        str(same_period_last_year_end.date()))
+    power_period_last_year = filter_power_by_date(power_loader.get_power_meter_id(meter_id),
+                                                  same_period_last_year_start, same_period_last_year_end)
 
     billing_period_month_last_year = round(calculator.compute_total_cost(power_period_last_year,
                                                                          meter_info.contracted_power,
@@ -284,6 +287,8 @@ def device_simulator(request):
 def contract_subscription(request):
     meter_id = get_meter_id_from_query_parm(request)
     meter_power = power_loader.get_power_meter_id(meter_id)
+    meter_power = filter_power_by_date(meter_power, end_datetime=TODAY)
+
     meter_info = meters_info.get_meter_id_contract_info(meter_id)
     kW = 1000
 
@@ -291,14 +296,11 @@ def contract_subscription(request):
     percentil_small_adjustment = 99.99
     percentil_some_adjustments = 99.95
 
-    best_contracted_power = round(recommend_contract(power_loader.get_power_meter_id(meter_id),
-                                                     percentile=percentil_no_adjustment), 2)
-    contracted_power_perc_small = round(recommend_contract(power_loader.get_power_meter_id(meter_id),
-                                                           percentile=percentil_small_adjustment), 2)
-    contracted_power_perc_some = round(recommend_contract(power_loader.get_power_meter_id(meter_id),
-                                                          percentile=percentil_some_adjustments), 2)
+    best_contracted_power = round(recommend_contract(meter_power, percentile=percentil_no_adjustment), 2)
+    contracted_power_perc_small = round(recommend_contract(meter_power, percentile=percentil_small_adjustment), 2)
+    contracted_power_perc_some = round(recommend_contract(meter_power, percentile=percentil_some_adjustments), 2)
 
-    df_power_loader_meter_hours_max = meter_power.groupby(meter_power.index.strftime('%m-%Y')).max()
+    df_power_loader_meter_hours_max = meter_power.groupby(meter_power.index.strftime('%Y-%m')).max()
 
     labels_contract_power_by_month = df_power_loader_meter_hours_max.index.to_list()
     max_contract_power_by_month = list(df_power_loader_meter_hours_max.values.flatten()/1000)
@@ -345,7 +347,10 @@ def contract_subscription(request):
                                                           "max_contract_power_by_month": max_contract_power_by_month,
                                                           "contracted_powers_perc_values": recommended_contracted_powers_perc_values,
                                                           "contracted_powers_perc_label": recommended_contracted_powers_perc_label,
-                                                          "contracted_power_values": contracted_power_values
+                                                          "contracted_power_values": contracted_power_values,
+                                                          "no_adjustment_price_contract": best_contracted_power,
+                                                          "small_adjustment_price_contract": contracted_power_perc_small,
+                                                          "medium_adjustment_price_contract": contracted_power_perc_some,
                                                           })
 
 
@@ -353,13 +358,14 @@ def contract_subscription(request):
 def tariff_subscription(request):
     meter_id = get_meter_id_from_query_parm(request)
     meter_power = power_loader.get_power_meter_id(meter_id)
+    meter_power = filter_power_by_date(meter_power, end_datetime=TODAY)
     meter_info = meters_info.get_meter_id_contract_info(meter_id)
 
     current_price = calculator.compute_total_cost(meter_power, meter_info.contracted_power,
                                                   meter_info.tariff).get_total()
 
     # Recommend the best tariff taken into account the two years info
-    best_tariff, costs_tariffs = recommender_tariff.get_best_tariff(power_loader.get_power_meter_id(meter_id),
+    best_tariff, costs_tariffs = recommender_tariff.get_best_tariff(meter_power,
                                                                     meter_info.contracted_power)
 
     costs_tariffs_month = recommender_tariff.get_tariff_billing_by_months(meter_power, meter_info.contracted_power)
