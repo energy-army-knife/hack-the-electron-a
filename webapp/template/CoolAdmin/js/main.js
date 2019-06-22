@@ -1366,20 +1366,33 @@ $(document).ready(function() {
     try {
 
       // single bar chart
-      var ctx = document.getElementById("singelBarChart");
+      var ctx = document.getElementById("tariff_months");
       if (ctx) {
-        ctx.height = 150;
         var myChart = new Chart(ctx, {
           type: 'bar',
           data: {
-            labels: ["Sun", "Mon", "Tu", "Wed", "Th", "Fri", "Sat"],
+            labels: months_tariff_label,
             datasets: [
               {
-                label: "My First dataset",
-                data: [40, 55, 75, 81, 56, 55, 40],
+                label: "Simple Tariff",
+                data: simple_tariff_cross_months,
                 borderColor: "rgba(0, 123, 255, 0.9)",
                 borderWidth: "0",
                 backgroundColor: "rgba(0, 123, 255, 0.5)"
+              },
+                {
+                label: "Two-Period Tariff",
+                data: two_tariff_cross_months,
+                borderColor: "rgba(0,161,2,0.9)",
+                borderWidth: "0",
+                backgroundColor: "rgba(0,161,2, 0.5)"
+              },
+                {
+                label: "Three Period Tariff",
+                data: three_tariff_cross_months,
+                borderColor: "rgba(255,26,0,0.9)",
+                borderWidth: "0",
+                backgroundColor: "rgba(255,26,0, 0.5)"
               }
             ]
           },
@@ -1394,14 +1407,14 @@ $(document).ready(function() {
             scales: {
               xAxes: [{
                 ticks: {
-                  fontFamily: "Poppins"
+                  fontFamily: "Poppins",
 
                 }
               }],
               yAxes: [{
                 ticks: {
                   beginAtZero: true,
-                  fontFamily: "Poppins"
+                  fontFamily: "Poppins",
                 }
               }]
             }

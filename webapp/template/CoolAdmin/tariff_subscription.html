@@ -22,6 +22,14 @@
 
     </style>
 
+    <script>
+        var months_tariff_label = {{ months_tariff_label|safe }};
+        var simple_tariff_cross_months = {{ simple_tariff_cross_months|safe }};
+        var two_tariff_cross_months = {{ two_tariff_cross_months|safe }};
+        var three_tariff_cross_months = {{ three_tariff_cross_months|safe }};
+
+    </script>
+
 
 {% endblock %}
 
@@ -45,21 +53,21 @@
                 </div>
             </div>
             <div class="card-deck">
-                <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+                <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: rgba(0, 123, 255, 0.5)">
                   <div class="card-header title-card">Simple</div>
                   <div class="card-body">
                     <h1 class="title-price">{{ simple_tariff_savings }}€</h1>
                     <p class="card-text">BLABLABLA</p>
                   </div>
                 </div>
-                <div class="card text-white bg-warning mb-3" style="max-width: 18rem;">
+                <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: rgba(0,161,2, 0.5)">
                   <div class="card-header title-card">Two-Periods</div>
                   <div class="card-body">
                     <h1 class="title-price">{{ two_tariff_savings }}€</h1>
                     <p class="card-text">BLABLABLA</p>
                   </div>
                 </div>
-                <div class="card text-white bg-info mb-3" style="max-width: 18rem;">
+                <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: rgba(255,26,0,0.5)">
                   <div class="card-header title-card">Three-Periods</div>
                   <div class="card-body">
                     <h1 class="title-price">{{ three_tariff_savings }}€</h1>
@@ -68,7 +76,7 @@
                 </div>
             </div>
             <div>
-                <img src="data:image/png;base64,{{ result }}" alt="tariffs">
+                <canvas id="tariff_months"></canvas>
             </div>
         </div>
     </div>

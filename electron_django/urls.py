@@ -21,12 +21,13 @@ from django.views.generic import RedirectView
 from webapp import views
 
 urlpatterns = [
-    url(r'^admin/$', views.index, name='index'),
-    url(r'^admin/analyser/$', views.analyser, name='analyser'),
-    url(r'^admin/photovoltaic/$', views.pv, name='photovoltaic'),
-    url(r'^admin/device_simulator/$', views.device_simulator, name='device_simulator'),
-    url(r'^admin/contract_subscription/$', views.contract_subscription, name='contract_subscription'),
-    url(r'^admin/tariff_subscription/$', views.tariff_subscription, name='tariff_subscription'),
+    path('admin/', admin.site.urls),
+    url(r'^$', views.index, name='index'),
+    url(r'^analyser/$', views.analyser, name='analyser'),
+    url(r'^photovoltaic/$', views.pv, name='photovoltaic'),
+    url(r'^device_simulator/$', views.device_simulator, name='device_simulator'),
+    url(r'^contract_subscription/$', views.contract_subscription, name='contract_subscription'),
+    url(r'^tariff_subscription/$', views.tariff_subscription, name='tariff_subscription'),
     url(r'^notifications/$', views.notifications, name='notificatons'),
     url(r'^favicon\.ico$', RedirectView.as_view(url='static/images/favicon.ico')),
 ]

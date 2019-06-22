@@ -6,19 +6,19 @@
         var percentage_last_month_peak = {{ percentage_last_month_peak }};
         var percentage_last_month_off_peak = {{ percentage_last_month_off_peak }};
 
-        var power_spent_by_hours = JSON.parse("{{ power_spent_by_hours }}");
-        var power_spent_by_hours_label= JSON.parse("{{ power_spent_by_hours_label }}");
+        var power_spent_by_hours = {{ power_spent_by_hours|safe }};
+        var power_spent_by_hours_label= {{ power_spent_by_hours_label|safe }};
         var percentage_last_month_super_off_peak = {{ percentage_last_month_super_off_peak }};
 
         var percentage_last_month_peak_cost = {{ percentage_last_month_peak_cost }};
         var percentage_last_month_off_peak_cost = {{ percentage_last_month_off_peak_cost }};
         var percentage_last_month_super_off_peak_cost = {{ percentage_last_month_super_off_peak_cost }};
 
-        var plot_current_month = JSON.parse("{{ plot_current_month }}");
-        var plot_last_year_month = JSON.parse("{{ plot_last_year_month }}");
-        var plot_axes = JSON.parse("{{ plot_axes }}");
+        var plot_current_month = {{ plot_current_month|safe }};
+        var plot_last_year_month = {{ plot_last_year_month|safe }};
+        var plot_axes = {{ plot_axes|safe }};
 
-        var power_loader_meter_hours_max = JSON.parse("{{ power_loader_meter_hours_max }}");
+        var power_loader_meter_hours_max = {{ power_loader_meter_hours_max|safe }};
 
         var current_cost = {{ billing_period_month }};
         var current_cost_label = "{{ billing_period_month_label }}";
@@ -38,12 +38,12 @@
         }
         .plot-position{
             margin: 0;
-            position: relative;
+            position: static;
             bottom: 20%;
         }
         .alert-position{
             margin: 0;
-            position: absolute;
+            position: static;
             bottom: 10%;
         }
     </style>
@@ -60,7 +60,7 @@
                 <div class="card bg-light mb-3" style="width: 33%;">
                   <div class="card-header">Current Bill</div>
                   <div class="card-body">
-                    <h1 class="card-title" style="text-align: center; color: rgba(0,0,0,0.58)">{{ bill }}€</h1>
+                    <h1 class="card-title" style="text-align: center; color: rgba(0,0,0,0.58)">{{ billing_period_month }}€</h1>
                       <div class="plot-position">
                         <canvas id="barChart"></canvas>
                       </div>
