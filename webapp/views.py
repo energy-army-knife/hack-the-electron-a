@@ -13,10 +13,6 @@ from src.make_plots import plot_var
 from src.recommend_contract import recommend_contract
 from src.tariff_recommender import TariffRecommender
 
-###
-import pandas as pd
-appliances_data = pd.read_csv('resources/appliances_1month_15m.csv').drop(['Unnamed: 0'],axis=1)
-###
 
 meters_info = MetersInformation(settings.RESOURCES + "/dataset_index.csv")
 power_loader = PowerDataLoader(settings.RESOURCES + "/load_pwr.csv")
@@ -26,6 +22,9 @@ tariff_data_load = TariffDataLoader(settings.RESOURCES + "/HackTheElectron datas
                                                          "Regulated Tarrifs-Table 1.csv")
 
 pv_power = CSVDataLoader(settings.RESOURCES + "/pv_pwr.csv", parse_dates=['Date']).data_frame.set_index('Date')
+
+device_signal = CSVDataLoader(settings.RESOURCES + "/device_signal.csv").data_frame.drop(['Unnamed: 0'],axis=1)
+device_signalsize = CSVDataLoader(settings.RESOURCES + "/device_signalsize.csv").data_frame.drop(['Unnamed: 0'],axis=1)
 
 calculator = BillingCalculator(tariff_data_load, tarriff_periods)
 recommender_tariff = TariffRecommender(tariff_data_load, tarriff_periods)
@@ -43,13 +42,13 @@ def get_meter_id_from_query_parm(request):
     else:
         return request.GET["meter"]
 
-######
-def get_appliance_id_from_query_parm(request):
-    if "appliance" not in request.GET:
-        return "fridge_freezer"
+
+def get_device_id_from_query_parm(request):
+    if "device_id" not in request.GET:
+        return "Air Conditioner"
     else:
-        return request.GET["appliance"]
-######
+        return request.GET["device_id"]
+
 
 def get_name_tariff(tariff: TariffType):
     if tariff == TariffType.SIMPLE:
@@ -58,6 +57,18 @@ def get_name_tariff(tariff: TariffType):
         return "Two-Periods"
     elif tariff == TariffType.THREE_PERIOD:
         return "Three-Period"
+
+def get_device_daily_from_query_parm(request):
+    if "device_daily" not in request.GET:
+        return 0
+    else:
+        return request.GET["device_daily"]
+
+def get_device_weekly_from_query_parm(request):
+    if "device_weekly" not in request.GET:
+        return 0
+    else:
+        return request.GET["device_weekly"]
 
 
 
@@ -123,23 +134,52 @@ def get_parameters_period_overview(meter_id, period_start, period_end):
             "tariff_savings": round(bill_total.get_total() - bill_best_case.get_total(), 2),
             "best_contracted_power": best_contracted_power}
 
-######
-def get_parameters_device_simulator(meter_id, appliance_id, appliance_data, period_start):
+
+def get_parameters_device_simulator(meter_id, device_id, day_times, week_times):
 
     start_datetime = PREVIOUS_MONTH_START
     end_datetime = PREVIOUS_MONTH_END
 
     meter_info = meters_info.get_meter_id_contract_info(meter_id)
-
-    appliance_data=pd.DataFrame(appliance_data[appliance_id])
     calculator = BillingCalculator(tariff_data_load, tarriff_periods)
-
     power_data = power_loader.get_power_meter_id(meter_id).loc[start_datetime:end_datetime]
+    
+    device_data=power_data.copy()
+
+    step_d=96//device_signalsize[device_id][0]
+    start_w=4-(week_times+1)//2
+    if step_d%2 == 0:            
+        start_d=int((step_d/2)-(day_times+1)//2)
+    else:
+        start_d=int(((step_d+1)/2)-(day_times+1)//2)
+    
+    active_h=device_signal[device_id][:step_d].to_list()
+    inactive_h=[0 for i in range(step_d)]
+    inactive_d=[0 for i in range(96)]
+    
+    active_d=[]
+    for i in range(96//step_d):
+        if (i >= start_d) & (i < start_d+day_times):
+            active_d.extend(active_h)
+        else:
+            active_d.extend(inactive_h)
+            
+    active_w=[]
+    for i in range(7):
+        if (i >= start_w) & (i < start_w+week_times):
+            active_w.extend(active_d)
+        else:
+            active_w.extend(inactive_d)
+            
+    active_m=[]
+    for i in range(5):
+            active_m.extend(active_w)
+    
+    device_data[meter_id]=active_m[:power_data.shape[0]]
     old_bill = calculator.compute_total_cost(power_data, meter_info.contracted_power, meter_info.tariff)
 
-    appliance_data=appliance_data[:power_data.shape[0]]
-    max_power = power_data[meter_id].max()+appliance_data[appliance_id].max()
-    power_data[meter_id]=power_data[meter_id]+appliance_data[appliance_data.columns[0]].values
+    max_power = power_data[meter_id].max()+device_data[meter_id].max()
+    power_data[meter_id]=power_data[meter_id]+device_data[meter_id]
     new_bill = calculator.compute_total_cost(power_data, meter_info.contracted_power, meter_info.tariff)
 
     best_contracted_power = recommend_contract(max_power)
@@ -149,9 +189,11 @@ def get_parameters_device_simulator(meter_id, appliance_id, appliance_data, peri
             "best_contracted_power": best_contracted_power,
             "all_meters": meters_info.get_all_meters(),
             "meter_id": meter_id,
-            "all_appliances": appliances_data.columns,
-            "appliance_id": appliance_id}
-######
+            "all_devices": device_signalsize.columns,
+            "device_id": device_id,
+            "max_per_day": step_d
+           }
+
 
 # Create your views here.
 @login_required
@@ -230,8 +272,10 @@ def pv(request):
 @login_required
 def device_simulator(request):
     meter_id = get_meter_id_from_query_parm(request)
-    appliance_id = get_appliance_id_from_query_parm(request)
-    param=get_parameters_device_simulator(meter_id, appliance_id, appliances_data, PREVIOUS_MONTH_START)
+    device_id = get_device_id_from_query_parm(request)
+    device_daily = get_device_daily_from_query_parm(request)
+    device_weekly = get_device_weekly_from_query_parm(request)
+    param=get_parameters_device_simulator(meter_id, device_id, device_daily, device_weekly)
 
     return render(request, "device_simulator.html", param)
 
