@@ -9,9 +9,11 @@ from src.data_loader import MetersInformation, PowerDataLoader, TariffPeriods, T
 from src.data_models import HourTariffType, TariffType
 from src.data_utils import filter_power_by_date, to_string_tariff
 
-from src.make_plots import plot_var
+from src.make_plots import plot_var, plot_hist
 from src.recommend_contract import recommend_contract
 from src.tariff_recommender import TariffRecommender
+import pandas as pd
+import numpy as np
 
 
 meters_info = MetersInformation(settings.RESOURCES + "/dataset_index.csv")
@@ -143,38 +145,38 @@ def get_parameters_device_simulator(meter_id, device_id, day_times, week_times):
     meter_info = meters_info.get_meter_id_contract_info(meter_id)
     calculator = BillingCalculator(tariff_data_load, tarriff_periods)
     power_data = power_loader.get_power_meter_id(meter_id).loc[start_datetime:end_datetime]
-    
+
     device_data=power_data.copy()
 
     step_d=96//device_signalsize[device_id][0]
     start_w=4-(week_times+1)//2
-    if step_d%2 == 0:            
+    if step_d%2 == 0:
         start_d=int((step_d/2)-(day_times+1)//2)
     else:
         start_d=int(((step_d+1)/2)-(day_times+1)//2)
-    
+
     active_h=device_signal[device_id][:step_d].to_list()
     inactive_h=[0 for i in range(step_d)]
     inactive_d=[0 for i in range(96)]
-    
+
     active_d=[]
     for i in range(96//step_d):
         if (i >= start_d) & (i < start_d+day_times):
             active_d.extend(active_h)
         else:
             active_d.extend(inactive_h)
-            
+
     active_w=[]
     for i in range(7):
         if (i >= start_w) & (i < start_w+week_times):
             active_w.extend(active_d)
         else:
             active_w.extend(inactive_d)
-            
+
     active_m=[]
     for i in range(5):
             active_m.extend(active_w)
-    
+
     device_data[meter_id]=active_m[:power_data.shape[0]]
     old_bill = calculator.compute_total_cost(power_data, meter_info.contracted_power, meter_info.tariff)
 
@@ -368,3 +370,184 @@ def tariff_subscription(request):
 
 def notifications(request):
     return render(request, 'notifications.html')
+
+
+def pv_savings(meter_id):
+    """calculated series with several pv installation scenarios"""
+    meter_power = power_loader.get_power_meter_id(meter_id)
+    df_solar = pd.concat([meter_power, pv_power], axis=1)
+    # df_solar_nozeros = df_solar.loc[df_solar.EPV != 0]
+    df_solar['n_panels'] = df_solar.apply(lambda row: row[meter_id] / row.EPV if row.EPV else 0, axis=1)
+
+    bill_0panel = calculator.compute_total_cost(meter_power,
+                                                contracted_power=meters_info.get_meter_id_contract_info(
+                                                    meter_id).contracted_power,
+                                                tariff=meters_info.get_meter_id_contract_info(
+                                                    meter_id).tariff).get_total()
+
+    temp_vec = []
+
+    for percentile in [10, 20, 30, 40, 50, 60, 70, 80, 90]:
+
+        n_panel = int(np.nanpercentile(df_solar[df_solar.EPV != 0].n_panels, percentile))
+
+        if n_panel == 0:
+            continue
+
+        # subtract the solar power of n panels to the 2 year load profile
+        df_temp = (df_solar[meter_id] - n_panel * df_solar.EPV).to_frame(meter_id)
+        df_temp = df_temp[meter_id].apply(lambda x: x if x > 0 else 0)
+
+        # adjust for contract and tariff changes with each new load profile
+        contract = recommend_contract(df_temp, 99.99)
+        tariff = recommender_tariff.get_best_tariff(df_temp.to_frame(), contract)[0]
+
+        # calculate what would be the bill if there were n panels
+        bill = calculator.compute_total_cost(power_data=df_temp.to_frame(),
+                                             contracted_power=contract,
+                                             tariff=tariff).get_total()
+
+        # panel fixed and per panel instalation cost
+        bill_installation = 100 + 600 * n_panel
+
+        # total saving with n panels in relation to 0 panel bill (per year)
+        bill_savings_year = (bill_0panel - bill) / 2
+
+        # time until savings reach the installation cost
+        time_till_paid_panels = bill_installation / bill_savings_year
+
+        temp = {'n_panels': n_panel,
+                'installation_cost': bill_installation,
+                'savings per year': bill_savings_year,
+                'time for return': time_till_paid_panels}
+
+        temp_vec.append(temp)
+
+    return temp_vec
+
+
+def calc_bat(capacity, load, threshold=0):
+    """auxiliar function to calculate battery <-> load transfers"""
+    new_cap = []
+    new_load = []
+
+    cumsum = 0
+    for c, l in zip(capacity, load):
+        current_load = 0
+        if c > 0:
+            if threshold and cumsum + c > threshold:
+                cumsum = threshold
+            else:
+                cumsum += c
+        elif l > 0:
+            if l > cumsum:
+                current_load = l - cumsum
+                cumsum = 0
+            elif l < cumsum:
+                current_load = 0
+                cumsum -= l
+            else:
+                current_load = 0
+                cumsum = 0
+
+        new_cap.append(cumsum)
+        new_load.append(current_load)
+    return new_cap, new_load
+
+
+def pv_and_battery_savings(meter_id):
+    """calculated series with several pv and battery installation scenarios"""
+
+    BATTERY_CAPACITY = 2000  # Wh
+    BATTERY_POWER = 1500  # W
+    BATTERY_COST = 3500
+
+    meter_power = power_loader.get_power_meter_id(meter_id)
+    df_solar = pd.concat([meter_power, pv_power], axis=1)
+    # df_solar_nozeros = df_solar.loc[df_solar.EPV != 0]
+    df_solar['n_panels'] = df_solar.apply(lambda row: row[meter_id] / row.EPV if row.EPV else 0, axis=1)
+
+    bill_0panel = calculator.compute_total_cost(meter_power,
+                                                contracted_power=meters_info.get_meter_id_contract_info(
+                                                    meter_id).contracted_power,
+                                                tariff=meters_info.get_meter_id_contract_info(
+                                                    meter_id).tariff).get_total()
+    temp_vec = []
+
+    for percentile in [10, 20, 30, 40, 50, 60, 70, 80, 90]:
+
+        n_battery = 1
+        n_panel = int(np.nanpercentile(df_solar[df_solar.EPV != 0].n_panels, percentile))
+
+        if n_panel == 0:
+            continue
+
+        while True:
+
+            df_temp = df_solar[meter_id].to_frame()
+            df_temp['load_with_pv'] = (df_solar[meter_id] - n_panel * df_solar.EPV).to_frame(meter_id)
+            # df_temp['load_with_pv'] = df_temp[meter_id].apply(lambda x: x if x > 0 else 0)
+            if n_battery:
+                df_temp['bat'] = df_temp['load_with_pv'].apply(lambda x: x*-1 if x < 0 else 0)
+            else:
+                df_temp['bat'] = df_temp['load_with_pv'].apply(lambda x: 0)
+
+            df_temp['bat_real'],  df_temp['load_real'] = calc_bat(df_temp['bat'].to_list(),
+                                                                  df_temp['load_with_pv'],
+                                                                  threshold=BATTERY_CAPACITY*n_battery)
+
+            # adjust for contract and tariff changes with each new load profile
+            contract = recommend_contract(df_temp['load_real'], 99.99)
+            tariff = recommender_tariff.get_best_tariff(df_temp['load_real'].to_frame(), contract)[0]
+
+            # calculate what would be the bill if there were n panels
+            bill = calculator.compute_total_cost(power_data=df_temp['load_real'].to_frame(),
+                                                 contracted_power=contract,
+                                                 tariff=tariff).get_total()
+
+            # panel fixed and per panel instalation cost
+            bill_installation = 100 + 600 * n_panel + n_battery * BATTERY_COST
+
+            # total saving with n panels in relation to 0 panel bill (per year)
+            bill_savings_year = (bill_0panel - bill) / 2
+
+            # time until savings reach the installation cost
+            time_till_paid_panels = bill_installation / bill_savings_year
+
+            temp = {'n_panels': n_panel,
+                    'n_batteries': n_battery,
+                    'installation_cost': bill_installation,
+                    'savings per year': bill_savings_year,
+                    'time for return': time_till_paid_panels}
+
+            temp_vec.append(temp)
+
+            if df_temp['bat_real'].max() < BATTERY_CAPACITY*n_battery or time_till_paid_panels > 30:
+                break
+            else:
+                n_battery += 1
+
+    return temp_vec
+
+
+import matplotlib.pyplot as plt
+import datetime as dt
+if __name__ == "__main__":
+
+    start = dt.datetime.now()
+    meter_id = 'meter_64'
+
+
+    dic = pv_and_battery_savings(meter_id)
+    print(dic)
+    plt.plot([d['installation_cost'] for d in dic if d['time for return'] < 15],
+             [d['time for return'] for d in dic if d['time for return'] < 15], 'o-')
+
+    dic = pv_savings(meter_id)
+    print(dic)
+    plt.plot([d['installation_cost'] for d in dic if d['time for return'] < 15],
+             [d['time for return'] for d in dic if d['time for return'] < 15], 'o-')
+
+    plt.savefig("../output/panel_vs_bill.png")
+    # plot_hist(df_solar.n_panels, filename='npanels', range=[0, np.nanpercentile(df_solar.n_panels, 70)])
+    print(dt.datetime.now() - start)
