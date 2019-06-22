@@ -259,16 +259,14 @@ def analyser(request):
 @login_required
 def pv(request):
     meter_id = get_meter_id_from_query_parm(request)
-    meter_power = power_loader.get_power_meter_id(meter_id)
-
-    n_panels = int(meter_power[meter_power != 0].mean().values[0] / pv_power.mean().values[0])
+    dic_pv = pv_savings(meter_id)
+    dic_pv_and_bat = pv_and_battery_savings(meter_id)
 
     return render(request, "pv.html", {"active_tab_photovoltaic": "class=active has-sub",
-                                       "plot_pv": plot_var([meter_power, n_panels * pv_power],
-                                                           runtime=1, legend_name=['house load',
-                                                                                   f'load from {n_panels} panels']),
                                        "all_meters": meters_info.get_all_meters(),
                                        "meter_id": meter_id,
+                                       "pv_data": dic_pv,
+                                       "pv_and_bat_data": dic_pv_and_bat,
                                        "today": TODAY})
 
 
