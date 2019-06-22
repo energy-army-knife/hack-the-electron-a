@@ -4059,7 +4059,6 @@ section {
 }
 
 .chart-note {
-    text-transform: capitalize;
     display: inline-block;
     margin-right: 12px;
     font-size: 14px;

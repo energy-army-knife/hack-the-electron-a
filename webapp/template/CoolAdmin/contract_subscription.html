@@ -2,6 +2,15 @@
 {% load static %}
 
 {%  block header %}
+
+    <script>
+        var labels_contract_power_by_month = {{ labels_contract_power_by_month|safe }};
+        var max_contract_power_by_month = {{ max_contract_power_by_month|safe }};
+        var contracted_powers_perc_values = {{ contracted_powers_perc_values|safe }};
+        var contracted_powers_perc_label = {{ contracted_powers_perc_label|safe }};
+        var label_current_contract = "{{ label_current_contract }}";
+        var contracted_power_values = {{ contracted_power_values|safe }};
+    </script>
     <style>
     .title-price{
         color: rgba(0, 0, 0, 0.6);
@@ -51,10 +60,10 @@
             <div class="alert alert-success" role="alert">
                   Congratulations! Your contracted power fits your routine habits perfectly, You do not need to change it.
             </div>
-            {% elif no_adjustment_price < 0 and small_adjustment_price < 0 and medium_adjustment_price <= 0%}
+            {% elif no_adjustment_price < 0 and small_adjustment_price <= 0 and medium_adjustment_price <= 0%}
                 <div class="alert alert-danger" role="alert">
-                  Warning! You need a contracted power greater than what you have. Do you think you can change your
-                    habits? You do need to increase your contracted power (it will cost you {{ no_adjustment_price }})?
+                  Warning! You exceeded your contracted power at least once in the past. If you were in the next
+                    contract level you would pay {{ no_adjustment_price }} more.
                 </div>
             {% endif %}
 
@@ -93,7 +102,7 @@
             {% endif %}
             </div>
             <div>
-                <img src="data:image/png;base64,{{ result }}">
+                <canvas id="contract-by-month"></canvas>
             </div>
         </div>
     </div>
