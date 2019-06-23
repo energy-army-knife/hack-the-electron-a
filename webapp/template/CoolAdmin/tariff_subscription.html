@@ -15,8 +15,7 @@
         font-size: x-large;
     }
     .title-current-tariff{
-        font-size: 20px;
-        color: rgba(58, 114, 188, 0.94);
+        color: rgba(56, 56, 56, 0.74);
         font-family: inherit;
     }
 
@@ -42,17 +41,28 @@
         <div class="container-fluid">
             <div class="row" style="margin-bottom: 20px">
                 <div class="col-md-12">
-                    <div class="overview-wrap">
-                        <h1 class="title-1">Tariff</h1>
+                    <div class="overview-wrap m-b-30">
+                        <h1 class="title-1">Tariff Recommender</h1>
                     </div>
+                    <div class="m-b-10" style="display: flex">
+                        <h3 style="margin-right: 5px;">Current Tariff:</h3><h3 class="title-current-tariff"> {{ current_tariff }}</h3>
+                    </div>
+                    <p>The values mentioned bellow where simulated with the had the corresponding tariff in the last two years.</p>
                 </div>
             </div>
-            <div class="row" style="margin-bottom: 20px">
-                <div class="col-md-12" style="display: flex">
-                    <h2 class="title-current-tariff" style="margin-right: 5px">Current Tariff:</h2><h4> {{ current_tariff }}</h4>
-                </div>
+            {% if simple_tariff_savings <= 0  and two_tariff_savings <= 0 and three_tariff_savings <= 0 %}
+            <div class="alert alert-success" role="alert">
+                  Congratulations! Your tariff fits your routine habits perfectly, You do not need to change it.
             </div>
+            {% else %}
+                <div class="alert alert-warning" role="alert">
+                  You have a tariff not suited for your consumption! You could save some money (...) take a look
+                    below to see some of the options!
+                </div>
+            {% endif %}
+
             <div class="card-deck">
+                {% if simple_tariff_savings > 0 %}
                 <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: rgba(0, 123, 255, 0.5)">
                   <div class="card-header title-card">Simple</div>
                   <div class="card-body">
@@ -60,6 +70,8 @@
                     <p class="card-text">BLABLABLA</p>
                   </div>
                 </div>
+                {% endif %}
+                {% if two_tariff_savings > 0 %}
                 <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: rgba(0,161,2, 0.5)">
                   <div class="card-header title-card">Two-Periods</div>
                   <div class="card-body">
@@ -67,6 +79,8 @@
                     <p class="card-text">BLABLABLA</p>
                   </div>
                 </div>
+                {% endif %}
+                {% if three_tariff_savings > 0 %}
                 <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: rgba(255,26,0,0.5)">
                   <div class="card-header title-card">Three-Periods</div>
                   <div class="card-body">
@@ -74,6 +88,7 @@
                     <p class="card-text">BLABLABLA</p>
                   </div>
                 </div>
+                {% endif %}
             </div>
             <div>
                 <canvas id="tariff_months"></canvas>

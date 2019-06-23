@@ -24,7 +24,8 @@
         var current_cost_label = "{{ billing_period_month_label }}";
         var last_year_cost = {{ billing_period_month_last_year }};
         var last_year_cost_label = "{{ billing_period_month_last_year_label }}";
-
+        var appliances_label = {{ appliances_label|safe }};
+        var appliances_data = {{ appliances_data|safe }};
 
     </script>
 
@@ -56,103 +57,145 @@
 <div class="main-content">
     <div class="section__content section__content--p30">
         <div class="container-fluid" >
-            <div class="row">
-                <div class="card bg-light mb-3" style="width: 33%;">
-                  <div class="card-header">Current Bill</div>
-                  <div class="card-body">
-                    <h1 class="card-title" style="text-align: center; color: rgba(0,0,0,0.58)">{{ billing_period_month }}€</h1>
-                      <div class="plot-position">
-                        <canvas id="barChart"></canvas>
-                      </div>
-                      <div>
-                        {% if billing_period_month_last_year < billing_period_month%}
-                        <div class="alert alert-danger alert-position" role="alert">
-                          You are spending more this month than in same period last year! Your current bill is
-                            {{ billing_period_month }}€ and in the same period last year was {{ billing_period_month_last_year }}€.
+            <h3 class="title-2 m-b-40">{{ start_month }}-{{ today }}</h3>
+
+            <div>
+                <div class="row m-b-30">
+                    <div class="col-5">
+                        <div class="au-card"  style="height: 100%">
+                            <div class="au-card-inner">
+                                <div class="plot-position">
+                                    {% if percentage_bill == 0 %}
+                                    {% elif billing_period_month_last_year < billing_period_month%}
+                                    <div style="margin: auto; width: 30%; display: flex">
+                                        <img src="{% static "images/icon/up.png" %}" alt="Billing is higher" style="padding-right: 10px; height: 35px">
+                                        <h1 style="color: #ff1a00">{{ percentage_bill }}%</h1>
+                                    </div>
+                                    {% elif billing_period_month_last_year > billing_period_month%}
+                                    <div style="margin: auto; width: 30%; display: flex">
+                                        <img src="{% static "images/icon/down.png" %}" alt="Billing is lower" style="padding-right: 10px; height: 35px">
+                                        <h1 style="color: #00a102">{{ percentage_bill }}%</h1>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <canvas id="barChart"></canvas>
+                                    </div>
+
+                                    <div class="chart-note-wrap">
+                                        <div class="chart-note mr-0 d-block">
+                                            <p>The values in this plot are both from the same time period.</p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
-                        {% elif billing_period_month_last_year > billing_period_month %}
-                            <div class="alert alert-success alert-position" role="alert">
-                              Congratulations! You are spending less this month than in same period last year! Your current bill is
-                                {{ billing_period_month }}€ and in the same period last year was {{ billing_period_month_last_year }}€.
+                    </div>
+                    <div class="col-7">
+                        <div class="au-card">
+                            <div class="au-card-inner">
+                                <canvas id="overview-month-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row m-b-30">
+                <div class="col-5">
+                    <div class="au-card" style="height: 100%">
+                        <div class="au-card-inner" style="height: 100%">
+
+                            <div class="plot-position">
+                                <div class="row no-gutters">
+                                    <div class="col-4">
+                                        <div class="chart-note-wrap">
+                                            <div class="chart-note mr-0 d-block">
+                                                <span class="dot dot--blue"></span>
+                                                <span>Peak</span>
+                                            </div>
+                                            {% if tariff > 1 %}
+                                            <div class="chart-note mr-0 d-block">
+                                                <span class="dot dot--red"></span>
+                                                <span>Off-Peak</span>
+                                            </div>
+                                            {% endif %}
+                                            {% if tariff > 2 %}
+                                            <div class="chart-note mr-0 d-block">
+                                                <span class="dot dot--green"></span>
+                                                <span>Super-Off-Peak</span>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                <div class="col-8">
+                                    <canvas id="percent-chart"></canvas>
+                                </div>
+
+                                <div class="chart-note-wrap">
+                                    <div class="chart-note mr-0 d-block">
+                                        <span>Inner circle: % of the bill in each Tariff period</span>
+                                    </div>
+                                    <div class="chart-note mr-0 d-block">
+                                        <span>Outer circle: % of the total used power in each Tariff period</span>
+                                    </div>
+                                </div>
+                            </div>
+                           {% if current_tariff != best_tariff %}
+                                <div class="alert alert-danger alert-position" role="alert" style="margin-top: 20px">
+                                  Tariff not optimized for your power consumption, click <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}" class="alert-link">here</a>.
+                                </div>
+                           {% else %}
+                               <div class="alert alert-success alert-position" role="alert" style="margin-top: 20px">
+                                  Congratulations! Your current tariff {{ current_tariff }} is optimized for your power consumption! Detailed info <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}" class="alert-link">here</a>.
+                                </div>
+                          {% endif %}
+
+                      </div>
+                    </div>
+                </div>
+                </div>
+                <div class="col-7">
+                    <div class="au-card" style="height: 100%">
+                        <div class="au-card-inner" style="height: 100%">
+                        <div class="progress">
+                          <div class="progress-bar" role="progressbar" style="width: {{ percentage_contracted_power_registered }}%;" aria-valuenow="{{ percentage_contracted_power_registered }}" aria-valuemin="0" aria-valuemax="100">{{ max_contracted_power_registered }}/{{ contracted_power }} kW</div>
+                        </div>
+
+                        <canvas id="power-mean-month"></canvas>
+                          {% if contracted_power != best_contracted_power %}
+                            <div class="alert alert-danger alert-position" role="alert">
+                              Contracted power {{ contracted_power }} is not optimized click <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}" class="alert-link">here</a>.
                             </div>
                         {% endif %}
                       </div>
-                  </div>
-                </div>
-
-                <div class="card bg-light mb-3" style="width: 33%;">
-                  <div class="card-header">Peak distribution</div>
-                  <div class="card-body">
-                    <div class="plot-position">
-                        <div class="row no-gutters">
-                            <div class="chart-note-wrap">
-                                <div class="chart-note mr-0 d-block">
-                                    <span>Inner circle: Cost distribution</span>
-                                </div>
-                                <div class="chart-note mr-0 d-block">
-                                    <span>Outer circle: Power Usage distribution</span>
-                                </div>
-                            <br>
-                            <div class="chart-note mr-0 d-block">
-                                <span class="dot dot--blue"></span>
-                                <span>Peak</span>
-                            </div>
-                            {% if tariff > 1 %}
-                                <div class="chart-note mr-0 d-block">
-                                    <span class="dot dot--red"></span>
-                                    <span>Off-Peak</span>
-                                </div>
-                            {% endif %}
-                            {% if tariff > 2 %}
-                                <div class="chart-note mr-0 d-block">
-                                    <span class="dot dot--green"></span>
-                                    <span>Super-Off-Peak</span>
-                                </div>
-                            {% endif %}
-                        </div>
                     </div>
-                    <div style="width: 90%">
-                        <canvas id="percent-chart"></canvas>
-                    </div>
-                </div>
-               {% if current_tariff != best_tariff %}
-                    <div class="alert alert-danger alert-position" role="alert" style="margin-top: 20px">
-                      Your current tariff {{ current_tariff }} is not optimized for your power consumption, it should be {{ best_tariff }}.
-                         To view detailed information regarding this subject click <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}" class="alert-link">here</a>.
-                    </div>
-              {% else %}
-                   <div class="alert alert-success alert-position" role="alert" style="margin-top: 20px">
-                      Congratulations! Your current tariff {{ current_tariff }} is optimized for your power consumption! Detailed info <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}" class="alert-link">here</a>.
-                    </div>
-              {% endif %}
-
-              </div>
-                </div>
-                <div class="card bg-light mb-3" style="width: 33%;">
-                  <div class="card-header">Contracted Power</div>
-                  <div class="card-body">
-                    <h5 class="card-title">Light card title</h5>
-                    <canvas id="power-mean-month"></canvas>
-                      {% if contracted_power != best_contracted_power %}
-                        <div class="alert alert-danger alert-position" role="alert">
-                          Your current contracted power {{ contracted_power }} is not optimized for your power consumption, it should be {{ best_contracted_power }}.
-                             To view detailed information regarding this subject click <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}" class="alert-link">here</a>.
-                        </div>
-                    {% endif %}
-                  </div>
                 </div>
             </div>
-
-            <div class="row" style="margin-top: 50px">
-                <div class="col-lg-8">
-                    <div class="au-card m-b-30">
-                        <div class="au-card-inner">
-                            <h3 class="title-2 m-b-40">{{ start_month }}-{{ today }}</h3>
-                            <canvas id="overview-month-chart"></canvas>
+        <div class="row">
+            <div class="col-5">
+                <div class="au-card">
+                    <div class="au-card-inner">
+                        <h1>Carbon Footprint</h1>
+                        <h4>Emission</h4>
+                        <div class="progress">
+                          <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <h4>Green Energy Generated</h4>
+                        <div class="progress">
+                          <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="col-7">
+                <div class="au-card">
+                    <div class="au-card-inner">
+                        <canvas id="appliancesbarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
         </div>
     </div>
 </div>

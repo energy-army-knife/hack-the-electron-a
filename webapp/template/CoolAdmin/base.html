@@ -33,6 +33,13 @@
 
     <!-- Main CSS-->
     <link href="{% static "css/theme.css" %}" rel="stylesheet" media="all">
+    <style>
+        .scroll-meters {
+            float: left;
+            overflow-y: auto;
+            height: 500px;
+        }
+    </style>
 
     {% block header %}
     {% endblock %}
@@ -78,11 +85,11 @@
                         </li>
                         <li {{ active_contract_subscription}}>
                             <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}">
-                                <i class="fas fa-chart-bar"></i>Contract Subscription</a>
+                                <i class="fas fa-chart-bar"></i>Contracted Power Recommender</a>
                         </li>
                         <li {{ active_tariff_subscription}}>
                             <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}">
-                                <i class="fas fa-chart-bar"></i>Tariff Subscription</a>
+                                <i class="fas fa-chart-bar"></i>Tariff Recommender</a>
                         </li>
                     </ul>
                 </div>
@@ -118,11 +125,11 @@
                         </li>
                         <li {{ active_contract_subscription}}>
                             <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}">
-                                <i class="fas fa-chart-bar"></i>Contract Subscription</a>
+                                <i class="fas fa-chart-bar"></i>Contracted Power Recommender</a>
                         </li>
                         <li {{ active_tariff_subscription}}>
                             <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}">
-                                <i class="fas fa-chart-bar"></i>Tariff Subscription</a>
+                                <i class="fas fa-chart-bar"></i>Tariff Recommender</a>
                         </li>
 
                     </ul>
@@ -188,7 +195,7 @@
                                         {{ meter_id }}
                                       </a>
 
-                                      <div class="dropdown-menu" style="overflow-y: scroll" aria-labelledby="dropdownMenuLink">
+                                      <div class="dropdown-menu scroll-meters" aria-labelledby="dropdownMenuLink">
                                           {% for meter in all_meters %}
                                                 <a class="dropdown-item"  href={{ request.path }}?meter={{ meter }}>{{ meter }}</a>
                                           {% endfor %}

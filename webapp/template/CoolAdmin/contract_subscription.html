@@ -2,6 +2,15 @@
 {% load static %}
 
 {%  block header %}
+
+    <script>
+        var labels_contract_power_by_month = {{ labels_contract_power_by_month|safe }};
+        var max_contract_power_by_month = {{ max_contract_power_by_month|safe }};
+        var contracted_powers_perc_values = {{ contracted_powers_perc_values|safe }};
+        var contracted_powers_perc_label = {{ contracted_powers_perc_label|safe }};
+        var label_current_contract = "{{ label_current_contract }}";
+        var contracted_power_values = {{ contracted_power_values|safe }};
+    </script>
     <style>
     .title-price{
         color: rgba(0, 0, 0, 0.6);
@@ -16,7 +25,6 @@
     }
 
     .title-current-contract{
-        font-size: 20px;
         color: rgba(56, 56, 56, 0.74);
         font-family: inherit;
     }
@@ -36,32 +44,37 @@
         <div class="container-fluid">
             <div class="row" style="margin-bottom: 20px">
                 <div class="col-md-12">
-                    <div class="overview-wrap">
-                        <h2 class="title-1">Contract Savings</h2>
+                    <div class="overview-wrap m-b-30">
+                        <h3 class="title-1">Contracted Power Recommender</h3>
                     </div>
+                    <div class="m-b-10" style="display: flex">
+                        <h3 style="margin-right: 5px;">Current Contracted Power:</h3><h3 class="title-current-contract"> {{ current_contract }}</h3>
+                    </div>
+                    <p>The values mentioned bellow where simulated with the had the corresponding contracted power in the last two years.</p>
                 </div>
             </div>
 
-            <div class="row" style="margin-bottom: 20px">
-                <div class="col-md-12" style="display: flex">
-                    <h2 class="title-current-contract" style="margin-right: 5px">Current Contract: </h2> {{ current_contract }}
-                </div>
             </div>
             {% if no_adjustment_price == 0 and small_adjustment_price == 0 and medium_adjustment_price == 0 %}
             <div class="alert alert-success" role="alert">
                   Congratulations! Your contracted power fits your routine habits perfectly, You do not need to change it.
             </div>
-            {% elif no_adjustment_price < 0 and small_adjustment_price < 0 and medium_adjustment_price <= 0%}
+            {% elif no_adjustment_price < 0 and small_adjustment_price <= 0 and medium_adjustment_price <= 0%}
                 <div class="alert alert-danger" role="alert">
-                  Warning! You need a contracted power greater than what you have. Do you think you can change your
-                    habits? You do need to increase your contracted power (it will cost you {{ no_adjustment_price }})?
+                  Warning! You exceeded your contracted power at least once in the past. If you were in the next
+                    contract level you would pay {{ no_adjustment_price }} more.
+                </div>
+            {% else %}
+                <div class="alert alert-warning" role="alert">
+                  You have a contracted power above your power consumption! You could save some money (...) take a look
+                    below to see some of the options!
                 </div>
             {% endif %}
 
             <div class="card-deck">
             {% if no_adjustment_price > 0%}
-                <div class="card text-white mb-3" style="max-width: 18rem; background-color: rgba(25,133,0,0.34)">
-                  <div class="card-header title-card">Smart</div>
+                <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: rgba(25,133,0,0.34)">
+                  <div class="card-header title-card">Smart - {{ no_adjustment_price_contract }}kW</div>
                   <div class="card-body">
                     <h1 class="title-price">{{ no_adjustment_price }}€</h1>
                     <p class="card-text">You do not have to adjust your current habits! This contracted power is greater
@@ -71,8 +84,8 @@
             {% endif %}
             {% if small_adjustment_price > 0 and no_adjustment_price != medium_adjustment_price%}
 
-                <div class="card text-white mb-3" style="max-width: 18rem; background-color: rgba(25,133,0,0.66)">
-                  <div class="card-header title-card">Eco</div>
+                <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: rgba(25,133,0,0.66)">
+                  <div class="card-header title-card">Eco - {{ small_adjustment_price_contract }}kW</div>
                   <div class="card-body">
                     <h1 class="title-price">{{ small_adjustment_price }}€</h1>
                     <p class="card-text">This contracted power is bellow the maximum registered in two years. Besides you
@@ -81,8 +94,8 @@
                 </div>
             {% endif %}
             {% if medium_adjustment_price > 0 and small_adjustment_price != medium_adjustment_price%}
-                    <div class="card text-white mb-3" style="max-width: 18rem; background-color: #198500">
-                      <div class="card-header title-card">Super saving</div>
+                    <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: #198500">
+                      <div class="card-header title-card">Super saving - {{ medium_adjustment_price_contract }}kW</div>
                       <div class="card-body">
                         <h1 class="title-price">{{ medium_adjustment_price }}€</h1>
                         <p class="card-text">With a little bit more effort you can lower your bill! Currently you cross the
@@ -93,7 +106,7 @@
             {% endif %}
             </div>
             <div>
-                <img src="data:image/png;base64,{{ result }}">
+                <canvas id="contract-by-month"></canvas>
             </div>
         </div>
     </div>

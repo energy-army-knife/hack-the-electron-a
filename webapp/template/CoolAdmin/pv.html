@@ -2,6 +2,32 @@
 {% load static %}
 
 {%  block header %}
+<script>
+    var pv_and_bat_data = {{ pv_and_bat_data|safe }};
+    var pv_data = {{ pv_data|safe }};
+
+    var pv_data_xy_dic = [];
+
+    for (var i = 0; i < pv_data.length; i++) {
+        if (pv_data[i]['time for return'] > 20) continue;
+
+        pv_data_xy_dic.push({
+            x: pv_data[i]['installation_cost'],
+            y: Math.round(pv_data[i]['time for return']*10)/10
+        });
+    }
+
+    var pv_and_bat_data_xy_dic = [];
+
+    for (var i = 0; i < pv_and_bat_data.length; i++) {
+        if (pv_and_bat_data[i]['time for return'] > 20) continue;
+
+        pv_and_bat_data_xy_dic.push({
+            x: pv_and_bat_data[i]['installation_cost'],
+            y: Math.round(pv_and_bat_data[i]['time for return']*10)/10
+        });
+    }
+</script>
 {% endblock %}
 
 {% block content %}
@@ -15,8 +41,8 @@
                         <h2 class="title-1">Photovoltaic</h2>
                     </div>
                 </div>
-                <div>
-                    <img src="data:image/png;base64,{{ plot_pv }}">
+                <div class="container-fluid">
+                    <canvas id="overview-pv-savings"></canvas>
                 </div>
             </div>
             <div class="row">

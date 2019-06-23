@@ -784,7 +784,7 @@ $(document).ready(function() {
             type: 'line',
             defaultFontFamily: 'Poppins',
             datasets: [{
-              label: "Sep-2018",
+              label: current_cost_label,
               data: plot_current_month,
               backgroundColor: 'transparent',
               borderColor: 'rgba(220,53,69,0.75)',
@@ -794,7 +794,7 @@ $(document).ready(function() {
               pointBorderColor: 'transparent',
               pointBackgroundColor: 'rgba(220,53,69,0.75)',
             }, {
-              label: "Sep-2017",
+              label: last_year_cost_label,
               data: plot_last_year_month,
               backgroundColor: 'transparent',
               borderColor: 'rgba(40,167,69,0.75)',
@@ -819,7 +819,7 @@ $(document).ready(function() {
               intersect: false,
             },
             legend: {
-              display: false,
+              display: true,
               labels: {
                 usePointStyle: true,
                 fontFamily: 'Poppins',
@@ -833,8 +833,8 @@ $(document).ready(function() {
                   drawBorder: false
                 },
                 scaleLabel: {
-                  display: false,
-                  labelString: 'Month'
+                  display: true,
+                  labelString: 'Day of the Month'
                 },
                 ticks: {
                   fontFamily: "Poppins"
@@ -848,7 +848,105 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Value',
+                  labelString: 'Power Spent [kW]',
+                  fontFamily: "Poppins"
+
+                },
+                ticks: {
+                  fontFamily: "Poppins"
+                }
+              }]
+            },
+            title: {
+              display: false,
+              text: 'Normal Legend'
+            }
+          }
+        });
+      }
+
+
+    } catch (error) {
+      console.log(error);
+    }
+    // pv plots
+    try {
+      //Sales chart
+      var ctx = document.getElementById("overview-pv-savings");
+      if (ctx) {
+        ctx.height = 150;
+        var myChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            type: 'line',
+            defaultFontFamily: 'Poppins',
+            datasets: [{
+              label: 'PV panels only',
+              data: pv_data_xy_dic,
+              backgroundColor: 'transparent',
+              borderColor: 'rgba(220,53,69,0.75)',
+              borderWidth: 3,
+              pointStyle: 'circle',
+              pointRadius: 5,
+              pointBorderColor: 'transparent',
+              pointBackgroundColor: 'rgba(220,53,69,0.75)',
+            }, {
+              label: 'PV and Batteries',
+              data: pv_and_bat_data_xy_dic,
+              backgroundColor: 'transparent',
+              borderColor: 'rgba(0,103,255,0.5)',
+              borderWidth: 3,
+              pointStyle: 'circle',
+              pointRadius: 5,
+              pointBorderColor: 'transparent',
+              pointBackgroundColor: 'rgba(0,103,255,0.5)',
+            }]
+          },
+          options: {
+            responsive: true,
+            tooltips: {
+              mode: 'index',
+              titleFontSize: 12,
+              titleFontColor: '#000',
+              bodyFontColor: '#000',
+              backgroundColor: '#fff',
+              titleFontFamily: 'Poppins',
+              bodyFontFamily: 'Poppins',
+              cornerRadius: 3,
+              intersect: false,
+            },
+            legend: {
+              display: false,
+              labels: {
+                usePointStyle: true,
+                fontFamily: 'Poppins',
+              },
+            },
+            scales: {
+              xAxes: [{
+                type: 'linear',
+                display: true,
+                gridLines: {
+                  display: false,
+                  drawBorder: false
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Investment [€]'
+                },
+                ticks: {
+                  fontFamily: "Poppins"
+                }
+              }],
+              yAxes: [{
+                display: true,
+                gridLines: {
+                  display: false,
+                  drawBorder: false
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Time to recover investment [Years]',
                   fontFamily: "Poppins"
 
                 },
@@ -926,7 +1024,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Day of the Month'
+                  labelString: 'Hour of the Day'
                 },
                 ticks: {
                   fontFamily: "Poppins"
@@ -960,21 +1058,17 @@ $(document).ready(function() {
       console.log(error);
     }
 
+
+
     try {
 
       //Team chart
-      var ctx = document.getElementById("team-chart");
+      var ctx = document.getElementById("contract-by-month");
       if (ctx) {
         ctx.height = 150;
-        var myChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: power_spent_by_hours_label,
-            type: 'line',
-            defaultFontFamily: 'Poppins',
-            datasets: [{
-              data: power_spent_by_hours,
-              label: "Power Spent [kW]",
+        var myListOfDatasets = [{
+              data: max_contract_power_by_month,
+              label: "Max Power Spent [kW]",
               backgroundColor: 'rgba(0,103,255,.15)',
               borderColor: 'rgba(0,103,255,0.5)',
               borderWidth: 3.5,
@@ -982,7 +1076,39 @@ $(document).ready(function() {
               pointRadius: 5,
               pointBorderColor: 'transparent',
               pointBackgroundColor: 'rgba(0,103,255,0.5)',
-            },]
+            },
+          {   data: contracted_power_values,
+              label: "Current Contract " + label_current_contract,
+              backgroundColor: 'transparent',
+              borderColor: 'rgba(255,26,0,0.5)',
+              borderWidth: 3.5,
+              pointStyle: 'circle',
+              pointRadius: 0,
+              pointBorderColor: 'transparent',
+              pointBackgroundColor: 'rgba(255,26,0,0.5)',
+            }];
+        var i;
+        for (i = 0; i < contracted_powers_perc_values.length; i++) {
+            myListOfDatasets.push({
+                  data: contracted_powers_perc_values[i],
+                  label: contracted_powers_perc_label[i],
+                  borderColor: 'rgba(0,161,2,0.5)',
+                  backgroundColor: 'transparent',
+                  borderWidth: 3.5,
+                  pointStyle: 'circle',
+                  pointRadius: 0,
+                  pointBorderColor: 'transparent',
+                  pointBackgroundColor: 'rgba(0,161,2,0.5)',
+              })
+        }
+
+        var myChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels_contract_power_by_month,
+            type: 'line',
+            defaultFontFamily: 'Poppins',
+            datasets: myListOfDatasets,
           },
           options: {
             responsive: true,
@@ -998,7 +1124,7 @@ $(document).ready(function() {
               intersect: false,
             },
             legend: {
-              display: false,
+              display: true,
               position: 'top',
               labels: {
                 usePointStyle: true,
@@ -1054,7 +1180,6 @@ $(document).ready(function() {
       //bar chart
       var ctx = document.getElementById("barChart");
       if (ctx) {
-        ctx.height = 380;
         var myChart = new Chart(ctx, {
           type: 'bar',
           defaultFontFamily: 'Poppins',
@@ -1072,6 +1197,55 @@ $(document).ready(function() {
             ]
           },
           options: {
+            maintainAspectRatio: false,
+            legend: {
+              display: false
+            },
+            scales: {
+              xAxes: [{
+                ticks: {
+                  fontFamily: "Poppins"
+
+                }
+              }],
+              yAxes: [{
+                ticks: {
+                  beginAtZero: true,
+                  fontFamily: "Poppins"
+                }
+              }]
+            }
+          }
+        });
+      }
+
+
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
+      //bar chart
+      var ctx = document.getElementById("appliancesbarChart");
+      if (ctx) {
+        var myChart = new Chart(ctx, {
+          type: 'bar',
+          defaultFontFamily: 'Poppins',
+          data: {
+            labels: appliances_label,
+            datasets: [
+              {
+                label: "Cost",
+                data: appliances_data,
+                borderColor: "rgba(0, 123, 255, 0.9)",
+                borderWidth: "0",
+                backgroundColor: "rgba(0, 123, 255, 0.5)",
+                fontFamily: "Poppins"
+              }
+            ]
+          },
+          options: {
+            maintainAspectRatio: false,
             legend: {
               display: false
             },
@@ -1217,7 +1391,6 @@ $(document).ready(function() {
     } catch (error) {
       console.log(error);
     }
-
 
     try {
 
