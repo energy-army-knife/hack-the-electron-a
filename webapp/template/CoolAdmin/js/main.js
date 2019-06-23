@@ -870,19 +870,21 @@ $(document).ready(function() {
       console.log(error);
     }
     // pv plots
+
     try {
-      //Sales chart
-      var ctx = document.getElementById("overview-pv-savings");
+      //power + reneals chart
+      var ctx = document.getElementById("power-renewals-chart");
       if (ctx) {
         ctx.height = 150;
         var myChart = new Chart(ctx, {
           type: 'line',
           data: {
+            labels: x_axis,
             type: 'line',
             defaultFontFamily: 'Poppins',
             datasets: [{
-              label: 'PV panels only',
-              data: pv_data_xy_dic,
+              label: 'total load',
+              data: total_load,
               backgroundColor: 'transparent',
               borderColor: 'rgba(220,53,69,0.75)',
               borderWidth: 3,
@@ -891,15 +893,15 @@ $(document).ready(function() {
               pointBorderColor: 'transparent',
               pointBackgroundColor: 'rgba(220,53,69,0.75)',
             }, {
-              label: 'PV and Batteries',
-              data: pv_and_bat_data_xy_dic,
+              label: "load from grid",
+              data: load_from_grid,
               backgroundColor: 'transparent',
-              borderColor: 'rgba(0,103,255,0.5)',
+              borderColor: 'rgba(40,167,69,0.75)',
               borderWidth: 3,
               pointStyle: 'circle',
               pointRadius: 5,
               pointBorderColor: 'transparent',
-              pointBackgroundColor: 'rgba(0,103,255,0.5)',
+              pointBackgroundColor: 'rgba(40,167,69,0.75)',
             }]
           },
           options: {
@@ -916,7 +918,163 @@ $(document).ready(function() {
               intersect: false,
             },
             legend: {
+              display: true,
+              labels: {
+                usePointStyle: true,
+                fontFamily: 'Poppins',
+              },
+            },
+            scales: {
+              xAxes: [{
+                display: true,
+                gridLines: {
+                  display: false,
+                  drawBorder: false
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Hour of the Day'
+                },
+                ticks: {
+                  fontFamily: "Poppins"
+                }
+              }],
+              yAxes: [{
+                display: true,
+                gridLines: {
+                  display: false,
+                  drawBorder: false
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Total Power Spent (normalized)',
+                  fontFamily: "Poppins"
+
+                },
+                ticks: {
+                  fontFamily: "Poppins"
+                }
+              }]
+            },
+            title: {
               display: false,
+              text: 'Normal Legend'
+            }
+          }
+        });
+      }
+
+
+    } catch (error) {
+      console.log(error);
+    }
+    try {
+      //bar chart
+      var ctx = document.getElementById("bar-renewals-chart");
+      if (ctx) {
+        ctx.height = 150;
+        var myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: x_axis,
+            defaultFontFamily: 'Poppins',
+            datasets: [{
+              label: 'waisted PV generation',
+              data: generated_PV_waisted,
+              backgroundColor: 'rgba(220,53,69,0.75)',
+            }, {
+              label: 'used PV generation',
+              data: generated_PV_used,
+              backgroundColor: 'rgba(50,253,69,0.75)',
+            }, {
+              label: 'used from batteries',
+              data: battery_used,
+              backgroundColor: 'rgba(50,50,250,0.75)',
+            }]
+          },
+          options: {
+            responsive: true,
+            tooltips: {
+              mode: 'index',
+              titleFontSize: 12,
+              titleFontColor: '#000',
+              bodyFontColor: '#000',
+              backgroundColor: '#fff',
+              titleFontFamily: 'Poppins',
+              bodyFontFamily: 'Poppins',
+              cornerRadius: 3,
+              intersect: false,
+            },
+            legend: {
+              display: true,
+              labels: {
+                usePointStyle: true,
+                fontFamily: 'Poppins',
+              },
+            },
+            scales: {
+              xAxes: [{
+              	stacked: true,
+                display: true,
+                gridLines: {
+                  display: false,
+                  drawBorder: false
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Hour of the Day'
+                },
+                ticks: {
+                  fontFamily: "Poppins"
+                }
+              }],
+              yAxes: [{
+                stacked: true,
+                display: true,
+                gridLines: {
+                  display: false,
+                  drawBorder: false
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Power [kW]',
+                  fontFamily: "Poppins"
+
+                },
+                ticks: {
+                  fontFamily: "Poppins"
+                }
+              }]
+            },
+            title: {
+              display: false,
+              text: 'Normal Legend'
+            }
+          }
+        });
+      }
+
+
+    } catch (error) {
+      console.log(error);
+    }
+    try {
+      //savings chart
+      var ctx = document.getElementById("overview-pv-savings");
+      if (ctx) {
+        ctx.height = 150;
+        var myChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            type: 'line',
+            defaultFontFamily: 'Poppins',
+            datasets: pv_and_bat_data_xy_dic
+          },
+          options: {
+            responsive: true,
+            tooltips: false,
+            legend: {
+              display: true,
               labels: {
                 usePointStyle: true,
                 fontFamily: 'Poppins',
