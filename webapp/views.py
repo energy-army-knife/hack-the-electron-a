@@ -52,8 +52,10 @@ def get_name_tariff(tariff: TariffType):
     elif tariff == TariffType.THREE_PERIOD:
         return "Three-Period"
 
-def get_power_grouped_by_days(power_data: pd.DataFrame) -> pd.DataFrame:
-    return power_data.groupby(power_data.index.strftime('%D')).sum().values.flatten()
+
+def get_power_grouped_by_days(power_data: pd.DataFrame) -> (list, list):
+    df = power_data.groupby(power_data.index.strftime('%d-%m')).sum() / 1000
+    return list(df.index), list(df.values.flatten())
 
 
 def get_parameters_period_overview(meter_id: str, period_start: datetime, period_end: datetime):
@@ -74,9 +76,11 @@ def get_parameters_period_overview(meter_id: str, period_start: datetime, period
 
     for peak_type in billing_period.times_peaks_distribution:
         percentages_peak_type_hours[peak_type] = round(
-            billing_period.times_peaks_distribution[peak_type] / sum(billing_period.times_peaks_distribution.values()), 2)
+            billing_period.times_peaks_distribution[peak_type] / sum(billing_period.times_peaks_distribution.values()),
+            2)
         percentages_peak_type_spent[peak_type] = round(
-            billing_period.costs_peaks_distribution[peak_type] / sum(billing_period.costs_peaks_distribution.values()), 2)
+            billing_period.costs_peaks_distribution[peak_type] / sum(billing_period.costs_peaks_distribution.values()),
+            2)
 
     recommender_tariff = TariffRecommender(tariff_data_load, tarriff_periods)
 
@@ -93,10 +97,9 @@ def get_parameters_period_overview(meter_id: str, period_start: datetime, period
 
     max_power_registered = min(round(power_loader_meter.max().values[0] / 1000, 2), meter_info.contracted_power)
 
-
     # Last year info
     same_period_last_year_start = period_start.replace(year=period_start.year - 1)
-    same_period_last_year_end = period_end.replace(year=period_end.year-1)
+    same_period_last_year_end = period_end.replace(year=period_end.year - 1)
 
     power_period_last_year = filter_power_by_date(power_loader.get_power_meter_id(meter_id),
                                                   same_period_last_year_start, same_period_last_year_end)
@@ -106,6 +109,30 @@ def get_parameters_period_overview(meter_id: str, period_start: datetime, period
                                                                          meter_info.tariff).get_total(), 2)
     appliances_label = ["MicroWave", "Fridge", "Oven", "Air-Condit", "Heater", "TV", "Hair Dyer"]
     appliances_data = [90, 120, 400, 30, 200, 250, 330]
+
+    # FIXME: Get prediction for the rest of the month
+    prediction = filter_power_by_date(power_loader.get_power_meter_id(meter_id),
+                                      start_datetime=TODAY.replace(day=TODAY.day + 1),
+                                      end_datetime=TODAY.replace(day=30))
+
+    prediction_group_month = get_power_grouped_by_days(prediction)
+
+    spent_period_overview_label, spent_period_overview_data = get_power_grouped_by_days(power_loader_meter)
+
+    predict_dataset = {"label": "prediction", "x": list(range(15, 15 + len(prediction_group_month[0]))),
+                       "y": prediction_group_month[1],
+                       "color": "#00000"}
+
+    last_year_month_dataset = {"label": same_period_last_year_start.strftime("%m-%Y"),
+                               "x": list(range(len(spent_period_overview_label))),
+                               "y": get_power_grouped_by_days(power_period_last_year)[1], "color": "rgba(0,161,2,0.5)"}
+
+    current_month_dataset = {"label": period_start.strftime("%m-%Y"),
+                             "x": list(range(len(spent_period_overview_label))),
+                             "y": spent_period_overview_data,
+                             "color": "#0063BC"}
+
+    datasets_overview = [last_year_month_dataset, current_month_dataset]
 
     param = {"contracted_power": meter_info.contracted_power,
              "mean_load": round(power_loader_meter.mean().values[0] / 1000, 2),
@@ -132,13 +159,13 @@ def get_parameters_period_overview(meter_id: str, period_start: datetime, period
              "billing_period_month_last_year_label": same_period_last_year_start.strftime("%m-%Y"),
              "billing_period_month": billing_period.get_total(),
              "billing_period_month_label": period_start.strftime("%m-%Y"),
-             "plot_current_month": list(get_power_grouped_by_days(power_loader_meter) / 1000),
-             "plot_last_year_month": list(get_power_grouped_by_days(power_period_last_year) / 1000),
-             "plot_axes": list(range(1, TODAY.day + 1)), "today": TODAY.date(), "start_month": START_MONTH.date(),
+             "today": TODAY.date(), "start_month": START_MONTH.date(),
              "appliances_label": appliances_label,
              "appliances_data": appliances_data,
+             "datasets_overview": datasets_overview,
              "percentage_bill": int(
-                 abs((billing_period_month_last_year - billing_period.get_total()) * 100 / billing_period_month_last_year))}
+                 abs((
+                                 billing_period_month_last_year - billing_period.get_total()) * 100 / billing_period_month_last_year))}
 
     return param
 
