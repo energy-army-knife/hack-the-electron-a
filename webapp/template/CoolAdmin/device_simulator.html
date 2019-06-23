@@ -4,6 +4,7 @@
 {%  block header %}
     <script>
         var appliance_id = {{ appliance_id }};
+        var meter_id = {{ meter_id }}
 
     </script>
 {% endblock %}
@@ -25,35 +26,45 @@
                     {% csrf_token  %}
                     <input type="hidden" name="meter-id" value="{{ meter_id }}">
                     <div class="form-group">
-                        <label for="appliance-id">Choose Appliance</label>
+                        <label for="appliance-id">Choose Device</label>
                         <select id="appliance-id" name="appliance-name">
                             {% for appliance in all_devices %}
-                                <option value={{ appliance }} id="appliance">{{ appliance }}</option>
+                                <option value="{{ appliance }}" id="appliance">{{ appliance }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="id-time-of-day">Choose Daily Usage</label>
+                        <label for="id-time-of-day">Daily Usage</label>
                         <select id="id-time-of-day" name="time-of-day">
                             <option>1</option>
                             <option>2</option>
                             <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                            <option>6</option>
+                            <option>7</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="id-weekly-usage">Choose weekly Usage</label>
+                        <label for="id-weekly-usage">Weekly Usage</label>
                         <select id="id-weekly-usage" name="weekly-usage">
                             <option>1</option>
                             <option>2</option>
                             <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                            <option>6</option>
+                            <option>7</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="id-power-appliance">Power of appliance</label>
-                        <select id="id-power-appliance" name="power-appliance">
-                            <option>Peak of appliance power</option>
-                        </select>
-                    </div>
+                    <fieldset disabled>
+                        <div class="form-group">
+                            <label for="id-power-appliance">Power of device</label>
+                            <select id="id-power-appliance" name="power-appliance">
+                                <option>disabled</option>
+                            </select>
+                        </div>
+                    </fieldset>
                     <div>
                         <button type="submit" class="btn btn-info" >Submit</button>
                     </div>
@@ -63,7 +74,12 @@
         {% if simulation %}
         <div class="container-fluid">
             <div class="text">
-                <h3>New Bill: {{ dif_bill }}</h3>
+                <h4>Device: {{ appliance_name }}, {{time_of_day}} times a day, {{weekly_usage}} times a week, peak power: {{ power_appliance }} kW</h4>
+            </div>
+            <div class="p-3 border bg-light">
+                <div class="text">
+                    <h3>Added value to your bill: {{ dif_bill }}</h3>
+                </div>
             </div>
         </div>
         {% endif %}
