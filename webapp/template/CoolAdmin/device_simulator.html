@@ -13,11 +13,11 @@
 <!-- MAIN CONTENT-->
 <div class="main-content">
     <div class="section__content section__content--p30">
-    <div class="container-fluid">
+        <div class="container-fluid">
             <div class="row m-b-30">
                 <div class="col-md-12">
                     <div class="overview-wrap">
-                        <h2 class="title-1">Device Analyser</h2>
+                        <h2 class="title-1">Equipment Simulator</h2>
                     </div>
                 </div>
             </div>
@@ -26,7 +26,7 @@
                     {% csrf_token  %}
                     <input type="hidden" name="meter-id" value="{{ meter_id }}">
                     <div class="form-group">
-                        <label for="appliance-id">Choose Device</label>
+                        <label for="appliance-id">Choose Equipment</label>
                         <select id="appliance-id" name="appliance-name">
                             {% for appliance in all_devices %}
                                 <option value="{{ appliance }}" id="appliance">{{ appliance }}</option>
@@ -57,28 +57,23 @@
                             <option>7</option>
                         </select>
                     </div>
-                    <fieldset disabled>
-                        <div class="form-group">
-                            <label for="id-power-appliance">Power of device</label>
-                            <select id="id-power-appliance" name="power-appliance">
-                                <option>disabled</option>
-                            </select>
-                        </div>
-                    </fieldset>
                     <div>
-                        <button type="submit" class="btn btn-info" >Submit</button>
+                        <button type="submit" class="btn btn-dark" >Submit</button>
                     </div>
                 </form>
             </div>
         </div>
         {% if simulation %}
         <div class="container-fluid">
-            <div class="text">
-                <h4>Device: {{ appliance_name }}, {{time_of_day}} times a day, {{weekly_usage}} times a week, peak power: {{ power_appliance }} kW</h4>
-            </div>
-            <div class="p-3 border bg-light">
+            <div class="card card-body">
                 <div class="text">
-                    <h3>Added value to your bill: {{ dif_bill }}</h3>
+                    <h3>Equipment: {{ appliance_name }}</h3>
+                    <h5>( {{time_of_day}} times a day x {{weekly_usage}} times a week  -   peak power: {{ power_appliance }} kW )<h5>
+                </div>
+                <div class="p-3 border bg-light">
+                    <div class="text">
+                        <h3>Added value to your bill: {{ dif_bill }} €/month</h3>
+                    </div>
                 </div>
             </div>
         </div>
