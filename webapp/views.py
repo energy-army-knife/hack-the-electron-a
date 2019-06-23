@@ -353,7 +353,7 @@ def device_simulator(request):
         #param["max_per_day"] = [i+1 for i in range(step_d)]
         #param["max_per_week"] = [i+1 for i in range(7)]
         #param["peak_power"] = device_data[meter_id].max()
-        param["plot_devices"] = plot_var([device_data], runtime=1, legend_name=[appliance_name])
+        #param["plot_devices"] = plot_var([device_data], runtime=1, legend_name=[appliance_name])
         param["meter_id"] = meter_id
         param["appliance_name"] = appliance_name
         param["time_of_day"] = time_of_day
