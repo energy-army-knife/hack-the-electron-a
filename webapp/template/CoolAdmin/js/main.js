@@ -776,34 +776,14 @@ $(document).ready(function() {
       //Sales chart
       var ctx = document.getElementById("overview-month-chart");
       if (ctx) {
+
         ctx.height = 150;
         var myChart = new Chart(ctx, {
           type: 'line',
           data: {
-            labels: plot_axes,
             type: 'line',
             defaultFontFamily: 'Poppins',
-            datasets: [{
-              label: current_cost_label,
-              data: plot_current_month,
-              backgroundColor: 'transparent',
-              borderColor: 'rgba(220,53,69,0.75)',
-              borderWidth: 3,
-              pointStyle: 'circle',
-              pointRadius: 5,
-              pointBorderColor: 'transparent',
-              pointBackgroundColor: 'rgba(220,53,69,0.75)',
-            }, {
-              label: last_year_cost_label,
-              data: plot_last_year_month,
-              backgroundColor: 'transparent',
-              borderColor: 'rgba(40,167,69,0.75)',
-              borderWidth: 3,
-              pointStyle: 'circle',
-              pointRadius: 5,
-              pointBorderColor: 'transparent',
-              pointBackgroundColor: 'rgba(40,167,69,0.75)',
-            }]
+            datasets: datasets_overview_month
           },
           options: {
             responsive: true,
@@ -828,6 +808,7 @@ $(document).ready(function() {
             scales: {
               xAxes: [{
                 display: true,
+                type: "linear",
                 gridLines: {
                   display: false,
                   drawBorder: false

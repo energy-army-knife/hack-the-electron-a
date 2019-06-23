@@ -14,10 +14,6 @@
         var percentage_last_month_off_peak_cost = {{ percentage_last_month_off_peak_cost }};
         var percentage_last_month_super_off_peak_cost = {{ percentage_last_month_super_off_peak_cost }};
 
-        var plot_current_month = {{ plot_current_month|safe }};
-        var plot_last_year_month = {{ plot_last_year_month|safe }};
-        var plot_axes = {{ plot_axes|safe }};
-
         var power_loader_meter_hours_max = {{ power_loader_meter_hours_max|safe }};
 
         var current_cost = {{ billing_period_month }};
@@ -26,6 +22,32 @@
         var last_year_cost_label = "{{ billing_period_month_last_year_label }}";
         var appliances_label = {{ appliances_label|safe }};
         var appliances_data = {{ appliances_data|safe }};
+
+        var datasets_overview = {{ datasets_overview|safe }};
+
+        var datasets_overview_month = [];
+
+        var i;
+
+        for (var j=0; j<datasets_overview.length; j++) {
+            var data = [];
+            for (i = 0; i < datasets_overview[j]["x"].length; i++) {
+            data.push({x: datasets_overview[j]["x"][i], y: datasets_overview[j]["y"][i]})
+          }
+
+          datasets_overview_month.push({
+            data: data,
+            label: datasets_overview[j]["label"],
+            borderColor: datasets_overview[j]["color"],
+            backgroundColor: 'transparent',
+            borderWidth: 3.5,
+            pointStyle: 'circle',
+            pointRadius: 0,
+            pointBorderColor: 'transparent',
+            pointBackgroundColor: datasets_overview[j]["color"],
+          });
+        }
+
 
     </script>
 
