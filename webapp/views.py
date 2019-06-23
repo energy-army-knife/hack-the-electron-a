@@ -42,14 +42,6 @@ def get_meter_id_from_query_parm(request):
     else:
         return request.GET["meter"]
 
-
-def get_device_id_from_query_parm(request):
-    if "device_id" not in request.GET:
-        return "Air Conditioner"
-    else:
-        return request.GET["device_id"]
-
-
 def get_name_tariff(tariff: TariffType):
     if tariff == TariffType.SIMPLE:
         return "Simple"
@@ -58,15 +50,21 @@ def get_name_tariff(tariff: TariffType):
     elif tariff == TariffType.THREE_PERIOD:
         return "Three-Period"
 
+def get_device_id_from_query_parm(request):
+    if "device_id" not in request.GET:
+        return "Electric Vehicle"
+    else:
+        return request.GET["device_id"]
+
 def get_device_daily_from_query_parm(request):
     if "device_daily" not in request.GET:
-        return 0
+        return 1
     else:
         return request.GET["device_daily"]
 
 def get_device_weekly_from_query_parm(request):
     if "device_weekly" not in request.GET:
-        return 0
+        return 1
     else:
         return request.GET["device_weekly"]
 
@@ -146,19 +144,23 @@ def get_parameters_device_simulator(meter_id, device_id, day_times, week_times):
     
     device_data=power_data.copy()
 
+    #device_id = device_id if isinstance(device_id, list) else [device_id]
+    #day_time = day_times if isinstance(day_times, list) else [day_times]
+    #week_times = week_times if isinstance(week_times, list) else [week_times]
+
     step_d=96//device_signalsize[device_id][0]
     start_w=4-(week_times+1)//2
     if step_d%2 == 0:            
-        start_d=int((step_d/2)-(day_times+1)//2)
+        start_d=int((step_d/2)-((day_times+1)//2))
     else:
-        start_d=int(((step_d+1)/2)-(day_times+1)//2)
+        start_d=int(((step_d+1)/2)-((day_times+1)//2))
     
-    active_h=device_signal[device_id][:step_d].to_list()
-    inactive_h=[0 for i in range(step_d)]
+    active_h=device_signal[device_id][:96//step_d].to_list()
+    inactive_h=[0 for i in range(96//step_d)]
     inactive_d=[0 for i in range(96)]
     
     active_d=[]
-    for i in range(96//step_d):
+    for i in range(step_d):
         if (i >= start_d) & (i < start_d+day_times):
             active_d.extend(active_h)
         else:
@@ -189,9 +191,12 @@ def get_parameters_device_simulator(meter_id, device_id, day_times, week_times):
             "best_contracted_power": best_contracted_power,
             "all_meters": meters_info.get_all_meters(),
             "meter_id": meter_id,
-            "all_devices": device_signalsize.columns,
+            "all_devices": device_signalsize.columns.to_list(),
             "device_id": device_id,
-            "max_per_day": step_d
+            "max_per_day": [i+1 for i in range(step_d)],
+            "max_per_week": [i+1 for i in range(7)],
+            "peak_power": device_data[meter_id].max(),
+            "plot_devices": plot_var([device_data], runtime=1, legend_name=[device_id]),
            }
 
 
