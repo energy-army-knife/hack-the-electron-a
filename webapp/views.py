@@ -256,14 +256,15 @@ def pv(request):
 
 @login_required
 def device_simulator(request):
-    meter_id = get_meter_id_from_query_parm(request)
 
-    param = {"all_meters": meters_info.get_all_meters(), "meter_id": meter_id, "simulation": request.method != "GET",
+    param = {"all_meters": meters_info.get_all_meters(), "simulation": request.method != "GET",
              "all_devices": device_signalsize.columns.to_list()}
 
     if request.method == "GET":
+        param["meter_id"] = get_meter_id_from_query_parm(request)
         render(request, "device_simulator.html", param)
     else:
+        meter_id = request.POST["meter-id"]
         appliance_name = request.POST["appliance-name"]
         time_of_day = request.POST["time-of-day"]
         weekly_usage = request.POST["weekly-usage"]
