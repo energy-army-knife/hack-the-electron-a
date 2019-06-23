@@ -3,30 +3,45 @@
 
 {%  block header %}
 <script>
-    var pv_and_bat_data = {{ pv_and_bat_data|safe }};
-    var pv_data = {{ pv_data|safe }};
 
-    var pv_data_xy_dic = [];
+    //var pv_and_bat_data = {{ pv_and_bat_data|safe }};
+    var bat_sep = {{ pv_and_bat_data|safe }};
+    var total_load = {{ total_load|safe }};
+    var load_from_grid = {{ load_from_grid|safe }};
 
-    for (var i = 0; i < pv_data.length; i++) {
-        if (pv_data[i]['time for return'] > 20) continue;
+    var generated_PV_waisted = {{ generated_PV_waisted|safe }};
+    var generated_PV_used = {{ generated_PV_used|safe }};
+    var battery_used = {{ battery_used|safe }};
 
-        pv_data_xy_dic.push({
-            x: pv_data[i]['installation_cost'],
-            y: Math.round(pv_data[i]['time for return']*10)/10
-        });
-    }
+    var x_axis = {{ x_axis|safe }};
 
+    var color = ['rgba(250,160,0,0.9)', 'rgba(0, 123, 255,0.9)', 'rgba(0,161,2, 0.9)', 'rgba(255,26,0, 0.9)']
     var pv_and_bat_data_xy_dic = [];
 
-    for (var i = 0; i < pv_and_bat_data.length; i++) {
-        if (pv_and_bat_data[i]['time for return'] > 20) continue;
-
+    for (var i = 0; i < bat_sep.length; i++) { // loop per battery
         pv_and_bat_data_xy_dic.push({
-            x: pv_and_bat_data[i]['installation_cost'],
-            y: Math.round(pv_and_bat_data[i]['time for return']*10)/10
+              label: 'PVs + ' + i + ' battery',
+              data: [],
+              backgroundColor: 'transparent',
+              borderColor: color[i],
+              borderWidth: 3,
+              pointStyle: 'circle',
+              pointRadius: 5,
+              pointBorderColor: 'transparent',
+              pointBackgroundColor: color[i],
         });
+        for (var j = 0; j < bat_sep[i].length; j++) { // loop per item
+
+            if (bat_sep[i][j]['time for return'] > 20) continue;
+
+            pv_and_bat_data_xy_dic[i]['data'].push({
+                x: bat_sep[i][j]['installation_cost'],
+                y: Math.round(bat_sep[i][j]['time for return']*10)/10
+            });
+        }
     }
+
+
 </script>
 {% endblock %}
 
@@ -41,9 +56,42 @@
                         <h2 class="title-1">Photovoltaic</h2>
                     </div>
                 </div>
+            </div>
+            <div class="row">
+                PV Panels: {{ n_panel }}, Battery: {{ n_battery }}, Total Investment: {{ cost }} €
+            </div>
+            <div class="row">
                 <div class="container-fluid">
-                    <canvas id="overview-pv-savings"></canvas>
+                    <p>
+                        <button class="btn btn-dark" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                        simulate generation
+                        </button>
+                    </p>
+                    <div class="collapse" id="collapseExample">
+                        <div class="card card-body">
+                        <form action="{% url 'photovoltaic' %}" method="post">
+                            {% csrf_token  %}
+                            <input type="hidden" name="meter_id" value="{{ meter_id }}">
+                            <div class="form-group">
+                                <label for="id_n_panels" class="col-sm-3 col-form-label">number of PV panels</label>
+                                 <input id="id_n_panels" name="n_panels" type="number" value=0 class="col-sm-6">
+                            </div>
+                            <div class="form-group">
+                                <label for="id_n_batteries" class="col-sm-3 col-form-label">number of batteries</label>
+                                <input id="id_n_batteries" name="n_batteries" type="number" value=0 class="col-sm-6">
+                            </div>
+                            <div>
+                                <button type="submit" class="btn btn-dark" >Submit</button>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
                 </div>
+                <canvas id="power-renewals-chart"></canvas>
+                <canvas id="bar-renewals-chart"></canvas>
+            </div>
+            <div class="row">
+                <canvas id="overview-pv-savings"></canvas>
             </div>
             <div class="row">
                 <div class="col-md-12">
