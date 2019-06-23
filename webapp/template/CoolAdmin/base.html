@@ -67,29 +67,32 @@
             <nav class="navbar-mobile">
                 <div class="container-fluid">
                     <ul class="navbar-mobile__list list-unstyled">
-                        <li {{ active_tab_dashboard}}>
+                        <li {{ active_tab_dashboard }}>
                             <a href="{% url 'index' %}?meter={{ meter_id }}">
                                 <i class="fas fa-tachometer-alt"></i>Dashboard</a>
                         </li>
-                        <li {{ active_tab_analyser}}>
+                        <li {{ active_tab_analyser }}>
                             <a href="{% url 'analyser' %}?meter={{ meter_id }}">
                                 <i class="fas fa-chart-bar"></i>Analyser</a>
                         </li>
                         <li> {{ active_tab_photovoltaic}}
                             <a href="{% url 'photovoltaic' %}?meter={{ meter_id }}">
-                                <i class="fas fa-chart-bar"></i>Photovoltaic</a>
+                                <i class="fas fa-certificate"></i>Photovoltaic</a>
                         </li>
-                        <li {{ active_tab_device_simulator}}>
+                         <li {{ active_tab_device_simulator }}>
                             <a href="{% url 'device_simulator' %}?meter={{ meter_id }}">
-                                <i class="fas fa-chart-bar"></i>Add Device Simulator</a>
+                                <i class="fas fa-laptop"></i>Device Simulator</a>
                         </li>
-                        <li {{ active_contract_subscription}}>
-                            <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}">
-                                <i class="fas fa-chart-bar"></i>Contracted Power Recommender</a>
-                        </li>
-                        <li {{ active_tariff_subscription}}>
-                            <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}">
-                                <i class="fas fa-chart-bar"></i>Tariff Recommender</a>
+                        <li {{ active_subscription }}>
+                            <a class="js-arrow" href="#">
+                            <i class="fas fa-eur"></i>Recommendations</a>
+                            <ul class="navbar-mobile-sub__list list-unstyled js-sub-list">
+                                <li>
+                                <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}">Tariff</a>
+                                </li>
+                                <li>
+                                <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}">Contracted Power</a>
+                                </li>
                         </li>
                     </ul>
                 </div>
@@ -107,31 +110,33 @@
             <div class="menu-sidebar__content js-scrollbar1">
                 <nav class="navbar-sidebar">
                     <ul class="list-unstyled navbar__list">
-                        <li {{ active_tab_dashboard}}>
+                        <li {{ active_tab_dashboard }}>
                             <a href="{% url 'index' %}?meter={{ meter_id }}">
                                 <i class="fas fa-tachometer-alt"></i>Dashboard</a>
                         </li>
-                        <li {{ active_tab_analyser}}>
+                        <li {{ active_tab_analyser }}>
                             <a href="{% url 'analyser' %}?meter={{ meter_id }}">
                                 <i class="fas fa-chart-bar"></i>Analyser</a>
                         </li>
-                        <li {{ active_tab_photovoltaic}}>
+                        <li {{ active_tab_photovoltaic }}>
                             <a href="{% url 'photovoltaic' %}?meter={{ meter_id }}">
-                                <i class="fas fa-chart-bar"></i>Photovoltaic</a>
+                                <i class="fas fa-certificate"></i>Photovoltaic</a>
                         </li>
-                        <li {{ active_tab_device_simulator}}>
+                        <li {{ active_tab_device_simulator }}>
                             <a href="{% url 'device_simulator' %}?meter={{ meter_id }}">
-                                <i class="fas fa-chart-bar"></i>Device Simulator</a>
+                                <i class="fas fa-laptop"></i>Device Simulator</a>
                         </li>
-                        <li {{ active_contract_subscription}}>
-                            <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}">
-                                <i class="fas fa-chart-bar"></i>Contracted Power Recommender</a>
+                        <li {{ active_subscription }}>
+                            <a class="js-arrow" href="#">
+                            <i class="fas fa-eur"></i>Recommendations</a>
+                            <ul class="list-unstyled navbar__sub-list js-sub-list">
+                                <li>
+                                <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}">Tariff</a>
+                                </li>
+                                <li>
+                                <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}">Contracted Power</a>
+                                </li>
                         </li>
-                        <li {{ active_tariff_subscription}}>
-                            <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}">
-                                <i class="fas fa-chart-bar"></i>Tariff Recommender</a>
-                        </li>
-
                     </ul>
                 </nav>
             </div>
