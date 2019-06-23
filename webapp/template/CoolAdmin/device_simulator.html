@@ -12,89 +12,61 @@
 <!-- MAIN CONTENT-->
 <div class="main-content">
     <div class="section__content section__content--p30">
-        <p>
-            <button class="btn btn-dark" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-            Choose device
-            </button>
-        </p>
-        <div class="collapse" id="collapseExample">
+    <div class="container-fluid">
+            <div class="row m-b-30">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-1">Device Analyser</h2>
+                    </div>
+                </div>
+            </div>
             <div class="card card-body">
-                <form>
-                    <input type="hidden" name="meter_id" value="{{ meter_id }}">
+                <form action="{% url 'device_simulator' %}" method="post">
+                    {% csrf_token  %}
+                    <input type="hidden" name="meter-id" value="{{ meter_id }}">
                     <div class="form-group">
-                        <label for="appliance_id" class="col-sm-3 col-form-label">Choose Appliance</label>
-                        <select id="appliance_id" class="col-sm-6">
-                            {% for appliance in all_appliances %}
-                                <option value={{ appliance }} id="appliance"><a class="dropdown-item">{{ appliance }}</a></option>
+                        <label for="appliance-id">Choose Appliance</label>
+                        <select id="appliance-id" name="appliance-name">
+                            {% for appliance in all_devices %}
+                                <option value={{ appliance }} id="appliance">{{ appliance }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="time_of_day" class="col-sm-3 col-form-label">Choose Daily Usage</label>
-                        <select id="time_of_day" class="col-sm-6">
+                        <label for="id-time-of-day">Choose Daily Usage</label>
+                        <select id="id-time-of-day" name="time-of-day">
                             <option>1</option>
                             <option>2</option>
                             <option>3</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="work_frequency" class="col-sm-3 col-form-label">Choose weekly Usage</label>
-                        <select id="work_frequency" class="col-sm-6">
+                        <label for="id-weekly-usage">Choose weekly Usage</label>
+                        <select id="id-weekly-usage" name="weekly-usage">
                             <option>1</option>
                             <option>2</option>
                             <option>3</option>
                         </select>
                     </div>
-                    <fieldset disabled>
-                        <div class="form-group">
-                            <label for="disabledTextInput" class="col-sm-3 col-form-label">Power of appliance</label>
-                            <select id="work_frequency" class="col-sm-6">
-                                <option>peak of appliance power</option>
-                            </select>
-                        </div>
-                    </fieldset>
+                    <div class="form-group">
+                        <label for="id-power-appliance">Power of appliance</label>
+                        <select id="id-power-appliance" name="power-appliance">
+                            <option>Peak of appliance power</option>
+                        </select>
+                    </div>
                     <div>
-                        <a href={{ request.path }}?appliance={{ appliance }}><button type="submit" class="btn btn-dark" >Submit</button></a>
+                        <button type="submit" class="btn btn-info" >Submit</button>
                     </div>
                 </form>
             </div>
         </div>
+        {% if simulation %}
         <div class="container-fluid">
-            <div class="row m-t-25">
-                <div class="col-sm-6 col-lg-3">
-                    <div class="overview-item overview-item--c2">
-                        <div class="overview__inner">
-                            <div class="overview-box clearfix">
-                                <div class="icon">
-                                    <i class="zmdi zmdi-account-o"></i>
-                                </div><br>
-                                <div class="text">
-                                    <h2>{{ dif_bill }}</h2>
-                                    <span>New Bill</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="text">
+                <h3>New Bill: {{ dif_bill }}</h3>
             </div>
         </div>
-        <form>
-          <div class="form-group row">
-            <label for="staticAppliance" class="col-sm-2 col-form-label">Appliance list:</label>
-            <div class="col-sm-10">
-                <div class="dropdown show">
-                    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {{ appliance_id }}
-                    </a>
-                    <div class="dropdown-menu" style="overflow-y: scroll" aria-labelledby="dropdownMenuLink">
-                        {% for appliance in all_appliances %}
-                            <a class="dropdown-item"  href={{ request.path }}?appliance={{ appliance }}>{{ appliance }}</a>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-          </div>
-        </form>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

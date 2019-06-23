@@ -52,25 +52,6 @@ def get_name_tariff(tariff: TariffType):
     elif tariff == TariffType.THREE_PERIOD:
         return "Three-Period"
 
-def get_device_id_from_query_parm(request):
-    if "device_id" not in request.GET:
-        return "Electric Vehicle"
-    else:
-        return request.GET["device_id"]
-
-def get_device_daily_from_query_parm(request):
-    if "device_daily" not in request.GET:
-        return 1
-    else:
-        return request.GET["device_daily"]
-
-def get_device_weekly_from_query_parm(request):
-    if "device_weekly" not in request.GET:
-        return 1
-    else:
-        return request.GET["device_weekly"]
-
-
 def get_power_grouped_by_days(power_data: pd.DataFrame) -> pd.DataFrame:
     return power_data.groupby(power_data.index.strftime('%D')).sum().values.flatten()
 
@@ -219,9 +200,6 @@ def get_parameters_device_simulator(meter_id, device_id, day_times, week_times):
             "new_bill": round(new_bill.get_total(), 2),
             "dif_bill": round(new_bill.get_total()-old_bill.get_total(), 2),
             "best_contracted_power": best_contracted_power,
-            "all_meters": meters_info.get_all_meters(),
-            "meter_id": meter_id,
-            "all_devices": device_signalsize.columns.to_list(),
             "device_id": device_id,
             "max_per_day": [i+1 for i in range(step_d)],
             "max_per_week": [i+1 for i in range(7)],
@@ -279,10 +257,20 @@ def pv(request):
 @login_required
 def device_simulator(request):
     meter_id = get_meter_id_from_query_parm(request)
-    device_id = get_device_id_from_query_parm(request)
-    device_daily = get_device_daily_from_query_parm(request)
-    device_weekly = get_device_weekly_from_query_parm(request)
-    param=get_parameters_device_simulator(meter_id, device_id, device_daily, device_weekly)
+
+    param = {"all_meters": meters_info.get_all_meters(), "meter_id": meter_id, "simulation": request.method != "GET",
+             "all_devices": device_signalsize.columns.to_list()}
+
+    if request.method == "GET":
+        render(request, "device_simulator.html", param)
+    else:
+        appliance_name = request.POST["appliance-name"]
+        time_of_day = request.POST["time-of-day"]
+        weekly_usage = request.POST["weekly-usage"]
+        power_appliance = request.POST["power-appliance"]
+
+        #TODO: Add info
+        #param = get_parameters_device_simulator(meter_id, device_id, device_daily, device_weekly)
 
     return render(request, "device_simulator.html", param)
 
