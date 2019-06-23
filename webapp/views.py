@@ -1,4 +1,5 @@
 import datetime
+import os
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -30,6 +31,9 @@ device_signalsize = CSVDataLoader(settings.RESOURCES + "/device_signalsize.csv")
 
 calculator = BillingCalculator(tariff_data_load, tarriff_periods)
 recommender_tariff = TariffRecommender(tariff_data_load, tarriff_periods)
+
+appliance_data = pd.read_csv(os.path.join(settings.RESOURCES, "appliances.csv"), \
+        parse_dates=["datetime"]).set_index("datetime")
 
 TODAY = datetime.datetime(2018, 9, 16, 23, 59)
 START_MONTH = TODAY.replace(day=1)
@@ -107,8 +111,15 @@ def get_parameters_period_overview(meter_id: str, period_start: datetime, period
     billing_period_month_last_year = round(calculator.compute_total_cost(power_period_last_year,
                                                                          meter_info.contracted_power,
                                                                          meter_info.tariff).get_total(), 2)
-    appliances_label = ["MicroWave", "Fridge", "Oven", "Air-Condit", "Heater", "TV", "Hair Dyer"]
-    appliances_data = [90, 120, 400, 30, 200, 250, 330]
+    if meter_id == "meter_EDP":
+        x = appliance_data[START_MONTH:TODAY].sum(axis=0)
+        percentage = dict(map(lambda i: (i[0], 100*i[1]/x[0]), x[1:].items()))
+        percentage["others"] = 100-np.sum(list(percentage.values()))
+        appliances_label = list(percentage.keys())
+        appliances_data = list(map(lambda x: round(x,1 ), percentage.values()))
+    else:
+        appliances_label = ["Others"]
+        appliances_data = [100]
 
     # FIXME: Get prediction for the rest of the month
     prediction = filter_power_by_date(power_loader.get_power_meter_id(meter_id),
