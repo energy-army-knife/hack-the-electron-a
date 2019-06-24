@@ -31,7 +31,7 @@ device_signalsize = CSVDataLoader(settings.RESOURCES + "/device_signalsize.csv")
 calculator = BillingCalculator(tariff_data_load, tarriff_periods)
 recommender_tariff = TariffRecommender(tariff_data_load, tarriff_periods)
 
-TODAY = datetime.datetime(2018, 9, 16, 23, 59)
+TODAY = datetime.datetime(2018, 9, 30, 23, 59)
 START_MONTH = TODAY.replace(day=1)
 
 PREVIOUS_MONTH_END = START_MONTH - datetime.timedelta(days=1)
@@ -112,27 +112,28 @@ def get_parameters_period_overview(meter_id: str, period_start: datetime, period
 
     # FIXME: Get prediction for the rest of the month
     prediction = filter_power_by_date(power_loader.get_power_meter_id(meter_id),
-                                      start_datetime=TODAY.replace(day=TODAY.day + 1),
-                                      end_datetime=TODAY.replace(day=30))
+                                      start_datetime=datetime.datetime(2018, 8, 1),
+                                      end_datetime=datetime.datetime(2018, 8, 30))
 
     prediction_group_month = get_power_grouped_by_days(prediction)
 
     spent_period_overview_label, spent_period_overview_data = get_power_grouped_by_days(power_loader_meter)
 
-    predict_dataset = {"label": "prediction", "x": list(range(15, 15 + len(prediction_group_month[0]))),
+    predict_dataset = {"label": "10-2018 (Expected)", "x": list(range(len(spent_period_overview_label))),
                        "y": prediction_group_month[1],
-                       "color": "#00000"}
+                       "color": "#00000", "doted": "true"}
 
     last_year_month_dataset = {"label": same_period_last_year_start.strftime("%m-%Y"),
                                "x": list(range(len(spent_period_overview_label))),
-                               "y": get_power_grouped_by_days(power_period_last_year)[1], "color": "rgba(0,161,2,0.5)"}
+                               "y": get_power_grouped_by_days(power_period_last_year)[1], "color": "rgba(0,161,2,0.5)",
+                               "doted": "false"}
 
     current_month_dataset = {"label": period_start.strftime("%m-%Y"),
                              "x": list(range(len(spent_period_overview_label))),
                              "y": spent_period_overview_data,
-                             "color": "#0063BC"}
+                             "color": "#0063BC", "doted": "false"}
 
-    datasets_overview = [last_year_month_dataset, current_month_dataset]
+    datasets_overview = [last_year_month_dataset, current_month_dataset, predict_dataset]
 
     param = {"contracted_power": meter_info.contracted_power,
              "mean_load": round(power_loader_meter.mean().values[0] / 1000, 2),

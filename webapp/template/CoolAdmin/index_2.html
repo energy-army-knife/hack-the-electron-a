@@ -34,18 +34,33 @@
             for (i = 0; i < datasets_overview[j]["x"].length; i++) {
             data.push({x: datasets_overview[j]["x"][i], y: datasets_overview[j]["y"][i]})
           }
-
-          datasets_overview_month.push({
-            data: data,
-            label: datasets_overview[j]["label"],
-            borderColor: datasets_overview[j]["color"],
-            backgroundColor: 'transparent',
-            borderWidth: 3.5,
-            pointStyle: 'circle',
-            pointRadius: 0,
-            pointBorderColor: 'transparent',
-            pointBackgroundColor: datasets_overview[j]["color"],
-          });
+            if (datasets_overview[j]["doted"] == "true") {
+                datasets_overview_month.push({
+                    data: data,
+                    label: datasets_overview[j]["label"],
+                    borderColor: datasets_overview[j]["color"],
+                    backgroundColor: 'transparent',
+                    borderDash: [5, 5],
+                    borderWidth: 3.5,
+                    pointStyle: 'circle',
+                    pointRadius: 0,
+                    pointBorderColor: 'transparent',
+                    pointBackgroundColor: datasets_overview[j]["color"],
+                });
+            }
+            else {
+                datasets_overview_month.push({
+                    data: data,
+                    label: datasets_overview[j]["label"],
+                    borderColor: datasets_overview[j]["color"],
+                    backgroundColor: 'transparent',
+                    borderWidth: 3.5,
+                    pointStyle: 'circle',
+                    pointRadius: 0,
+                    pointBorderColor: 'transparent',
+                    pointBackgroundColor: datasets_overview[j]["color"],
+                });
+            }
         }
 
 
@@ -87,26 +102,29 @@
                         <div class="au-card"  style="height: 100%">
                             <div class="au-card-inner">
                                 <div class="plot-position">
-                                    {% if percentage_bill == 0 %}
-                                    {% elif billing_period_month_last_year < billing_period_month%}
-                                    <div style="margin: auto; width: 30%; display: flex">
-                                        <img src="{% static "images/icon/up.png" %}" alt="Billing is higher" style="padding-right: 10px; height: 35px">
-                                        <h1 style="color: #ff1a00">{{ percentage_bill }}%</h1>
+                                    <div class="row">
+                                        {% if percentage_bill == 0 %}
+                                        {% elif billing_period_month_last_year < billing_period_month%}
+                                        <div class="col-12"  style="margin: auto; width: 30%; display: flex">
+                                            <p>Agost-Sept</p>
+                                            <img src="{% static "images/icon/up.png" %}" alt="Billing is higher" style="padding-right: 10px; height: 20px">
+                                            <h3 style="color: #ff1a00">{{ percentage_bill }}%</h3>
+                                        </div>
+                                        <div class="col-12"  style="margin: auto; width: 30%; display: flex">
+                                            <p>Sept-Out (Expected)</p>
+                                            <img src="{% static "images/icon/up.png" %}" alt="Billing is higher" style="padding-right: 10px; height: 20px">
+                                            <h3 style="color: #ff1a00">{{ percentage_bill }}%</h3>
+                                        </div>
+                                        {% elif billing_period_month_last_year > billing_period_month%}
+                                        <div class="col-12" style="margin: auto; width: 30%; display: flex">
+                                            <h3>Sept-Out (Expected)</h3>
+                                            <img src="{% static "images/icon/down.png" %}" alt="Billing is lower" style="padding-right: 10px; height: 35px">
+                                            <h3 style="color: #00a102">{{ percentage_bill }}%</h3>
+                                        </div>
+                                        {% endif %}
                                     </div>
-                                    {% elif billing_period_month_last_year > billing_period_month%}
-                                    <div style="margin: auto; width: 30%; display: flex">
-                                        <img src="{% static "images/icon/down.png" %}" alt="Billing is lower" style="padding-right: 10px; height: 35px">
-                                        <h1 style="color: #00a102">{{ percentage_bill }}%</h1>
-                                    </div>
-                                    {% endif %}
                                     <div>
                                         <canvas id="barChart"></canvas>
-                                    </div>
-
-                                    <div class="chart-note-wrap">
-                                        <div class="chart-note mr-0 d-block">
-                                            <p>The values in this plot are both from the same time period.</p>
-                                        </div>
                                     </div>
 
                                 </div>

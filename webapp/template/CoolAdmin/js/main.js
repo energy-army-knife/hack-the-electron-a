@@ -1323,11 +1323,11 @@ $(document).ready(function() {
           type: 'bar',
           defaultFontFamily: 'Poppins',
           data: {
-            labels: [last_year_cost_label, current_cost_label],
+            labels: [last_year_cost_label, current_cost_label, "10-2018 (Expected)"],
             datasets: [
               {
                 label: "Cost",
-                data: [last_year_cost, current_cost],
+                data: [last_year_cost, current_cost, 200],
                 borderColor: "rgba(0, 123, 255, 0.9)",
                 borderWidth: "0",
                 backgroundColor: "rgba(0, 123, 255, 0.5)",
