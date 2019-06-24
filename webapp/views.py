@@ -28,6 +28,8 @@ solar_preprocessed_data = CSVDataLoader(settings.RESOURCES + "/solar.csv", sep='
 
 device_signal = CSVDataLoader(settings.RESOURCES + "/device_signal.csv").data_frame.drop(['Unnamed: 0'], axis=1)
 device_signalsize = CSVDataLoader(settings.RESOURCES + "/device_signalsize.csv").data_frame.drop(['Unnamed: 0'], axis=1)
+prediction_data_raw = CSVDataLoader(settings.RESOURCES + "/load_pwr_only_predict.csv").data_frame.set_index(['Unnamed: 0'])
+prediction_data_raw.index = pd.to_datetime(prediction_data_raw.index)
 
 calculator = BillingCalculator(tariff_data_load, tarriff_periods)
 recommender_tariff = TariffRecommender(tariff_data_load, tarriff_periods)
@@ -35,7 +37,7 @@ recommender_tariff = TariffRecommender(tariff_data_load, tarriff_periods)
 appliance_data = pd.read_csv(os.path.join(settings.RESOURCES, "appliances.csv"), parse_dates=["datetime"]).set_index(
     "datetime")
 
-TODAY = datetime.datetime(2018, 8, 31, 23, 59)
+TODAY = datetime.datetime(2018, 9, 30, 23, 59)
 START_MONTH = TODAY.replace(day=1, hour=0, minute=0)
 
 PREVIOUS_MONTH_END = START_MONTH - datetime.timedelta(days=1)
@@ -172,9 +174,9 @@ def get_parameters_period_overview(meter_id: str, period_start: datetime, period
         1]).replace(hour=23,
                     minute=59)
 
-    prediction_power_data = filter_power_by_date(power_loader.get_power_meter_id(meter_id),
+    prediction_power_data = pd.DataFrame(filter_power_by_date(prediction_data_raw[meter_id],
                                                  start_datetime=prediction_start_date,
-                                                 end_datetime=prediction_end_date)
+                                                 end_datetime=prediction_end_date))
 
     cost_prediction = calculator.compute_total_cost(prediction_power_data, meter_info.contracted_power,
                                                     meter_info.tariff).get_total()
@@ -361,8 +363,8 @@ def device_simulator(request):
         weekly_usage = int(request.POST["weekly-usage"])
         # power_appliance = request.POST["power-appliance"]
 
-        start_datetime = PREVIOUS_MONTH_START
-        end_datetime = PREVIOUS_MONTH_END
+        start_datetime = START_MONTH
+        end_datetime = TODAY
 
         meter_info = meters_info.get_meter_id_contract_info(meter_id)
         calculator = BillingCalculator(tariff_data_load, tarriff_periods)
@@ -375,6 +377,10 @@ def device_simulator(request):
 
         if time_of_day > step_d:
             time_of_day = step_d
+            param["warning"] = "Daily usage exceeds equipment capacity, it was set to the maximum: {}".format(time_of_day)
+        else:
+            param["warning"] = ""
+
         if step_d % 2 == 0:
             start_d = int((step_d / 2) - ((time_of_day + 1) // 2))
         else:
@@ -403,6 +409,19 @@ def device_simulator(request):
             active_m.extend(active_w)
 
         device_data[meter_id] = active_m[:power_data.shape[0]]
+
+        power_overview_label, power_overview_data = get_power_grouped_by_days(power_data)
+        device_overview_label, device_overview_data = get_power_grouped_by_days(device_data)
+
+        x_2 = power_overview_label
+        y_2 = power_overview_data
+        x_3 = device_overview_label
+        y_3 = device_overview_data
+
+        dataset_y2 = {"label": "Current power usage ({} to {})".format(str(start_datetime.date()),str(end_datetime.date())), "x": x_2, "y": y_2, "color": "#0063bc", "doted": "false"}
+        dataset_y3 = {"label": "Equipment power usage", "x": x_3, "y": y_3, "color": "#000000", "doted": "true"}
+        datasets_overview = [dataset_y3, dataset_y2]
+
         old_bill = calculator.compute_total_cost(power_data, meter_info.contracted_power, meter_info.tariff)
 
         max_power = power_data[meter_id].max() + device_data[meter_id].max()
@@ -412,38 +431,16 @@ def device_simulator(request):
 
         param.update(default_parameters(meter_id))
 
-        #TODO: Add here real values to plot!
-        x_2 = list(range(20))
-        y_2 = [el ** 2 for el in range(len(x_2))]
-        x_3 = list(range(30))
-        y_3 = [el * 3 for el in range(len(x_3))]
-
-        dataset_y2 = {"label": "y2", "x": x_2, "y": y_2, "color": "#00000", "doted": "true"}
-        dataset_y3 = {"label": "y3", "x": x_3, "y": y_3, "color": "#FFA500", "doted": "false"}
-
-        datasets_overview = [dataset_y3, dataset_y2]
-
         param["datasets_overview"] = datasets_overview
-
         param["old_bill"] = round(old_bill.get_total(), 2)
         param["new_bill"] = round(new_bill.get_total(), 2)
         param["dif_bill"] = round(new_bill.get_total() - old_bill.get_total(), 2)
         param["best_contracted_power"] = best_contracted_power
-
-        # param["max_per_day"] = [i+1 for i in range(step_d)]
-        # param["max_per_week"] = [i+1 for i in range(7)]
-        # param["peak_power"] = device_data[meter_id].max()
-        # param["plot_devices"] = plot_var([device_data], runtime=1, legend_name=[appliance_name])
         param["appliance_name"] = appliance_name
         param["time_of_day"] = time_of_day
         param["weekly_usage"] = weekly_usage
 
         param["power_appliance"] = round(device_data[meter_id].max() / 1000, 1)
-
-        # TODO: Add warning here! If there is no messages to display leave it empty ""
-        param["warning"] = ""
-        # TODO: Add info
-        # param = get_parameters_device_simulator(meter_id, appliance_name, time_of_day, weekly_usage)
 
     return render(request, "device_simulator.html", param)
 
