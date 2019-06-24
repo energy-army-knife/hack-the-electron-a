@@ -16,6 +16,10 @@ from src.tariff_recommender import TariffRecommender
 import pandas as pd
 import numpy as np
 
+BATTERY_CAPACITY = 4500  # Wh
+BATTERY_POWER = 2500  # W
+BATTERY_COST = 4800
+
 meters_info = MetersInformation(settings.RESOURCES + "/dataset_index.csv")
 power_loader = PowerDataLoader(settings.RESOURCES + "/load_pwr.csv")
 tarriff_periods = TariffPeriods(settings.RESOURCES + "/HackTheElectron dataset support data/Tariff-Periods-Table 1.csv")
@@ -333,13 +337,10 @@ def pv(request):
     for i in set(df_renewals['n_batteries']):
         bat_sep.append(df_renewals.loc[df_renewals.n_batteries == i].to_dict('records'))
 
-    # dic_pv = pv_savings(meter_id)
-    # dic_pv_and_bat = pv_and_battery_savings(meter_id)
-
     cost = 0
     if n_panel:
         cost = 100 + 600 * n_panel
-    cost += 3500 * n_battery
+    cost += BATTERY_COST * n_battery
 
     param = {"active_tab_photovoltaic": "class=active has-sub", "total_load": total_load, "pv_and_bat_data": bat_sep,
              "load_from_grid": load_from_grid, "x_axis": x_axis, "generated_PV_waisted": generated_PV_waisted,
@@ -565,61 +566,7 @@ def notifications(request):
     return render(request, 'notifications.html')
 
 
-def pv_savings(meter_id):
-    """calculated series with several pv installation scenarios"""
-    meter_power = power_loader.get_power_meter_id(meter_id)
-    df_solar = pd.concat([meter_power, pv_power], axis=1)
-    # df_solar_nozeros = df_solar.loc[df_solar.EPV != 0]
-    df_solar['n_panels'] = df_solar.apply(lambda row: row[meter_id] / row.EPV if row.EPV else 0, axis=1)
-
-    bill_0panel = calculator.compute_total_cost(meter_power,
-                                                contracted_power=meters_info.get_meter_id_contract_info(
-                                                    meter_id).contracted_power,
-                                                tariff=meters_info.get_meter_id_contract_info(
-                                                    meter_id).tariff).get_total()
-
-    temp_vec = []
-
-    for percentile in [10, 20, 30, 40, 50, 60, 70, 80, 90]:
-
-        n_panel = int(np.nanpercentile(df_solar[df_solar.EPV != 0].n_panels, percentile))
-
-        if n_panel == 0:
-            continue
-
-        # subtract the solar power of n panels to the 2 year load profile
-        df_temp = (df_solar[meter_id] - n_panel * df_solar.EPV).to_frame(meter_id)
-        df_temp = df_temp[meter_id].apply(lambda x: x if x > 0 else 0)
-
-        # adjust for contract and tariff changes with each new load profile
-        contract = recommend_contract(df_temp, 99.99)
-        tariff = recommender_tariff.get_best_tariff(df_temp.to_frame(), contract)[0]
-
-        # calculate what would be the bill if there were n panels
-        bill = calculator.compute_total_cost(power_data=df_temp.to_frame(),
-                                             contracted_power=contract,
-                                             tariff=tariff).get_total()
-
-        # panel fixed and per panel instalation cost
-        bill_installation = 100 + 600 * n_panel
-
-        # total saving with n panels in relation to 0 panel bill (per year)
-        bill_savings_year = (bill_0panel - bill) / 2
-
-        # time until savings reach the installation cost
-        time_till_paid_panels = bill_installation / bill_savings_year
-
-        temp = {'n_panels': n_panel,
-                'installation_cost': bill_installation,
-                'savings per year': bill_savings_year,
-                'time for return': time_till_paid_panels}
-
-        temp_vec.append(temp)
-
-    return temp_vec
-
-
-def calc_bat(capacity, load, threshold=0):
+def calc_bat(capacity, load, threshold=0, max_load=2500):
     """auxiliar function to calculate battery <-> load transfers"""
     new_cap = []
     new_load = []
@@ -629,6 +576,11 @@ def calc_bat(capacity, load, threshold=0):
     for c, l in zip(capacity, load):
         current_load = 0
         waisted = 0
+        if cumsum > max_load:
+            cumsum_temp = max_load
+        else:
+            cumsum_temp = cumsum
+
         if c > 0:
             if threshold and cumsum + c > threshold:
                 waisted = (cumsum + c) - threshold
@@ -636,15 +588,20 @@ def calc_bat(capacity, load, threshold=0):
             else:
                 cumsum += c
         elif l > 0:
-            if l > cumsum:
-                current_load = l - cumsum
-                cumsum = 0
-            elif l < cumsum:
+            if l > cumsum_temp:
+                current_load = l - cumsum_temp
+                cumsum_temp = 0
+            elif l < cumsum_temp:
                 current_load = 0
-                cumsum -= l
+                cumsum_temp -= l
             else:
                 current_load = 0
-                cumsum = 0
+                cumsum_temp = 0
+
+            if cumsum > max_load:
+                cumsum = cumsum - max_load + cumsum_temp
+            else:
+                cumsum = cumsum_temp
 
         new_cap.append(cumsum)
         new_load.append(current_load)
@@ -653,41 +610,36 @@ def calc_bat(capacity, load, threshold=0):
 
 
 def renewal_generation(meter_id, n_panel, n_battery):
-    BATTERY_CAPACITY = 2000  # Wh
 
     meter_power = power_loader.get_power_meter_id(meter_id)
     df_solar = pd.concat([meter_power, pv_power], axis=1)
 
     df_temp = df_solar[meter_id].to_frame()
-    df_temp['load_with_pv'] = (df_solar[meter_id] - n_panel * df_solar.EPV).to_frame(meter_id)
+    df_temp['load_with_pv'] = (df_solar[meter_id] - n_panel * 0.86 * df_solar.EPV).to_frame(meter_id)
     # df_temp['load_with_pv'] = df_temp[meter_id].apply(lambda x: x if x > 0 else 0)
     df_temp['injection'] = df_temp['load_with_pv'].apply(lambda x: x if x < 0 else 0)
     df_temp['consumed_generation'] = df_temp.apply(lambda row:
-                                                   row[meter_id] - row.load_with_pv if row.load_with_pv >= 0 else row[
-                                                       meter_id],
+                                                   row[meter_id]-row.load_with_pv if row.load_with_pv >= 0 else row[meter_id],
                                                    axis=1)
     if n_battery:
-        df_temp['bat'] = df_temp['injection'].apply(lambda x: x * -1)
+        df_temp['bat'] = df_temp['injection'].apply(lambda x: x*-1)
     else:
         df_temp['bat'] = df_temp['injection'].apply(lambda x: 0)
 
     df_temp['bat_real'], df_temp['load_real'], df_temp['waisted'] = calc_bat(df_temp['bat'].to_list(),
                                                                              df_temp['load_with_pv'],
-                                                                             threshold=BATTERY_CAPACITY * n_battery)
+                                                                             threshold=BATTERY_CAPACITY * n_battery,
+                                                                             max_load=BATTERY_POWER)
     return df_temp
 
 
 def pv_and_battery_savings(meter_id):
     """calculated series with several pv and battery installation scenarios"""
 
-    BATTERY_CAPACITY = 2000  # Wh
-    BATTERY_POWER = 1500  # W
-    BATTERY_COST = 3500
-
     meter_power = power_loader.get_power_meter_id(meter_id)
     df_solar = pd.concat([meter_power, pv_power], axis=1)
     # df_solar_nozeros = df_solar.loc[df_solar.EPV != 0]
-    df_solar['n_panels'] = df_solar.apply(lambda row: row[meter_id] / row.EPV if row.EPV else 0, axis=1)
+    df_solar['n_panels'] = df_solar.apply(lambda row: row[meter_id] / row.EPV / 0.86 if row.EPV else 0, axis=1)
 
     bill_0panel = calculator.compute_total_cost(meter_power,
                                                 contracted_power=meters_info.get_meter_id_contract_info(
@@ -707,16 +659,17 @@ def pv_and_battery_savings(meter_id):
         while True:
 
             df_temp = df_solar[meter_id].to_frame()
-            df_temp['load_with_pv'] = (df_solar[meter_id] - n_panel * df_solar.EPV).to_frame(meter_id)
+            df_temp['load_with_pv'] = (df_solar[meter_id] - n_panel * 0.86 * df_solar.EPV).to_frame(meter_id)
             # df_temp['load_with_pv'] = df_temp[meter_id].apply(lambda x: x if x > 0 else 0)
             if n_battery:
                 df_temp['bat'] = df_temp['load_with_pv'].apply(lambda x: x * -1 if x < 0 else 0)
             else:
                 df_temp['bat'] = df_temp['load_with_pv'].apply(lambda x: 0)
 
-            df_temp['bat_real'], df_temp['load_real'], _ = calc_bat(df_temp['bat'].to_list(),
-                                                                    df_temp['load_with_pv'],
-                                                                    threshold=BATTERY_CAPACITY * n_battery)
+            df_temp['bat_real'],  df_temp['load_real'], _ = calc_bat(df_temp['bat'].to_list(),
+                                                                     df_temp['load_with_pv'],
+                                                                     threshold=BATTERY_CAPACITY*n_battery,
+                                                                     max_load=BATTERY_POWER)
 
             # adjust for contract and tariff changes with each new load profile
             contract = recommend_contract(df_temp['load_real'], 99.99)
@@ -745,7 +698,7 @@ def pv_and_battery_savings(meter_id):
 
             temp_vec.append(temp)
 
-            if df_temp['bat_real'].max() < BATTERY_CAPACITY * n_battery or time_till_paid_panels > 20:
+            if df_temp['bat_real'].max() < BATTERY_CAPACITY*n_battery or time_till_paid_panels > 30:
                 break
             else:
                 n_battery += 1
@@ -756,8 +709,8 @@ def pv_and_battery_savings(meter_id):
 if __name__ == "__main__":
 
     temp = renewal_generation(meter_id='meter_0',
-                              n_panel=int(50),
-                              n_battery=int(3))
+                              n_panel=int(10),
+                              n_battery=int(1))
     exit(0)
     # meter_id = 'meter_64'
     dic = pd.DataFrame()
