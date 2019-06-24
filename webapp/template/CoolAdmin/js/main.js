@@ -171,18 +171,9 @@ $(document).ready(function() {
             datasets: datasets_overview_month
           },
           options: {
+
             responsive: true,
-            tooltips: {
-              mode: 'index',
-              titleFontSize: 12,
-              titleFontColor: '#000',
-              bodyFontColor: '#000',
-              backgroundColor: '#fff',
-              titleFontFamily: 'Poppins',
-              bodyFontFamily: 'Poppins',
-              cornerRadius: 3,
-              intersect: false,
-            },
+            tooltips: false,
             legend: {
               display: true,
               labels: {
