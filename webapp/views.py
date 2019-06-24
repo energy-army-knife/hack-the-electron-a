@@ -331,29 +331,23 @@ def pv(request):
         cost = 100 + 600 * n_panel
     cost += 3500 * n_battery
 
-    return render(request, "pv.html", {"active_tab_photovoltaic": "class=active has-sub",
-                                       "all_meters": meters_info.get_all_meters(),
-                                       "meter_id": meter_id,
-                                       "total_load": total_load,
-                                       "pv_and_bat_data": bat_sep,
-                                       "load_from_grid": load_from_grid,
-                                       "x_axis": x_axis,
-                                       "generated_PV_waisted": generated_PV_waisted,
-                                       "generated_PV_used": generated_PV_used,
-                                       "battery_used": battery_used,
-                                       "n_panel": n_panel,
-                                       "n_battery": n_battery,
-                                       "cost": cost,
-                                       "today": TODAY})
+    param = {"active_tab_photovoltaic": "class=active has-sub", "total_load": total_load, "pv_and_bat_data": bat_sep,
+             "load_from_grid": load_from_grid, "x_axis": x_axis, "generated_PV_waisted": generated_PV_waisted,
+             "generated_PV_used": generated_PV_used, "battery_used": battery_used, "n_panel": n_panel,
+             "n_battery": n_battery, "cost": cost}
+
+    param.update(default_parameters(meter_id))
+
+    return render(request, "pv.html", param)
 
 
 @login_required
 def device_simulator(request):
-    param = {"all_meters": meters_info.get_all_meters(), "simulation": request.method != "GET",
-             "all_devices": device_signalsize.columns.to_list()}
+    param = {"simulation": request.method != "GET", "all_devices": device_signalsize.columns.to_list()}
 
     if request.method == "GET":
-        param["meter_id"] = get_meter_id_from_query_parm(request)
+        meter_id = get_meter_id_from_query_parm(request)
+        param.update(default_parameters(meter_id))
         render(request, "device_simulator.html", param)
     else:
         meter_id = request.POST["meter-id"]
@@ -411,15 +405,30 @@ def device_simulator(request):
         new_bill = calculator.compute_total_cost(power_data, meter_info.contracted_power, meter_info.tariff)
         best_contracted_power = recommend_contract(max_power)
 
+        param.update(default_parameters(meter_id))
+
+        #TODO: Add here real values to plot!
+        x_2 = list(range(20))
+        y_2 = [el ** 2 for el in range(len(x_2))]
+        x_3 = list(range(30))
+        y_3 = [el * 3 for el in range(len(x_3))]
+
+        dataset_y2 = {"label": "y2", "x": x_2, "y": y_2, "color": "#00000", "doted": "true"}
+        dataset_y3 = {"label": "y3", "x": x_3, "y": y_3, "color": "#FFA500", "doted": "false"}
+
+        datasets_overview = [dataset_y3, dataset_y2]
+
+        param["datasets_overview"] = datasets_overview
+
         param["old_bill"] = round(old_bill.get_total(), 2)
         param["new_bill"] = round(new_bill.get_total(), 2)
         param["dif_bill"] = round(new_bill.get_total() - old_bill.get_total(), 2)
         param["best_contracted_power"] = best_contracted_power
+
         # param["max_per_day"] = [i+1 for i in range(step_d)]
         # param["max_per_week"] = [i+1 for i in range(7)]
         # param["peak_power"] = device_data[meter_id].max()
         # param["plot_devices"] = plot_var([device_data], runtime=1, legend_name=[appliance_name])
-        param["meter_id"] = meter_id
         param["appliance_name"] = appliance_name
         param["time_of_day"] = time_of_day
         param["weekly_usage"] = weekly_usage
@@ -479,8 +488,7 @@ def contract_subscription(request):
 
     saving_some_adj = round((current_price - calculator.compute_total_cost(meter_power, contracted_power_perc_some,
                                                                            meter_info.tariff).get_total()) / 2, 2)
-
-    return render(request, "contract_subscription.html", {"active_subscription": "class=active has-sub",
+    param = {"active_subscription": "class=active has-sub",
                                                           "no_adjustment_price": saving_no_adj,
                                                           "small_adjustment_price": saving_small_adj,
                                                           "medium_adjustment_price": saving_some_adj,
@@ -491,8 +499,6 @@ def contract_subscription(request):
                                                               100 - percentil_small_adjustment, 3),
                                                           "percentil_some_adjustments": round(
                                                               100 - percentil_some_adjustments, 2),
-                                                          "all_meters": meters_info.get_all_meters(),
-                                                          "meter_id": meter_id,
                                                           "labels_contract_power_by_month": labels_contract_power_by_month,
                                                           "max_contract_power_by_month": max_contract_power_by_month,
                                                           "contracted_powers_perc_values": recommended_contracted_powers_perc_values,
@@ -501,7 +507,10 @@ def contract_subscription(request):
                                                           "no_adjustment_price_contract": best_contracted_power,
                                                           "small_adjustment_price_contract": contracted_power_perc_small,
                                                           "medium_adjustment_price_contract": contracted_power_perc_some,
-                                                          })
+                                                          }
+    param.update(default_parameters(meter_id))
+
+    return render(request, "contract_subscription.html", param)
 
 
 @login_required
@@ -525,10 +534,8 @@ def tariff_subscription(request):
     two_tariff_months = [round(value[TariffType.TWO_PERIOD], 2) for month, value in costs_tariffs_month.items()]
     three_tariff_months = [round(value[TariffType.THREE_PERIOD], 2) for month, value in costs_tariffs_month.items()]
 
-    return render(request, "tariff_subscription.html", {"active_subscription": "class=active has-sub",
-                                                        "all_meters": meters_info.get_all_meters(),
+    param = {"active_subscription": "class=active has-sub",
                                                         "current_tariff": get_name_tariff(meter_info.tariff),
-                                                        "meter_id": meter_id,
                                                         "simple_tariff_savings": round(
                                                             (current_price - costs_tariffs[TariffType.SIMPLE]) / 2, 2),
                                                         "two_tariff_savings": round(
@@ -537,11 +544,12 @@ def tariff_subscription(request):
                                                         "three_tariff_savings": round(
                                                             (current_price - costs_tariffs[
                                                                 TariffType.THREE_PERIOD]) / 2, 2),
-                                                        "today": TODAY,
                                                         "simple_tariff_cross_months": simple_tariff_months,
                                                         "two_tariff_cross_months": two_tariff_months,
                                                         "three_tariff_cross_months": three_tariff_months,
-                                                        "months_tariff_label": label_tariff_months})
+                                                        "months_tariff_label": label_tariff_months}
+    param.update(default_parameters(meter_id))
+    return render(request, "tariff_subscription.html", param)
 
 
 def notifications(request):
