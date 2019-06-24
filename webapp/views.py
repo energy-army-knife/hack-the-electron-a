@@ -1,4 +1,5 @@
 import datetime
+import os
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -30,6 +31,10 @@ device_signalsize = CSVDataLoader(settings.RESOURCES + "/device_signalsize.csv")
 
 calculator = BillingCalculator(tariff_data_load, tarriff_periods)
 recommender_tariff = TariffRecommender(tariff_data_load, tarriff_periods)
+
+appliance_data = pd.read_csv(os.path.join(settings.RESOURCES, "appliances.csv"), \
+        parse_dates=["datetime"]).set_index("datetime")
+
 
 TODAY = datetime.datetime(2018, 9, 30, 23, 59)
 START_MONTH = TODAY.replace(day=1)
@@ -107,8 +112,15 @@ def get_parameters_period_overview(meter_id: str, period_start: datetime, period
     billing_period_month_last_year = round(calculator.compute_total_cost(power_period_last_year,
                                                                          meter_info.contracted_power,
                                                                          meter_info.tariff).get_total(), 2)
-    appliances_label = ["MicroWave", "Fridge", "Oven", "Air-Condit", "Heater", "TV", "Hair Dyer"]
-    appliances_data = [90, 120, 400, 30, 200, 250, 330]
+    if meter_id == "meter_EDP":
+        x = appliance_data[START_MONTH:TODAY].sum(axis=0)
+        percentage = dict(map(lambda i: (i[0], 100*i[1]/x[0]), x[1:].items()))
+        percentage["others"] = 100-np.sum(list(percentage.values()))
+        appliances_label = list(percentage.keys())
+        appliances_data = list(map(lambda x: round(x,1 ), percentage.values()))
+    else:
+        appliances_label = ["Others"]
+        appliances_data = [100]
 
     # FIXME: Get prediction for the rest of the month
     prediction = filter_power_by_date(power_loader.get_power_meter_id(meter_id),
@@ -169,72 +181,6 @@ def get_parameters_period_overview(meter_id: str, period_start: datetime, period
                                  billing_period_month_last_year - billing_period.get_total()) * 100 / billing_period_month_last_year))}
 
     return param
-
-
-def get_parameters_device_simulator(meter_id, device_id, day_times, week_times):
-
-    start_datetime = PREVIOUS_MONTH_START
-    end_datetime = PREVIOUS_MONTH_END
-
-    meter_info = meters_info.get_meter_id_contract_info(meter_id)
-    calculator = BillingCalculator(tariff_data_load, tarriff_periods)
-    power_data = power_loader.get_power_meter_id(meter_id).loc[start_datetime:end_datetime]
-
-    device_data=power_data.copy()
-
-    #device_id = device_id if isinstance(device_id, list) else [device_id]
-    #day_time = day_times if isinstance(day_times, list) else [day_times]
-    #week_times = week_times if isinstance(week_times, list) else [week_times]
-
-    step_d=96//device_signalsize[device_id][0]
-    start_w=4-(week_times+1)//2
-
-    if step_d%2 == 0:
-        start_d=int((step_d/2)-((day_times+1)//2))
-    else:
-        start_d=int(((step_d+1)/2)-((day_times+1)//2))
-
-    active_h=device_signal[device_id][:96//step_d].to_list()
-    inactive_h=[0 for i in range(96//step_d)]
-    inactive_d=[0 for i in range(96)]
-
-    active_d=[]
-    for i in range(step_d):
-        if (i >= start_d) & (i < start_d+day_times):
-            active_d.extend(active_h)
-        else:
-            active_d.extend(inactive_h)
-
-    active_w=[]
-    for i in range(7):
-        if (i >= start_w) & (i < start_w+week_times):
-            active_w.extend(active_d)
-        else:
-            active_w.extend(inactive_d)
-
-    active_m=[]
-    for i in range(5):
-            active_m.extend(active_w)
-
-    device_data[meter_id]=active_m[:power_data.shape[0]]
-    old_bill = calculator.compute_total_cost(power_data, meter_info.contracted_power, meter_info.tariff)
-
-    max_power = power_data[meter_id].max()+device_data[meter_id].max()
-    power_data[meter_id]=power_data[meter_id]+device_data[meter_id]
-    new_bill = calculator.compute_total_cost(power_data, meter_info.contracted_power, meter_info.tariff)
-
-    best_contracted_power = recommend_contract(max_power)
-    return {"old_bill": round(old_bill.get_total(), 2),
-            "new_bill": round(new_bill.get_total(), 2),
-            "dif_bill": round(new_bill.get_total()-old_bill.get_total(), 2),
-            "best_contracted_power": best_contracted_power,
-            "device_id": device_id,
-            "max_per_day": [i+1 for i in range(step_d)],
-            "max_per_week": [i+1 for i in range(7)],
-            "peak_power": device_data[meter_id].max(),
-            "plot_devices": plot_var([device_data], runtime=1, legend_name=[device_id]),
-           }
-
 
 # Create your views here.
 @login_required
@@ -360,12 +306,75 @@ def device_simulator(request):
     else:
         meter_id = request.POST["meter-id"]
         appliance_name = request.POST["appliance-name"]
-        time_of_day = request.POST["time-of-day"]
-        weekly_usage = request.POST["weekly-usage"]
-        power_appliance = request.POST["power-appliance"]
+        time_of_day = int(request.POST["time-of-day"])
+        weekly_usage = int(request.POST["weekly-usage"])
+        #power_appliance = request.POST["power-appliance"]
+
+        start_datetime = PREVIOUS_MONTH_START
+        end_datetime = PREVIOUS_MONTH_END
+
+        meter_info = meters_info.get_meter_id_contract_info(meter_id)
+        calculator = BillingCalculator(tariff_data_load, tarriff_periods)
+        power_data = power_loader.get_power_meter_id(meter_id).loc[start_datetime:end_datetime]
+
+        device_data=power_data.copy()
+
+        step_d=96//device_signalsize[appliance_name][0]
+        start_w=4-(weekly_usage+1)//2
+
+        if time_of_day > step_d:
+            time_of_day = step_d
+        if step_d%2 == 0:
+            start_d=int((step_d/2)-((time_of_day+1)//2))
+        else:
+            start_d=int(((step_d+1)/2)-((time_of_day+1)//2))
+
+        active_h=device_signal[appliance_name][:96//step_d].to_list()
+        inactive_h=[0 for i in range(96//step_d)]
+        inactive_d=[0 for i in range(96)]
+
+        active_d=[]
+        for i in range(step_d):
+            if (i >= start_d) & (i < start_d+time_of_day):
+                active_d.extend(active_h)
+            else:
+                active_d.extend(inactive_h)
+
+        active_w=[]
+        for i in range(7):
+            if (i >= start_w) & (i < start_w+weekly_usage):
+                active_w.extend(active_d)
+            else:
+                active_w.extend(inactive_d)
+
+        active_m=[]
+        for i in range(5):
+                active_m.extend(active_w)
+
+        device_data[meter_id]=active_m[:power_data.shape[0]]
+        old_bill = calculator.compute_total_cost(power_data, meter_info.contracted_power, meter_info.tariff)
+
+        max_power = power_data[meter_id].max()+device_data[meter_id].max()
+        power_data[meter_id]=power_data[meter_id]+device_data[meter_id]
+        new_bill = calculator.compute_total_cost(power_data, meter_info.contracted_power, meter_info.tariff)
+        best_contracted_power = recommend_contract(max_power)
+
+        param["old_bill"] = round(old_bill.get_total(), 2)
+        param["new_bill"] = round(new_bill.get_total(), 2)
+        param["dif_bill"] = round(new_bill.get_total()-old_bill.get_total(), 2)
+        param["best_contracted_power"] = best_contracted_power
+        #param["max_per_day"] = [i+1 for i in range(step_d)]
+        #param["max_per_week"] = [i+1 for i in range(7)]
+        #param["peak_power"] = device_data[meter_id].max()
+        #param["plot_devices"] = plot_var([device_data], runtime=1, legend_name=[appliance_name])
+        param["meter_id"] = meter_id
+        param["appliance_name"] = appliance_name
+        param["time_of_day"] = time_of_day
+        param["weekly_usage"] = weekly_usage
+        param["power_appliance"] = round(device_data[meter_id].max()/1000, 1)
 
         #TODO: Add info
-        #param = get_parameters_device_simulator(meter_id, device_id, device_daily, device_weekly)
+        #param = get_parameters_device_simulator(meter_id, appliance_name, time_of_day, weekly_usage)
 
     return render(request, "device_simulator.html", param)
 

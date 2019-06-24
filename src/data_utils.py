@@ -1,6 +1,10 @@
 import datetime
 
 import pandas as pd
+# has to be done before importing prophet
+import matplotlib
+matplotlib.use("Agg")
+
 from fbprophet import Prophet
 import datetime
 
