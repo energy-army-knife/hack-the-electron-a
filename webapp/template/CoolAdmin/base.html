@@ -46,7 +46,7 @@
 
 </head>
 
-<body class="animsition">
+<body>
     <div class="page-wrapper">
         <!-- HEADER MOBILE-->
         <header class="header-mobile d-block d-lg-none">
@@ -93,6 +93,7 @@
                                 <li>
                                 <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}">Contracted Power</a>
                                 </li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
@@ -136,6 +137,7 @@
                                 <li>
                                 <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}">Contracted Power</a>
                                 </li>
+                            </ul>
                         </li>
                     </ul>
                 </nav>
@@ -230,7 +232,6 @@
     <script src="{% static "vendor/slick/slick.min.js" %}">
     </script>
     <script src="{% static "vendor/wow/wow.min.js" %}"></script>
-    <script src="{% static "vendor/animsition/animsition.min.js" %}"></script>
     <script src="{% static "vendor/bootstrap-progressbar/bootstrap-progressbar.min.js" %}">
     </script>
     <script src="{% static "vendor/counter-up/jquery.waypoints.min.js" %}"></script>
