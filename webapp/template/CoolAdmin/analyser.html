@@ -31,29 +31,29 @@
                     </div>
                 </div>
             </div>
-            <form action="{% url 'analyser' %}?meter={{ meter_id }}" method="post">
-                {% csrf_token  %}
-                 <input type="hidden" name="meter_id" value="{{ meter_id }}">
-                <div class="form-group row">
-                  <label for="id-date-start" class="col-2 col-form-label">Date</label>
-                  <div class="col-3">
-                    <input class="form-control" type="date" value={{ period_start }} id="id-date-start" name="date-start">
-                  </div>
-                     <div class="col-3">
-                    <input class="form-control" type="date" value={{ period_end }} id="id-date-end" name="date-end">
-                  </div>
-                    <div>
-                    <button type="submit" class="btn btn-dark">Ok</button>
-                </div>
-                </div>
-            </form>
-
-
+            <div class="m-b-30">
+                <form action="{% url 'analyser' %}?meter={{ meter_id }}" method="post">
+                    {% csrf_token  %}
+                     <input type="hidden" name="meter_id" value="{{ meter_id }}">
+                    <div class="form-group row">
+                      <label for="id-date-start" class="col-2 col-form-label">Date</label>
+                      <div class="col-3">
+                        <input class="form-control" type="date" value={{ period_start }} id="id-date-start" name="date-start">
+                      </div>
+                         <div class="col-3">
+                        <input class="form-control" type="date" value={{ period_end }} id="id-date-end" name="date-end">
+                      </div>
+                        <div>
+                        <button type="submit" class="btn btn-dark">Ok</button>
+                    </div>
+                    </div>
+                </form>
+            </div>
+            <h1  class="m-b-30" style="text-align: center">{{ bill }} €</h1>
             <div class="row m-b-30">
                 <div class="col-5">
                     <div class="au-card" style="height: 100%">
                         <div class="au-card-inner" style="height: 100%">
-
                             <div class="plot-position">
                                 <div class="row no-gutters">
                                     <div class="col-4">
@@ -90,16 +90,6 @@
                                     </div>
                                 </div>
                             </div>
-                           {% if current_tariff != best_tariff %}
-                                <div class="alert alert-danger alert-position" role="alert" style="margin-top: 20px">
-                                  Tariff not optimized for your power consumption, click <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}" class="alert-link">here</a>.
-                                </div>
-                           {% else %}
-                               <div class="alert alert-success alert-position" role="alert" style="margin-top: 20px">
-                                  Congratulations! Your current tariff {{ current_tariff }} is optimized for your power consumption! Detailed info <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}" class="alert-link">here</a>.
-                                </div>
-                          {% endif %}
-
                       </div>
                     </div>
                 </div>
@@ -110,13 +100,7 @@
                         <div class="progress">
                           <div class="progress-bar" role="progressbar" style="width: {{ percentage_contracted_power_registered }}%;" aria-valuenow="{{ percentage_contracted_power_registered }}" aria-valuemin="0" aria-valuemax="100">{{ max_contracted_power_registered }}/{{ contracted_power }} kW</div>
                         </div>
-
                           <canvas id="power-mean-month"></canvas>
-                          {% if contracted_power != best_contracted_power %}
-                            <div class="alert alert-danger alert-position" role="alert">
-                              Contracted power {{ contracted_power }} is not optimized click <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}" class="alert-link">here</a>.
-                            </div>
-                        {% endif %}
                       </div>
                     </div>
                 </div>

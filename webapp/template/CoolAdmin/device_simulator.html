@@ -59,7 +59,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card card-body">
+            <div class="au-card m-b-30" style="width: 100%">
                 <form action="{% url 'device_simulator' %}?meter={{ meter_id }}" method="post">
                     {% csrf_token  %}
                     <input type="hidden" name="meter-id" value="{{ meter_id }}">
@@ -100,25 +100,38 @@
                     </div>
                 </form>
             </div>
-        </div>
-        {% if simulation %}
-        <div class="container-fluid">
-            <div class="card card-body">
+
+            {% if simulation %}
+
+            <div class="au-card m-b-30" style="width: 100%">
                 <div class="text">
-                    <h3>Equipment: {{ appliance_name }}</h3>
-                    <h5>( {{time_of_day}} times a day x {{weekly_usage}} times a week  -   peak power: {{ power_appliance }} kW )</h5>
-                </div>
-                <div class="p-3 border bg-light">
-                    <div class="text">
-                        <h3>Added value to your bill: {{ dif_bill }} €/month</h3><
+                    <h3 class="m-b-30" style="text-align: center">{{ appliance_name }}: <span style="color: #0063bc">{{ dif_bill }} €/month</span></h3>
+
+                    <div>
+                        {% if warning|length %}
+                            <div class="alert alert-secondary alert-position" role="alert" style="margin-top: 20px">
+                                  <p style="text-align: center">{{ warning }}</p>
+                            </div>
+
+                        {% endif %}
                     </div>
-                </div>
+                    <div class="row m-b-30">
+                        <div class="col-4">
+                            <h4 style="text-align: center">Daily a Day: {{time_of_day}}</h4>
+                        </div>
+                        <div class="col-4">
+                            <h4 style="text-align: center">Weekly Usage: {{weekly_usage}}</h4>
+                        </div>
+                        <div class="col-4">
+                            <h4 style="text-align: center">Peak Power: {{ power_appliance }} kW</h4>
+                        </div>
+                    </div>
                 <div>
                     <canvas id="overview-month-chart"></canvas>
                 </div>
             </div>
+            {% endif %}
         </div>
-        {% endif %}
     </div>
 </div>
 {% endblock %}

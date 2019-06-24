@@ -103,13 +103,14 @@ def get_parameters_analyser(meter_id: str, period_start: datetime, period_end: d
     power_loader_meter_hours_max = df_power_loader_meter_hours_max.values.flatten()
     billing_period = calculator.compute_total_cost(power_loader_meter, meter_info.contracted_power, meter_info.tariff)
     parm_pie_chart = get_param_pie_chart_peak(billing_period)
-
+    bill = round(billing_period.get_total(), 2)
     max_power_registered = min(round(power_loader_meter.max().values[0] / 1000, 2), meter_info.contracted_power)
 
     param = {"power_spent_by_hours_label": list(range(0, 24)),
             "power_loader_meter_hours_max": list(power_loader_meter_hours_max),
             "max_contracted_power_registered": max_power_registered,
-            "percentage_contracted_power_registered": max_power_registered * 100 / meter_info.contracted_power
+            "percentage_contracted_power_registered": max_power_registered * 100 / meter_info.contracted_power,
+            "bill": bill
              }
     param.update(parm_pie_chart)
     return param
@@ -241,7 +242,7 @@ def index(request):
     param.update(default_parameters(meter_id))
     param["active_tab_dashboard"] = "class=active has-sub"
 
-    return render(request, 'index_2.html', param)
+    return render(request, 'index.html', param)
 
 
 @login_required
@@ -255,8 +256,8 @@ def analyser(request):
         meter = get_meter_id_from_query_parm(request)
     else:
         meter = request.POST["meter_id"]
-        search_start = datetime.datetime.strptime(request.POST["date-start"], date_format)
-        search_end = datetime.datetime.strptime(request.POST["date-end"], date_format)
+        search_start = datetime.datetime.strptime(request.POST["date-start"], date_format).replace(hour=0, minute=0)
+        search_end = datetime.datetime.strptime(request.POST["date-end"], date_format).replace(hour=23, minute=59)
 
     param = get_parameters_analyser(meter, search_start, search_end)
     default_parm = default_parameters(meter)
@@ -265,12 +266,15 @@ def analyser(request):
     param["active_tab_analyser"] = "class=active has-sub"
     param.update(default_parm)
 
-    return render(request, "tariff_analyser.html", param)
+    return render(request, "analyser.html", param)
 
 
 @login_required
 def pv(request):
-    if request.POST:
+
+    is_simulation = request.method == "POST"
+
+    if request.method == "POST":
         n_panel = int(request.POST['n_panels'])
         n_battery = int(request.POST['n_batteries'])
         meter_id = request.POST['meter_id']
@@ -334,8 +338,9 @@ def pv(request):
     param = {"active_tab_photovoltaic": "class=active has-sub", "total_load": total_load, "pv_and_bat_data": bat_sep,
              "load_from_grid": load_from_grid, "x_axis": x_axis, "generated_PV_waisted": generated_PV_waisted,
              "generated_PV_used": generated_PV_used, "battery_used": battery_used, "n_panel": n_panel,
-             "n_battery": n_battery, "cost": cost}
+             "n_battery": n_battery, "cost": cost, "is_simulation": is_simulation, "pay_back_period": 10}
 
+    # TODO: fill properly
     param.update(default_parameters(meter_id))
 
     return render(request, "pv.html", param)
@@ -432,8 +437,11 @@ def device_simulator(request):
         param["appliance_name"] = appliance_name
         param["time_of_day"] = time_of_day
         param["weekly_usage"] = weekly_usage
+
         param["power_appliance"] = round(device_data[meter_id].max() / 1000, 1)
 
+        # TODO: Add warning here! If there is no messages to display leave it empty ""
+        param["warning"] = ""
         # TODO: Add info
         # param = get_parameters_device_simulator(meter_id, appliance_name, time_of_day, weekly_usage)
 

@@ -285,6 +285,7 @@ $(document).ready(function() {
             },
             legend: {
               display: true,
+              position: "right",
               labels: {
                 usePointStyle: true,
                 fontFamily: 'Poppins',
