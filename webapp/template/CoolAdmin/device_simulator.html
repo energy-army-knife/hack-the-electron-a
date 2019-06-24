@@ -3,8 +3,46 @@
 
 {%  block header %}
     <script>
-        var appliance_id = {{ appliance_id }};
-        var meter_id = {{ meter_id }}
+
+        var datasets_overview = {{ datasets_overview|safe }};
+
+        var datasets_overview_month = [];
+
+        var i;
+
+        for (var j=0; j<datasets_overview.length; j++) {
+            var data = [];
+            for (i = 0; i < datasets_overview[j]["x"].length; i++) {
+            data.push({x: datasets_overview[j]["x"][i], y: datasets_overview[j]["y"][i]})
+          }
+            if (datasets_overview[j]["doted"] == "true") {
+                datasets_overview_month.push({
+                    data: data,
+                    label: datasets_overview[j]["label"],
+                    borderColor: datasets_overview[j]["color"],
+                    backgroundColor: 'transparent',
+                    borderDash: [5, 5],
+                    borderWidth: 3.5,
+                    pointStyle: 'circle',
+                    pointRadius: 0,
+                    pointBorderColor: 'transparent',
+                    pointBackgroundColor: datasets_overview[j]["color"],
+                });
+            }
+            else {
+                datasets_overview_month.push({
+                    data: data,
+                    label: datasets_overview[j]["label"],
+                    borderColor: datasets_overview[j]["color"],
+                    backgroundColor: 'transparent',
+                    borderWidth: 3.5,
+                    pointStyle: 'circle',
+                    pointRadius: 0,
+                    pointBorderColor: 'transparent',
+                    pointBackgroundColor: datasets_overview[j]["color"],
+                });
+            }
+        }
 
     </script>
 {% endblock %}
@@ -68,12 +106,15 @@
             <div class="card card-body">
                 <div class="text">
                     <h3>Equipment: {{ appliance_name }}</h3>
-                    <h5>( {{time_of_day}} times a day x {{weekly_usage}} times a week  -   peak power: {{ power_appliance }} kW )<h5>
+                    <h5>( {{time_of_day}} times a day x {{weekly_usage}} times a week  -   peak power: {{ power_appliance }} kW )</h5>
                 </div>
                 <div class="p-3 border bg-light">
                     <div class="text">
-                        <h3>Added value to your bill: {{ dif_bill }} €/month</h3>
+                        <h3>Added value to your bill: {{ dif_bill }} €/month</h3><
                     </div>
+                </div>
+                <div>
+                    <canvas id="overview-month-chart"></canvas>
                 </div>
             </div>
         </div>
