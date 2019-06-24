@@ -4148,6 +4148,11 @@ section {
     }
 }
 
+.price-label{
+        font-size: 18px;
+}
+
+
 .statistic-chart {
     padding-top: 22px;
 }

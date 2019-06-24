@@ -19,6 +19,10 @@
         font-family: inherit;
     }
 
+    .price-label{
+        font-size: 18px;
+    }
+
     </style>
 
     <script>
@@ -47,7 +51,6 @@
                     <div class="m-b-10" style="display: flex">
                         <h3 style="margin-right: 5px;">Current Tariff:</h3><h3 class="title-current-tariff"> {{ current_tariff }}</h3>
                     </div>
-                    <p>The values mentioned bellow where simulated with the had the corresponding tariff in the last two years.</p>
                 </div>
             </div>
             {% if simple_tariff_savings <= 0  and two_tariff_savings <= 0 and three_tariff_savings <= 0 %}
@@ -66,8 +69,8 @@
                 <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: rgba(0, 123, 255, 0.5)">
                   <div class="card-header title-card">Simple</div>
                   <div class="card-body">
-                    <h1 class="title-price">{{ simple_tariff_savings }}€</h1>
-                    <p class="card-text">BLABLABLA</p>
+                    <h1 class="title-price">{{ simple_tariff_savings }} <span class="price-label">€/year</span></h1>
+                    <p class="card-text">The electricity rate is the same (normal rate) every day of the week and at any time of the year.</p>
                   </div>
                 </div>
                 {% endif %}
@@ -75,8 +78,8 @@
                 <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: rgba(0,161,2, 0.5)">
                   <div class="card-header title-card">Two-Periods</div>
                   <div class="card-body">
-                    <h1 class="title-price">{{ two_tariff_savings }}€</h1>
-                    <p class="card-text">BLABLABLA</p>
+                    <h1 class="title-price">{{ two_tariff_savings }} <span class="price-label">€/year</span></h1>
+                    <p class="card-text">The electricity rate depends on the consumption schedule and can be charged at two rates: peak or off-peak.</p>
                   </div>
                 </div>
                 {% endif %}
@@ -84,8 +87,8 @@
                 <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: rgba(255,26,0,0.5)">
                   <div class="card-header title-card">Three-Periods</div>
                   <div class="card-body">
-                    <h1 class="title-price">{{ three_tariff_savings }}€</h1>
-                    <p class="card-text">BLABLABLA</p>
+                    <h1 class="title-price">{{ three_tariff_savings }} <span class="price-label">€/year</span></h1>
+                    <p class="card-text">The electricity rate depends on the consumption schedule and can be charged at Peak, Off-peak or Super-off peak. </p>
                   </div>
                 </div>
                 {% endif %}

@@ -5,10 +5,16 @@
     <script>
         var percentage_last_month_peak = {{ percentage_last_month_peak }};
         var percentage_last_month_off_peak = {{ percentage_last_month_off_peak }};
-
-        var power_spent_by_hours = JSON.parse("{{ power_spent_by_hours }}");
-        var power_spent_by_hours_label= JSON.parse("{{ power_spent_by_hours_label }}");
         var percentage_last_month_super_off_peak = {{ percentage_last_month_super_off_peak }};
+
+        var percentage_last_month_peak_cost = {{ percentage_last_month_peak_cost }};
+        var percentage_last_month_off_peak_cost = {{ percentage_last_month_off_peak_cost }};
+        var percentage_last_month_super_off_peak_cost = {{ percentage_last_month_super_off_peak_cost }};
+        var period_start = {{ period_start }};
+        var period_end = {{ period_end }};
+
+        var power_loader_meter_hours_max = {{ power_loader_meter_hours_max|safe }};
+        var power_spent_by_hours_label= {{ power_spent_by_hours_label|safe }};
 
     </script>
 {% endblock %}
@@ -25,7 +31,7 @@
                     </div>
                 </div>
             </div>
-            <form action="{% url 'analyser' %}" target="_blank"  method="post">
+            <form action="{% url 'analyser' %}?meter={{ meter_id }}" method="post">
                 {% csrf_token  %}
                  <input type="hidden" name="meter_id" value="{{ meter_id }}">
                 <div class="form-group row">
@@ -43,103 +49,75 @@
             </form>
 
 
-            <div class="row m-t-25">
-                <div class="col-sm-2 col-lg-3">
-                    <div class="overview-item overview-item--c1">
-                        <div class="overview__inner">
-                            <div class="overview-box clearfix">
-                                <div class="text">
-                                    <h2>{{ contracted_power }}</h2>
-                                    <span>Contracted Power</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-lg-3">
-                    <div class="overview-item overview-item--c2">
-                        <div class="overview__inner">
-                            <div class="overview-box clearfix">
-                                <div class="text">
-                                    <h2>{{ peak_load }}</h2>
-                                    <span>Peak load</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-lg-3">
-                    <div class="overview-item overview-item--c3">
-                        <div class="overview__inner">
-                            <div class="overview-box clearfix">
-                                <div class="icon">
-                                    <i class="zmdi zmdi-calendar-note"></i>
-                                </div><br>
-                                <div class="text">
-                                    <h2>{{ mean_load }}</h2>
-                                    <span>mean load</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-lg-3">
-                    <div class="overview-item overview-item--c4">
-                        <div class="overview__inner">
-                            <div class="overview-box clearfix">
-                                <div class="icon">
-                                    <i class="zmdi zmdi-money"></i>
-                                </div><br>
-                                <div class="text">
-                                    <h2>{{ bill }}€</h2>
-                                    <span>Bill</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="au-card m-b-30">
-                        <div class="au-card-inner">
-                            <h4 class="title-2 m-b-40">Power spent by hours used during the period selected</h4>
-                            <canvas id="team-chart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="au-card chart-percent-card">
-                        <div class="au-card-inner">
-                            <h3 class="title-2 tm-b-5">Percentage of the bill by tariff type</h3>
-                            <div class="row no-gutters">
-                                <div class="col-xl-6">
-                                    <div class="chart-note-wrap">
-                                        <div class="chart-note mr-0 d-block">
-                                            <span class="dot dot--blue"></span>
-                                            <span>Peak</span>
-                                        </div>
-                                        {% if tariff > 1 %}
+            <div class="row m-b-30">
+                <div class="col-5">
+                    <div class="au-card" style="height: 100%">
+                        <div class="au-card-inner" style="height: 100%">
+
+                            <div class="plot-position">
+                                <div class="row no-gutters">
+                                    <div class="col-4">
+                                        <div class="chart-note-wrap">
+                                            <div class="chart-note mr-0 d-block">
+                                                <span class="dot dot--blue"></span>
+                                                <span>Peak</span>
+                                            </div>
+                                            {% if tariff > 1 %}
                                             <div class="chart-note mr-0 d-block">
                                                 <span class="dot dot--red"></span>
                                                 <span>Off-Peak</span>
                                             </div>
-                                        {% endif %}
-                                        {% if tariff > 2 %}
+                                            {% endif %}
+                                            {% if tariff > 2 %}
                                             <div class="chart-note mr-0 d-block">
                                                 <span class="dot dot--green"></span>
                                                 <span>Super-Off-Peak</span>
                                             </div>
-                                        {% endif %}
+                                            {% endif %}
+                                        </div>
                                     </div>
+
+                                <div class="col-8">
+                                    <canvas id="percent-chart"></canvas>
                                 </div>
-                                <div class="col-xl-6">
-                                    <div class="percent-chart">
-                                        <canvas id="percent-chart"></canvas>
+
+                                <div class="chart-note-wrap">
+                                    <div class="chart-note mr-0 d-block">
+                                        <span>Inner circle: % of the bill in each Tariff period</span>
+                                    </div>
+                                    <div class="chart-note mr-0 d-block">
+                                        <span>Outer circle: % of the total used power in each Tariff period</span>
                                     </div>
                                 </div>
                             </div>
+                           {% if current_tariff != best_tariff %}
+                                <div class="alert alert-danger alert-position" role="alert" style="margin-top: 20px">
+                                  Tariff not optimized for your power consumption, click <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}" class="alert-link">here</a>.
+                                </div>
+                           {% else %}
+                               <div class="alert alert-success alert-position" role="alert" style="margin-top: 20px">
+                                  Congratulations! Your current tariff {{ current_tariff }} is optimized for your power consumption! Detailed info <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}" class="alert-link">here</a>.
+                                </div>
+                          {% endif %}
+
+                      </div>
+                    </div>
+                </div>
+                </div>
+                <div class="col-7">
+                    <div class="au-card" style="height: 100%">
+                        <div class="au-card-inner" style="height: 100%">
+                        <div class="progress">
+                          <div class="progress-bar" role="progressbar" style="width: {{ percentage_contracted_power_registered }}%;" aria-valuenow="{{ percentage_contracted_power_registered }}" aria-valuemin="0" aria-valuemax="100">{{ max_contracted_power_registered }}/{{ contracted_power }} kW</div>
                         </div>
+
+                          <canvas id="power-mean-month"></canvas>
+                          {% if contracted_power != best_contracted_power %}
+                            <div class="alert alert-danger alert-position" role="alert">
+                              Contracted power {{ contracted_power }} is not optimized click <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}" class="alert-link">here</a>.
+                            </div>
+                        {% endif %}
+                      </div>
                     </div>
                 </div>
             </div>

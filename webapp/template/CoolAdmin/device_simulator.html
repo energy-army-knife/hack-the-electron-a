@@ -22,7 +22,7 @@
                 </div>
             </div>
             <div class="card card-body">
-                <form action="{% url 'device_simulator' %}" method="post">
+                <form action="{% url 'device_simulator' %}?meter={{ meter_id }}" method="post">
                     {% csrf_token  %}
                     <input type="hidden" name="meter-id" value="{{ meter_id }}">
                     <div class="form-group">

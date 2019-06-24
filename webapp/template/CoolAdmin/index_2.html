@@ -16,10 +16,9 @@
 
         var power_loader_meter_hours_max = {{ power_loader_meter_hours_max|safe }};
 
-        var current_cost = {{ billing_period_month }};
-        var current_cost_label = "{{ billing_period_month_label }}";
-        var last_year_cost = {{ billing_period_month_last_year }};
-        var last_year_cost_label = "{{ billing_period_month_last_year_label }}";
+        var bar_plot_values = {{ bar_plot_values|safe }};
+        var bar_plot_labels = {{ bar_plot_labels|safe }};
+
         var appliances_label = {{ appliances_label|safe }};
         var appliances_data = {{ appliances_data|safe }};
 
@@ -84,6 +83,11 @@
             position: static;
             bottom: 10%;
         }
+        .box-image-alert-bill{
+            padding-right: 10px;
+            height: 20px;
+            padding-left: 10px;
+        }
     </style>
 {% endblock %}
 
@@ -101,33 +105,38 @@
                     <div class="col-5">
                         <div class="au-card"  style="height: 100%">
                             <div class="au-card-inner">
-                                <div class="plot-position">
-                                    <div class="row">
-                                        {% if percentage_bill == 0 %}
-                                        {% elif billing_period_month_last_year < billing_period_month%}
-                                        <div class="col-12"  style="margin: auto; width: 30%; display: flex">
-                                            <p>Agost-Sept</p>
-                                            <img src="{% static "images/icon/up.png" %}" alt="Billing is higher" style="padding-right: 10px; height: 20px">
-                                            <h3 style="color: #ff1a00">{{ percentage_bill }}%</h3>
+                                <div class="row m-b-30">
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <p>The bill this month</p>
+                                            {% if bar_plot_values.0 < bar_plot_values.1%}
+                                                <img class="box-image-alert-bill" src="{% static "images/icon/up.png" %}" alt="Billing is higher">
+                                                <h3 style="color: #ff1a00">{{ percentage_bill.0 }}%</h3>
+                                            {% elif bar_plot_values.0 > bar_plot_values.1%}
+                                                <img class="box-image-alert-bill" src="{% static "images/icon/down.png" %}" alt="Billing is lower">
+                                                <h3 style="color: #00a102">{{ percentage_bill.0 }}%</h3>
+                                            {% endif %}
                                         </div>
-                                        <div class="col-12"  style="margin: auto; width: 30%; display: flex">
-                                            <p>Sept-Out (Expected)</p>
-                                            <img src="{% static "images/icon/up.png" %}" alt="Billing is higher" style="padding-right: 10px; height: 20px">
-                                            <h3 style="color: #ff1a00">{{ percentage_bill }}%</h3>
-                                        </div>
-                                        {% elif billing_period_month_last_year > billing_period_month%}
-                                        <div class="col-12" style="margin: auto; width: 30%; display: flex">
-                                            <h3>Sept-Out (Expected)</h3>
-                                            <img src="{% static "images/icon/down.png" %}" alt="Billing is lower" style="padding-right: 10px; height: 35px">
-                                            <h3 style="color: #00a102">{{ percentage_bill }}%</h3>
-                                        </div>
-                                        {% endif %}
                                     </div>
-                                    <div>
-                                        <canvas id="barChart"></canvas>
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <p>Expected bill nex month</p>
+                                             {% if bar_plot_values.1 < bar_plot_values.2%}
+                                                <img class="box-image-alert-bill" src="{% static "images/icon/up.png" %}" alt="Billing is higher">
+                                                <h3 style="color: #ff1a00">{{ percentage_bill.1 }}%</h3>
+                                            {% elif bar_plot_values.1 > bar_plot_values.2%}
+                                                <img class="box-image-alert-bill" src="{% static "images/icon/down.png" %}" alt="Billing is lower">
+                                                <h3 style="color: #00a102">{{ percentage_bill.1 }}%</h3>
+                                            {% endif %}
+                                        </div>
                                     </div>
 
+
                                 </div>
+
+
+                                <canvas id="barChart"></canvas>
+
                             </div>
                         </div>
                     </div>
