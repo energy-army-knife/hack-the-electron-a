@@ -159,8 +159,12 @@ def get_parameters_period_overview(meter_id: str, period_start: datetime, period
                                                                          meter_info.tariff).get_total(), 2)
     if meter_id == "meter_EDP":
         x = appliance_data[START_MONTH:TODAY].sum(axis=0)
-        percentage = dict(map(lambda i: (i[0], 100 * i[1] / x[0]), x[1:].items()))
-        percentage["others"] = 100 - np.sum(list(percentage.values()))
+        allowed = {'air1': "AC", 'car1': "EV", 'clotheswasher_dryg1': "WasherDryer", \
+                'furnace1': "Furnace", 'use': 'use'}
+        percentage = dict(map(lambda i: (allowed.get(i[0], i[0].capitalize()), \
+            100*i[1]/x["use"]), x.items()))
+        percentage.pop("use")
+        percentage["Others"] = 100 - np.sum(list(percentage.values()))
         appliances_label = list(percentage.keys())
         appliances_data = list(map(lambda x: round(x, 1), percentage.values()))
     else:
