@@ -347,6 +347,7 @@ def pv(request):
              "n_battery": n_battery, "cost": cost, "is_simulation": is_simulation, "pay_back_period": 10}
 
     # TODO: fill properly
+
     param.update(default_parameters(meter_id))
 
     return render(request, "pv.html", param)
