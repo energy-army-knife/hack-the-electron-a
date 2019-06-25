@@ -215,7 +215,4 @@ meter_212;Time-Of-Use Two Periods ;T ;17.25
 meter_213;Simple Tariff ;M ;3.45
 meter_214;Time-Of-Use Three Periods ;M ;3.45
 meter_215;Simple Tariff ;M ;3.45
-meter_216;Simple Tariff ;T ;13.8
-meter_217;Time-Of-Use Three Periods ;T ;20.7
-meter_218;Simple Tariff ;M ;1.15
 meter_EDP;Time-Of-Use Two Periods;M;17.25
