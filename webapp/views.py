@@ -32,7 +32,8 @@ solar_preprocessed_data = CSVDataLoader(settings.RESOURCES + "/solar.csv", sep='
 
 device_signal = CSVDataLoader(settings.RESOURCES + "/device_signal.csv").data_frame.drop(['Unnamed: 0'], axis=1)
 device_signalsize = CSVDataLoader(settings.RESOURCES + "/device_signalsize.csv").data_frame.drop(['Unnamed: 0'], axis=1)
-prediction_data_raw = CSVDataLoader(settings.RESOURCES + "/load_pwr_only_predict.csv").data_frame.set_index(['Unnamed: 0'])
+prediction_data_raw = CSVDataLoader(settings.RESOURCES + "/load_pwr_only_predict.csv").data_frame.set_index(
+    ['Unnamed: 0'])
 prediction_data_raw.index = pd.to_datetime(prediction_data_raw.index)
 
 calculator = BillingCalculator(tariff_data_load, tarriff_periods)
@@ -65,8 +66,8 @@ def get_name_tariff(tariff: TariffType):
 
 
 def get_power_grouped_by_days(power_data: pd.DataFrame) -> (list, list):
-    df = power_data.groupby(power_data.index.strftime('%d')).sum() / 1000
-    return [int(el) for el in list(df.index)], list(df.values.flatten())
+    df = power_data.groupby(power_data.index.strftime('%D')).sum() / 1000
+    return list(df.index), list(df.values.flatten())
 
 
 def get_param_pie_chart_peak(billing_period: Bill) -> dict:
@@ -113,10 +114,10 @@ def get_parameters_analyser(meter_id: str, period_start: datetime, period_end: d
     max_power_registered = min(round(power_loader_meter.max().values[0] / 1000, 2), meter_info.contracted_power)
 
     param = {"power_spent_by_hours_label": list(range(0, 24)),
-            "power_loader_meter_hours_max": list(power_loader_meter_hours_max),
-            "max_contracted_power_registered": max_power_registered,
-            "percentage_contracted_power_registered": max_power_registered * 100 / meter_info.contracted_power,
-            "bill": bill
+             "power_loader_meter_hours_max": list(power_loader_meter_hours_max),
+             "max_contracted_power_registered": max_power_registered,
+             "percentage_contracted_power_registered": max_power_registered * 100 / meter_info.contracted_power,
+             "bill": bill
              }
     param.update(parm_pie_chart)
     return param
@@ -163,8 +164,12 @@ def get_parameters_period_overview(meter_id: str, period_start: datetime, period
                                                                          meter_info.tariff).get_total(), 2)
     if meter_id == "meter_EDP":
         x = appliance_data[START_MONTH:TODAY].sum(axis=0)
-        percentage = dict(map(lambda i: (i[0], 100 * i[1] / x[0]), x[1:].items()))
-        percentage["others"] = 100 - np.sum(list(percentage.values()))
+        allowed = {'air1': "AC", 'car1': "EV", 'clotheswasher_dryg1': "WasherDryer", \
+                'furnace1': "Furnace", 'use': 'use'}
+        percentage = dict(map(lambda i: (allowed.get(i[0], i[0].capitalize()), \
+            100*i[1]/x["use"]), x.items()))
+        percentage.pop("use")
+        percentage["Others"] = 100 - np.sum(list(percentage.values()))
         appliances_label = list(percentage.keys())
         appliances_data = list(map(lambda x: round(x, 1), percentage.values()))
     else:
@@ -179,8 +184,8 @@ def get_parameters_period_overview(meter_id: str, period_start: datetime, period
                     minute=59)
 
     prediction_power_data = pd.DataFrame(filter_power_by_date(prediction_data_raw[meter_id],
-                                                 start_datetime=prediction_start_date,
-                                                 end_datetime=prediction_end_date))
+                                                              start_datetime=prediction_start_date,
+                                                              end_datetime=prediction_end_date))
 
     cost_prediction = calculator.compute_total_cost(prediction_power_data, meter_info.contracted_power,
                                                     meter_info.tariff).get_total()
@@ -253,7 +258,6 @@ def index(request):
 
 @login_required
 def analyser(request):
-
     date_format = "%Y-%m-%d"
     search_start = datetime.datetime(2018, 5, 1)
     search_end = datetime.datetime(2018, 5, 31)
@@ -277,7 +281,6 @@ def analyser(request):
 
 @login_required
 def pv(request):
-
     is_simulation = request.method == "POST"
 
     if request.method == "POST":
@@ -419,7 +422,9 @@ def device_simulator(request):
         x_3 = device_overview_label
         y_3 = device_overview_data
 
-        dataset_y2 = {"label": "Current power usage ({} to {})".format(str(start_datetime.date()),str(end_datetime.date())), "x": x_2, "y": y_2, "color": "#0063bc", "doted": "false"}
+        dataset_y2 = {
+            "label": "Current power usage ({} to {})".format(str(start_datetime.date()), str(end_datetime.date())),
+            "x": x_2, "y": y_2, "color": "#0063bc", "doted": "false"}
         dataset_y3 = {"label": "Equipment power usage", "x": x_3, "y": y_3, "color": "#000000", "doted": "true"}
         datasets_overview = [dataset_y3, dataset_y2]
 
@@ -500,25 +505,25 @@ def contract_subscription(request):
     saving_some_adj = round((current_price - calculator.compute_total_cost(meter_power, contracted_power_perc_some,
                                                                            meter_info.tariff).get_total()) / 2, 2)
     param = {"active_subscription": "class=active has-sub",
-                                                          "no_adjustment_price": saving_no_adj,
-                                                          "small_adjustment_price": saving_small_adj,
-                                                          "medium_adjustment_price": saving_some_adj,
-                                                          "current_contract": meter_info.contracted_power,
-                                                          "label_current_contract": str(
-                                                              meter_info.contracted_power) + "kW",
-                                                          "percentil_small_adjustment": round(
-                                                              100 - percentil_small_adjustment, 3),
-                                                          "percentil_some_adjustments": round(
-                                                              100 - percentil_some_adjustments, 2),
-                                                          "labels_contract_power_by_month": labels_contract_power_by_month,
-                                                          "max_contract_power_by_month": max_contract_power_by_month,
-                                                          "contracted_powers_perc_values": recommended_contracted_powers_perc_values,
-                                                          "contracted_powers_perc_label": recommended_contracted_powers_perc_label,
-                                                          "contracted_power_values": contracted_power_values,
-                                                          "no_adjustment_price_contract": best_contracted_power,
-                                                          "small_adjustment_price_contract": contracted_power_perc_small,
-                                                          "medium_adjustment_price_contract": contracted_power_perc_some,
-                                                          }
+             "no_adjustment_price": saving_no_adj,
+             "small_adjustment_price": saving_small_adj,
+             "medium_adjustment_price": saving_some_adj,
+             "current_contract": meter_info.contracted_power,
+             "label_current_contract": str(
+                 meter_info.contracted_power) + "kW",
+             "percentil_small_adjustment": round(
+                 100 - percentil_small_adjustment, 3),
+             "percentil_some_adjustments": round(
+                 100 - percentil_some_adjustments, 2),
+             "labels_contract_power_by_month": labels_contract_power_by_month,
+             "max_contract_power_by_month": max_contract_power_by_month,
+             "contracted_powers_perc_values": recommended_contracted_powers_perc_values,
+             "contracted_powers_perc_label": recommended_contracted_powers_perc_label,
+             "contracted_power_values": contracted_power_values,
+             "no_adjustment_price_contract": best_contracted_power,
+             "small_adjustment_price_contract": contracted_power_perc_small,
+             "medium_adjustment_price_contract": contracted_power_perc_some,
+             }
     param.update(default_parameters(meter_id))
 
     return render(request, "contract_subscription.html", param)
@@ -546,19 +551,19 @@ def tariff_subscription(request):
     three_tariff_months = [round(value[TariffType.THREE_PERIOD], 2) for month, value in costs_tariffs_month.items()]
 
     param = {"active_subscription": "class=active has-sub",
-                                                        "current_tariff": get_name_tariff(meter_info.tariff),
-                                                        "simple_tariff_savings": round(
-                                                            (current_price - costs_tariffs[TariffType.SIMPLE]) / 2, 2),
-                                                        "two_tariff_savings": round(
-                                                            (current_price - costs_tariffs[TariffType.TWO_PERIOD]) / 2,
-                                                            2),
-                                                        "three_tariff_savings": round(
-                                                            (current_price - costs_tariffs[
-                                                                TariffType.THREE_PERIOD]) / 2, 2),
-                                                        "simple_tariff_cross_months": simple_tariff_months,
-                                                        "two_tariff_cross_months": two_tariff_months,
-                                                        "three_tariff_cross_months": three_tariff_months,
-                                                        "months_tariff_label": label_tariff_months}
+             "current_tariff": get_name_tariff(meter_info.tariff),
+             "simple_tariff_savings": round(
+                 (current_price - costs_tariffs[TariffType.SIMPLE]) / 2, 2),
+             "two_tariff_savings": round(
+                 (current_price - costs_tariffs[TariffType.TWO_PERIOD]) / 2,
+                 2),
+             "three_tariff_savings": round(
+                 (current_price - costs_tariffs[
+                     TariffType.THREE_PERIOD]) / 2, 2),
+             "simple_tariff_cross_months": simple_tariff_months,
+             "two_tariff_cross_months": two_tariff_months,
+             "three_tariff_cross_months": three_tariff_months,
+             "months_tariff_label": label_tariff_months}
     param.update(default_parameters(meter_id))
     return render(request, "tariff_subscription.html", param)
 

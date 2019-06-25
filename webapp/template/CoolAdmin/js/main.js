@@ -171,18 +171,9 @@ $(document).ready(function() {
             datasets: datasets_overview_month
           },
           options: {
+
             responsive: true,
-            tooltips: {
-              mode: 'index',
-              titleFontSize: 12,
-              titleFontColor: '#000',
-              bodyFontColor: '#000',
-              backgroundColor: '#fff',
-              titleFontFamily: 'Poppins',
-              bodyFontFamily: 'Poppins',
-              cornerRadius: 3,
-              intersect: false,
-            },
+            tooltips: false,
             legend: {
               display: true,
               labels: {
@@ -193,7 +184,7 @@ $(document).ready(function() {
             scales: {
               xAxes: [{
                 display: true,
-                type: "linear",
+                type: "time",
                 gridLines: {
                   display: false,
                   drawBorder: false
@@ -249,7 +240,7 @@ $(document).ready(function() {
             type: 'line',
             defaultFontFamily: 'Poppins',
             datasets: [{
-              label: 'total load',
+              label: 'Without Panels and Batteries',
               data: total_load,
               backgroundColor: 'transparent',
               borderColor: 'rgba(220,53,69,0.75)',
@@ -259,7 +250,7 @@ $(document).ready(function() {
               pointBorderColor: 'transparent',
               pointBackgroundColor: 'rgba(220,53,69,0.75)',
             }, {
-              label: "load from grid",
+              label: "With Panels and Batteries",
               data: load_from_grid,
               backgroundColor: 'transparent',
               borderColor: 'rgba(40,167,69,0.75)',
@@ -285,7 +276,7 @@ $(document).ready(function() {
             },
             legend: {
               display: true,
-              position: "right",
+              position: "top",
               labels: {
                 usePointStyle: true,
                 fontFamily: 'Poppins',
@@ -471,7 +462,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Time to recover investment [Years]',
+                  labelString: 'Pay Back Period [Years]',
                   fontFamily: "Poppins"
 
                 },
