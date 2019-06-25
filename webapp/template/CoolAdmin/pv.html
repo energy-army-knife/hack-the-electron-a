@@ -83,27 +83,35 @@
 
             </div>
             {% if is_simulation %}
+                <div class="au-card m-b-20" style="width: 100%">
             <div style="width: 100%">
-                <h1 class="m-b-30" style="text-align: center">Simulation Results</h1>
-                <div class="row m-b-30">
-                    <div class="col-3">
-                        <h5 style="text-align: center">Total Investment: <span style="color: #0063bc">{{ cost }} €</span></h5>
+                <h1 class="m-b-30 color-wwc" style="text-align: center">Simulation Results</h1>
+                <div class="row m-b-20">
+                    <div class="col-4">
+                        <h4>Number of Panels: {{ n_panel }}</h4>
                     </div>
-                    <div class="col-3">
-                        <h5 style="text-align: center">Pay Back Period : <span style="color: #0063bc">{{ pay_back_period }} years</span></h5>
+                    <div class="col-4">
+                        <h4>Number of Batteries: {{ n_battery }}</h4>
                     </div>
-                    <div class="col-3">
-                        <h5 style="text-align: center">Number of Panels: {{ n_panel }}</h5>
-                    </div>
-                    <div class="col-3">
-                        <h5 style="text-align: center">Number of Batteries: {{ n_battery }}</h5>
+                    <div class="col-4">
                     </div>
                 </div>
+
+                <div class="row m-b-40">
+                    <div class="col-4">
+                        <h4>Total Investment: <span class="color-wwc">{{ cost }} €</span></h4>
+                    </div>
+                    <div class="col-4">
+                        <h4>Pay Back Period : <span class="color-wwc"> {{ pay_back_period }}years</span></h4>
+                    </div>
+                    <div class="col-4">
+                        <h4>Savings: <span class="color-wwc">{{ monthly_savings }} €/month</span></h4>
+                    </div>
+                </div>
+
             </div>
 
-
-            <div class="au-card m-b-20" style="width: 100%">
-                <h3 class="m-b-30">Estimation of Energy Generated with the Selected Equipment in the Past Year</h3>
+                <h3 class="m-b-30" style="text-align: center">Estimation of Energy Generated with the Selected Equipment in the Past Year</h3>
                 <canvas id="bar-renewals-chart"></canvas>
             </div>
             <div class="au-card m-b-20" style="width: 100%">

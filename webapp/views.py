@@ -450,11 +450,17 @@ def pv(request):
         cost = 100 + 600 * n_panel
     cost += BATTERY_COST * n_battery
 
+    monthly_savings = 0
+    pay_back_period = 0
+    if is_simulation:
+        pay_back_period = round(time_till_paid_panels, 1)
+        monthly_savings = round(cost*1.0/(pay_back_period*12), 1)
+
     param = {"active_tab_photovoltaic": "class=active has-sub", "total_load": total_load, "pv_and_bat_data": bat_sep,
              "load_from_grid": load_from_grid, "x_axis": x_axis, "generated_PV_waisted": generated_PV_waisted,
              "generated_PV_used": generated_PV_used, "battery_used": battery_used, "n_panel": n_panel,
              "n_battery": n_battery, "cost": cost, "is_simulation": is_simulation,
-             "pay_back_period": round(time_till_paid_panels, 1)}
+             "monthly_savings": monthly_savings, "pay_back_period": pay_back_period}
 
     param.update(default_parameters(meter_id))
 
