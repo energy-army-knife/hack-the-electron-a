@@ -58,7 +58,7 @@
                         <h2 class="title-1">Equipment Simulator</h2>
                     </div>
                 </div>
-            </div> 
+            </div>
             <div class="au-card m-b-30" style="width: 100%">
                 <form action="{% url 'device_simulator' %}?meter={{ meter_id }}" method="post">
                     {% csrf_token  %}
@@ -111,6 +111,14 @@
                         {% if warning|length %}
                             <div class="alert alert-secondary alert-position" role="alert" style="margin-top: 20px">
                                   <p style="text-align: center">{{ warning }}</p>
+                            </div>
+
+                        {% endif %}
+                    </div>
+                    <div>
+                        {% if change_contracted_power|length %}
+                            <div class="alert alert-danger alert-position" role="alert" style="margin-top: 20px">
+                                  <p style="text-align: center">{{ change_contracted_power }}kW</p>
                             </div>
 
                         {% endif %}

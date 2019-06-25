@@ -378,7 +378,7 @@ def device_simulator(request):
 
         if time_of_day > step_d:
             time_of_day = step_d
-            param["warning"] = "Daily usage exceeds equipment capacity, it was set to the maximum: {}".format(time_of_day)
+            param["warning"] = "Daily usage exceeds equipment capacity, it was set to the maximum: {}.".format(time_of_day)
         else:
             param["warning"] = ""
 
@@ -426,9 +426,15 @@ def device_simulator(request):
         old_bill = calculator.compute_total_cost(power_data, meter_info.contracted_power, meter_info.tariff)
 
         max_power = power_data[meter_id].max() + device_data[meter_id].max()
+        actual_contracted_power = recommend_contract(power_data[meter_id].max())
         power_data[meter_id] = power_data[meter_id] + device_data[meter_id]
         new_bill = calculator.compute_total_cost(power_data, meter_info.contracted_power, meter_info.tariff)
-        best_contracted_power = recommend_contract(max_power)
+        needed_contracted_power = recommend_contract(max_power)
+
+        if actual_contracted_power != needed_contracted_power:
+            param["change_contracted_power"] = "Current contracted power may be insufficient for this equipment, consider changing to {}".format(needed_contracted_power)
+        else:
+            param["change_contracted_power"] = ""
 
         param.update(default_parameters(meter_id))
 
@@ -436,7 +442,6 @@ def device_simulator(request):
         param["old_bill"] = round(old_bill.get_total(), 2)
         param["new_bill"] = round(new_bill.get_total(), 2)
         param["dif_bill"] = round(new_bill.get_total() - old_bill.get_total(), 2)
-        param["best_contracted_power"] = best_contracted_power
         param["appliance_name"] = appliance_name
         param["time_of_day"] = time_of_day
         param["weekly_usage"] = weekly_usage
