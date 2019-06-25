@@ -30,6 +30,7 @@
             if (datasets_overview[j]["doted"] == "true") {
                 datasets_overview_month.push({
                     data: data,
+                    yAxisID: 'A',
                     label: datasets_overview[j]["label"],
                     borderColor: datasets_overview[j]["color"],
                     backgroundColor: 'transparent',
@@ -44,6 +45,7 @@
             else {
                 datasets_overview_month.push({
                     data: data,
+                    yAxisID: 'B',
                     label: datasets_overview[j]["label"],
                     borderColor: datasets_overview[j]["color"],
                     backgroundColor: 'transparent',

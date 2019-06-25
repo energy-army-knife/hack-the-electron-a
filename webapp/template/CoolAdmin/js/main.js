@@ -269,22 +269,41 @@ $(document).ready(function() {
                   drawBorder: false
                 },
                 scaleLabel: {
-                  display: false,
-                  labelString: 'Day of the Month'
+                  display: true,
+                  labelString: 'Date'
                 },
                 ticks: {
                   fontFamily: "Poppins"
                 }
               }],
               yAxes: [{
+                id: 'A',
+                position: 'left',
                 display: true,
                 gridLines: {
                   display: false,
                   drawBorder: false
                 },
                 scaleLabel: {
-                  display: false,
+                  display: true,
                   labelString: 'Mean Power Spent [kW]',
+                  fontFamily: "Poppins"
+
+                },
+                ticks: {
+                  fontFamily: "Poppins"
+                }
+              },{
+                id: 'B',
+                position: 'right',
+                display: true,
+                gridLines: {
+                  display: false,
+                  drawBorder: false
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Cost [€]',
                   fontFamily: "Poppins"
 
                 },
