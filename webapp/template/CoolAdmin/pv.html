@@ -32,7 +32,7 @@
         });
         for (var j = 0; j < bat_sep[i].length; j++) { // loop per item
 
-            if (bat_sep[i][j]['time for return'] > 20) continue;
+            //if (bat_sep[i][j]['time for return'] > 30) continue;
 
             pv_and_bat_data_xy_dic[i]['data'].push({
                 x: bat_sep[i][j]['installation_cost'],
@@ -100,14 +100,15 @@
 
 
             <div class="au-card m-b-20" style="width: 100%">
-                <h3 class="m-b-30">Theoretical Energy Generated</h3>
+                <h3 class="m-b-30">Calculated Renewable Energy Generated with the Chosen Equipment (Past Year)</h3>
                 <canvas id="bar-renewals-chart"></canvas>
             </div>
             <div class="au-card m-b-20" style="width: 100%">
-                <h3 class="m-b-30">Comparison of Energy Bought with and without panels</h3>
+                <h3 class="m-b-30">Comparison of Energy Bought with and without having the Chosen Equipment</h3>
                 <canvas id="power-renewals-chart"></canvas>
             </div>
              <div class="au-card m-b-20" style="width: 100%">
+                <h3 class="m-b-30">Comparison of the Initial Investment (X Axis) and the Time to Recover the Investment (Y Axis) by Accumulating in Savings</h3>
                 <canvas id="overview-pv-savings"></canvas>
             </div>
             {% endif %}
