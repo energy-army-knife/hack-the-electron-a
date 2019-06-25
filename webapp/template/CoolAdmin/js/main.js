@@ -247,7 +247,17 @@ $(document).ready(function() {
           options: {
 
             responsive: true,
-            tooltips: false,
+            tooltips: {
+              mode: 'index',
+              titleFontSize: 12,
+              titleFontColor: '#000',
+              bodyFontColor: '#000',
+              backgroundColor: '#fff',
+              titleFontFamily: 'Poppins',
+              bodyFontFamily: 'Poppins',
+              cornerRadius: 3,
+              intersect: false,
+            },
             legend: {
               display: true,
               labels: {
@@ -261,7 +271,6 @@ $(document).ready(function() {
                 type: "time",
 
                 time: {
-                  format: "MM-DD-YYYY",
                   unit: "day",
                 },
                 gridLines: {

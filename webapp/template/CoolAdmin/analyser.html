@@ -26,11 +26,11 @@
             var data = [];
             for (i = 0; i < datasets_overview[j]["x"].length; i++) {
             data.push({x: datasets_overview[j]["x"][i], y: datasets_overview[j]["y"][i]})
-          }
+            }
             if (datasets_overview[j]["doted"] == "true") {
                 datasets_overview_month.push({
                     data: data,
-                    yAxisID: 'A',
+                    yAxisID: datasets_overview[j]["axis"],
                     label: datasets_overview[j]["label"],
                     borderColor: datasets_overview[j]["color"],
                     backgroundColor: 'transparent',
@@ -45,7 +45,7 @@
             else {
                 datasets_overview_month.push({
                     data: data,
-                    yAxisID: 'B',
+                    yAxisID: datasets_overview[j]["axis"],
                     label: datasets_overview[j]["label"],
                     borderColor: datasets_overview[j]["color"],
                     backgroundColor: 'transparent',

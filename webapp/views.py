@@ -67,7 +67,7 @@ def get_name_tariff(tariff: TariffType):
 
 def get_power_grouped_by_days(power_data: pd.DataFrame) -> (list, list):
     df = power_data.groupby(power_data.index.strftime('%D')).mean() / 1000
-    return list(df.index), list(df.values.flatten())
+    return list(df.index), [round(el, 2) for el in list(df.values.flatten())]
 
 
 def get_cost_by_per_days(power_data: pd.DataFrame, contracted_power: float, tariff: TariffType) -> list:
@@ -119,7 +119,7 @@ def get_parameters_analyser(meter_id: str, period_start: datetime, period_end: d
     meter_info = meters_info.get_meter_id_contract_info(meter_id)
     power_loader_meter = filter_power_by_date(power_loader.get_power_meter_id(meter_id), period_start, period_end)
     df_power_loader_meter_hours_max = power_loader_meter.groupby(power_loader_meter.index.strftime('%H')).max()
-    power_loader_meter_hours_max = df_power_loader_meter_hours_max.values.flatten()
+    power_loader_meter_hours_max = df_power_loader_meter_hours_max.values.flatten()/1000
     billing_period = calculator.compute_total_cost(power_loader_meter, meter_info.contracted_power, meter_info.tariff)
     parm_pie_chart = get_param_pie_chart_peak(billing_period)
     bill = round(billing_period.get_total(), 2)
@@ -132,15 +132,15 @@ def get_parameters_analyser(meter_id: str, period_start: datetime, period_end: d
 
     x, y = get_power_grouped_by_days(power_loader_meter)
 
-    current_month_dataset = {"label": "Cost (€)",
+    current_month_dataset = {"label": "Cost [€]",
                              "x": x_cost_per_day,
                              "y": y_cost_per_day,
-                             "color": "#00000", "doted": "false"}
+                             "color": "#00000", "doted": "false", "axis": 'A'}
 
     cost_month_dataset = {"label": "Mean Power spent [kW]",
                              "x": x,
                              "y": y,
-                             "color": "#0063BC", "doted": "false"}
+                             "color": "#0063BC", "doted": "false", "axis": 'B'}
 
     datasets_overview = [cost_month_dataset, current_month_dataset]
 
