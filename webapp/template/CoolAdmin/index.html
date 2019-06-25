@@ -178,7 +178,7 @@
                                 </div>
                                {% if current_tariff != best_tariff %}
                                     <div class="alert alert-danger alert-position" role="alert" style="margin-top: 20px">
-                                      Tariff not optimized for your power consumption, click <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}" class="alert-link">here</a>.
+                                      Tariff is not optimized for your power consumption, click <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}" class="alert-link">here</a>.
                                     </div>
                                {% else %}
                                    <div class="alert alert-success alert-position" role="alert" style="margin-top: 20px">
@@ -201,7 +201,7 @@
                 {% if contracted_power != best_contracted_power %}
                 <div class="m-b-30">
                     <div class="alert alert-danger alert-position" role="alert">
-                      Contracted power {{ contracted_power }} is not optimized click <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}" class="alert-link">here</a>.
+                      Contracted Power is not optimized for your power consumption, click <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}" class="alert-link">here</a>.
                     </div>
                 </div>
                 {% endif %}
