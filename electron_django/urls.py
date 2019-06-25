@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^$', views.index, name='index'),
     url(r'^analyser/$', views.analyser, name='analyser'),
+    url(r'^last_bills/$', views.last_bills, name='last_bills'),
     url(r'^photovoltaic/$', views.pv, name='photovoltaic'),
     url(r'^device_simulator/$', views.device_simulator, name='device_simulator'),
     url(r'^contract_subscription/$', views.contract_subscription, name='contract_subscription'),

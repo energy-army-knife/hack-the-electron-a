@@ -95,6 +95,11 @@
                                 </li>
                             </ul>
                         </li>
+                         <li {{ active_tab_last_bills }}>
+                            <a href="{% url 'last_bills' %}?meter={{ meter_id }}">
+                                <i class="fas fa-table"></i>Last Bills</a>
+                        </li>
+
                     </ul>
                 </div>
             </nav>
@@ -138,6 +143,10 @@
                                 <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}">Contracted Power</a>
                                 </li>
                             </ul>
+                        </li>
+                        <li {{ active_tab_last_bills }}>
+                            <a href="{% url 'last_bills' %}?meter={{ meter_id }}">
+                                <i class="fas fa-table"></i>Last Bills</a>
                         </li>
                     </ul>
                 </nav>

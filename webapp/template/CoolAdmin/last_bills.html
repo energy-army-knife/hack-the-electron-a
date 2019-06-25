@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{%  block header %}
+    <script>
+        var percentage_last_month_peak = {{ percentage_last_month_peak }};
+        var percentage_last_month_off_peak = {{ percentage_last_month_off_peak }};
+        var percentage_last_month_super_off_peak = {{ percentage_last_month_super_off_peak }};
+
+        var percentage_last_month_peak_cost = {{ percentage_last_month_peak_cost }};
+        var percentage_last_month_off_peak_cost = {{ percentage_last_month_off_peak_cost }};
+        var percentage_last_month_super_off_peak_cost = {{ percentage_last_month_super_off_peak_cost }};
+        var period_start = {{ period_start }};
+        var period_end = {{ period_end }};
+
+        var power_loader_meter_hours_max = {{ power_loader_meter_hours_max|safe }};
+        var power_spent_by_hours_label= {{ power_spent_by_hours_label|safe }};
+
+    </script>
+{% endblock %}
+
+{% block content %}
+<!-- MAIN CONTENT-->
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-1 m-b-30">Last Bills</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive table--no-card m-b-30">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                        <th scope="col">Month</th>
+                        <th scope="col">Value of Bill (€)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for row in last_bills %}
+                    <tr>
+                        <th scope="row">{{ row.0 }}</th>
+                        <td>{{ row.1 }}</td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

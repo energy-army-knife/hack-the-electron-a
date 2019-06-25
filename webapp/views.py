@@ -210,7 +210,8 @@ def get_parameters_period_overview(meter_id: str, period_start: datetime, period
 
     datasets_overview = [last_year_month_dataset, current_month_dataset, predict_dataset]
 
-    bar_plot_values = [billing_period_month_last_year, billing_period.get_total(), cost_prediction]
+    bar_plot_values = [round(billing_period_month_last_year, 2), round(billing_period.get_total(), 2),
+                       round(cost_prediction, 2)]
     bar_plot_labels = [same_period_last_year_start.strftime("%m-%Y"), period_start.strftime("%m-%Y"),
                        prediction_start_date.strftime("%m-%Y") + " (Expected)"]
 
@@ -277,6 +278,37 @@ def analyser(request):
     param.update(default_parm)
 
     return render(request, "analyser.html", param)
+
+
+@login_required
+def last_bills(request):
+    meter_id = get_meter_id_from_query_parm(request)
+    param = default_parameters(meter_id)
+
+    meter_power = power_loader.get_power_meter_id(meter_id)
+    meter_power = filter_power_by_date(meter_power, end_datetime=TODAY)
+    meter_info = meters_info.get_meter_id_contract_info(meter_id)
+
+    current_price = calculator.compute_total_cost(meter_power, meter_info.contracted_power,
+                                                  meter_info.tariff).get_total()
+
+    # Recommend the best tariff taken into account the two years info
+    best_tariff, costs_tariffs = recommender_tariff.get_best_tariff(meter_power,
+                                                                    meter_info.contracted_power)
+
+    costs_tariffs_month = recommender_tariff.get_tariff_billing_by_months(meter_power, meter_info.contracted_power)
+
+    last_bills = []
+
+    for key, value in costs_tariffs_month.items():
+        bill = value[meter_info.tariff]
+        last_bills.append([key, round(bill, 2)])
+
+    last_bills.reverse()
+    param["last_bills"] = last_bills
+    param["active_tab_last_bills"] = "class=active has-sub"
+
+    return render(request, "last_bills.html", param)
 
 
 @login_required
