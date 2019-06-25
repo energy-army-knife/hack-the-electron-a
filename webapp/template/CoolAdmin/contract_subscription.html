@@ -72,21 +72,21 @@
 
             <div class="card-deck">
             {% if no_adjustment_price > 0%}
-                <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: rgba(25,133,0,0.34)">
+                <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: rgba(25,133,0,0.50)">
                   <div class="card-header title-card">Smart - {{ no_adjustment_price_contract }}kW</div>
                   <div class="card-body">
-                    <h1 class="title-price">{{ no_adjustment_price }} <span class="price-label">€/year</span> </h1>
+                    <h1 class="title-price"><span class="save-label">save: </span>{{ no_adjustment_price }} <span class="price-label">€/year</span> </h1>
                     <p class="card-text">You do not have to adjust your current habits! This contracted power is greater
                         than your maximum registered power!</p>
                   </div>
                 </div>
             {% endif %}
-            {% if small_adjustment_price > 0 and no_adjustment_price != medium_adjustment_price%}
+            {% if small_adjustment_price > 0 and no_adjustment_price != small_adjustment_price%}
 
                 <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: rgba(25,133,0,0.66)">
                   <div class="card-header title-card">Eco - {{ small_adjustment_price_contract }}kW</div>
                   <div class="card-body">
-                    <h1 class="title-price">{{ small_adjustment_price }} <span class="price-label">€/year</span> </h1>
+                    <h1 class="title-price"><span class="save-label">save: </span>{{ small_adjustment_price }} <span class="price-label">€/year</span> </h1>
                     <p class="card-text">This contracted power is bellow the maximum registered in two years. Besides you
                     only surpass the limit {{percentil_small_adjustment}}% of the times! Do your think you can change you habits and save money?</p>
                   </div>
@@ -96,15 +96,15 @@
                     <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: #198500">
                       <div class="card-header title-card">Super saving - {{ medium_adjustment_price_contract }}kW</div>
                       <div class="card-body">
-                        <h1 class="title-price">{{ medium_adjustment_price }} <span class="price-label">€/year</span> </h1>
+                        <h1 class="title-price"><span class="save-label">save: </span>{{ medium_adjustment_price }} <span class="price-label">€/year</span> </h1>
                         <p class="card-text">With a little bit more effort you can lower your bill! Currently you cross the
                             limit {{percentil_some_adjustments }}%, are you willing to change tour routine to save money?</p>
                       </div>
                     </div>
 
             {% endif %}
-            </div>
-            <div>
+        </div>
+            <div CLASS="au-card">
                 <canvas id="contract-by-month"></canvas>
             </div>
         </div>

@@ -66,8 +66,20 @@ def get_name_tariff(tariff: TariffType):
 
 
 def get_power_grouped_by_days(power_data: pd.DataFrame) -> (list, list):
-    df = power_data.groupby(power_data.index.strftime('%D')).sum() / 1000
+    df = power_data.groupby(power_data.index.strftime('%D')).mean() / 1000
     return list(df.index), list(df.values.flatten())
+
+
+def get_cost_by_per_days(power_data: pd.DataFrame, contracted_power: float, tariff: TariffType) -> list:
+
+    days = [g for n, g in power_data.groupby(pd.TimeGrouper('D'))]
+    name_months = [month.index[0].strftime("%D") for month in days]
+    billing = []
+    for i, power_day in enumerate(days):
+        billing.append([name_months[i], round(calculator.compute_total_cost(power_day, contracted_power,
+                                                                            tariff).get_total(), 2)])
+
+    return billing
 
 
 def get_param_pie_chart_peak(billing_period: Bill) -> dict:
@@ -113,11 +125,31 @@ def get_parameters_analyser(meter_id: str, period_start: datetime, period_end: d
     bill = round(billing_period.get_total(), 2)
     max_power_registered = min(round(power_loader_meter.max().values[0] / 1000, 2), meter_info.contracted_power)
 
+    cost_per_day = get_cost_by_per_days(power_loader_meter, meter_info.contracted_power, meter_info.tariff)
+
+    x_cost_per_day = [el[0] for el in cost_per_day]
+    y_cost_per_day = [el[1] for el in cost_per_day]
+
+    x, y = get_power_grouped_by_days(power_loader_meter)
+
+    current_month_dataset = {"label": "Cost (€)",
+                             "x": x_cost_per_day,
+                             "y": y_cost_per_day,
+                             "color": "#00000", "doted": "false"}
+
+    cost_month_dataset = {"label": "Mean Power spent [kW]",
+                             "x": x,
+                             "y": y,
+                             "color": "#0063BC", "doted": "false"}
+
+    datasets_overview = [cost_month_dataset, current_month_dataset]
+
     param = {"power_spent_by_hours_label": list(range(0, 24)),
              "power_loader_meter_hours_max": list(power_loader_meter_hours_max),
              "max_contracted_power_registered": max_power_registered,
              "percentage_contracted_power_registered": max_power_registered * 100 / meter_info.contracted_power,
-             "bill": bill
+             "bill": bill,
+             "datasets_overview": datasets_overview
              }
     param.update(parm_pie_chart)
     return param
@@ -270,11 +302,17 @@ def analyser(request):
         search_start = datetime.datetime.strptime(request.POST["date-start"], date_format).replace(hour=0, minute=0)
         search_end = datetime.datetime.strptime(request.POST["date-end"], date_format).replace(hour=23, minute=59)
 
+    if search_end > TODAY:
+        search_end = TODAY.replace(hour=23, minute=59)
+    if search_start > TODAY:
+        search_start = TODAY.replace(hour=0, minute=0)
+
     param = get_parameters_analyser(meter, search_start, search_end)
     default_parm = default_parameters(meter)
     param["period_start"] = search_start.strftime(date_format)
     param["period_end"] = search_end.strftime(date_format)
     param["active_tab_analyser"] = "class=active has-sub"
+
     param.update(default_parm)
 
     return render(request, "analyser.html", param)

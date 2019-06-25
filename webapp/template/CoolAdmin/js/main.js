@@ -185,12 +185,17 @@ $(document).ready(function() {
               xAxes: [{
                 display: true,
                 type: "time",
+
+                time: {
+                  format: "MM-DD-YYYY",
+                  unit: "day",
+                },
                 gridLines: {
                   display: false,
                   drawBorder: false
                 },
                 scaleLabel: {
-                  display: true,
+                  display: false,
                   labelString: 'Day of the Month'
                 },
                 ticks: {
@@ -205,7 +210,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Power Spent [kW]',
+                  labelString: 'Mean Power Spent [kW]',
                   fontFamily: "Poppins"
 
                 },
@@ -226,7 +231,81 @@ $(document).ready(function() {
     } catch (error) {
       console.log(error);
     }
-    // pv plots
+
+        try {
+      //Sales chart
+      var ctx = document.getElementById("overview-period-chart");
+      if (ctx) {
+
+        var myChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            type: 'line',
+            defaultFontFamily: 'Poppins',
+            datasets: datasets_overview_month
+          },
+          options: {
+
+            responsive: true,
+            tooltips: false,
+            legend: {
+              display: true,
+              labels: {
+                usePointStyle: true,
+                fontFamily: 'Poppins',
+              },
+            },
+            scales: {
+              xAxes: [{
+                display: true,
+                type: "time",
+
+                time: {
+                  format: "MM-DD-YYYY",
+                  unit: "day",
+                },
+                gridLines: {
+                  display: false,
+                  drawBorder: false
+                },
+                scaleLabel: {
+                  display: false,
+                  labelString: 'Day of the Month'
+                },
+                ticks: {
+                  fontFamily: "Poppins"
+                }
+              }],
+              yAxes: [{
+                display: true,
+                gridLines: {
+                  display: false,
+                  drawBorder: false
+                },
+                scaleLabel: {
+                  display: false,
+                  labelString: 'Mean Power Spent [kW]',
+                  fontFamily: "Poppins"
+
+                },
+                ticks: {
+                  fontFamily: "Poppins"
+                }
+              }]
+            },
+            title: {
+              display: false,
+              text: 'Normal Legend'
+            }
+          }
+        });
+      }
+
+
+    } catch (error) {
+      console.log(error);
+    }
+
 
     try {
       //power + reneals chart

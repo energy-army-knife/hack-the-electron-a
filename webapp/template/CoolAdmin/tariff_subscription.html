@@ -19,10 +19,6 @@
         font-family: inherit;
     }
 
-    .price-label{
-        font-size: 18px;
-    }
-
     </style>
 
     <script>
@@ -63,40 +59,41 @@
                     Take a look below to see the options available!
                 </div>
             {% endif %}
-
-            <div class="card-deck">
-                {% if simple_tariff_savings > 0 %}
-                <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: rgba(0, 123, 255, 0.5)">
-                  <div class="card-header title-card">Simple</div>
-                  <div class="card-body">
-                    <h1 class="title-price">{{ simple_tariff_savings }} <span class="price-label">€/year</span></h1>
-                    <p class="card-text">The electricity rate is the same (normal rate) every day of the week and at any time of the year.</p>
-                  </div>
+            <div class="center-div">
+                <div class="card-deck" >
+                    {% if simple_tariff_savings > 0 %}
+                    <div class="card text-white mb-3" style="max-width: 33.3rem; background-color: rgba(0, 123, 255, 0.5)">
+                      <div class="card-header title-card">Simple</div>
+                      <div class="card-body">
+                        <h1 class="title-price"><span class="save-label">save:</span> {{ simple_tariff_savings }} <span class="price-label">€/year</span></h1>
+                        <p class="card-text">The electricity rate is the same (normal rate) every day of the week and at any time of the year.</p>
+                      </div>
+                    </div>
+                    {% endif %}
+                    {% if two_tariff_savings > 0 %}
+                    <div class="card text-white mb-3" style="max-width: 33.3rem; background-color: rgba(0,161,2, 0.5)">
+                      <div class="card-header title-card">Two-Periods</div>
+                      <div class="card-body">
+                        <h1 class="title-price"><span class="save-label">save:</span> {{ two_tariff_savings }} <span class="price-label">€/year</span></h1>
+                        <p class="card-text">The electricity rate depends on the consumption schedule and can be charged at two rates: peak or off-peak.</p>
+                      </div>
+                    </div>
+                    {% endif %}
+                    {% if three_tariff_savings > 0 %}
+                    <div class="card text-white mb-3" style="max-width: 33.3rem; background-color: rgba(255,26,0,0.5)">
+                      <div class="card-header title-card">Three-Periods</div>
+                      <div class="card-body">
+                        <h1 class="title-price"><span class="save-label">save:</span> {{ three_tariff_savings }} <span class="price-label">€/year</span></h1>
+                        <p class="card-text">The electricity rate depends on the consumption schedule and can be charged at Peak, Off-peak or Super-off peak.
+                        Super-off peak hours are cheaper, Off-peak hours are charged at an intermediate price and Peak hours are more expensive.</p>
+                      </div>
+                    </div>
+                    {% endif %}
                 </div>
-                {% endif %}
-                {% if two_tariff_savings > 0 %}
-                <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: rgba(0,161,2, 0.5)">
-                  <div class="card-header title-card">Two-Periods</div>
-                  <div class="card-body">
-                    <h1 class="title-price">{{ two_tariff_savings }} <span class="price-label">€/year</span></h1>
-                    <p class="card-text">The electricity rate depends on the consumption schedule and can be charged at two rates: peak or off-peak.</p>
-                  </div>
                 </div>
-                {% endif %}
-                {% if three_tariff_savings > 0 %}
-                <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: rgba(255,26,0,0.5)">
-                  <div class="card-header title-card">Three-Periods</div>
-                  <div class="card-body">
-                    <h1 class="title-price">{{ three_tariff_savings }} <span class="price-label">€/year</span></h1>
-                    <p class="card-text">The electricity rate depends on the consumption schedule and can be charged at Peak, Off-peak or Super-off peak.
-                    Super-off peak hours are cheaper, Off-peak hours are charged at an intermediate price and Peak hours are more expensive.</p>
-                  </div>
+                <div class="au-card">
+                    <canvas id="tariff_months"></canvas>
                 </div>
-                {% endif %}
-            </div>
-            <div>
-                <canvas id="tariff_months"></canvas>
-            </div>
         </div>
     </div>
 </div>
