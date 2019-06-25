@@ -52,12 +52,14 @@
         <div class="container-fluid">
             <div class="row m-b-30">
                 <div class="col-md-12">
-                    <div class="overview-wrap">
+                    <div class="overview-wrap m-b-30">
                         <h2 class="title-1">Photovoltaic Simulator</h2>
+                    </div>
+                    <div class="overview-wrap">
+                        <p class="m-b-10 color-wwc" style="font-weight: bold">Do you want to find out the impact photovoltaic panels and batteries in you power consumption? Fill the fields bellow and click <span style="color: #000000"> Simulate</span> to get the results! </p>
                     </div>
                 </div>
             </div>
-
 
             <div class="au-card m-b-40">
                 <form action="{% url 'photovoltaic' %}?meter={{ meter_id }}" method="post">

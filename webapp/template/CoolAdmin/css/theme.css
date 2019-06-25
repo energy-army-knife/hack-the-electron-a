@@ -3246,6 +3246,14 @@ section {
     width: 100%;
 }
 
+.color-wwc{
+    color: #337ab7;
+}
+
+.title-current-contracted{
+    color: rgba(56, 56, 56, 0.74);
+    font-family: inherit;
+}
 /* ----- Card ----- */
 .au-card {
     -webkit-box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.1);

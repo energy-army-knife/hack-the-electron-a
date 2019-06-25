@@ -24,12 +24,6 @@
         font-size: x-large;
     }
 
-    .title-current-contract{
-        color: rgba(56, 56, 56, 0.74);
-        font-family: inherit;
-    }
-
-
     </style>
 
 
@@ -45,10 +39,10 @@
             <div class="row" style="margin-bottom: 20px">
                 <div class="col-md-12">
                     <div class="overview-wrap m-b-30">
-                        <h3 class="title-1">Contracted Power Recommender</h3>
+                        <h3 class="title-1">Contracted Power Recommended</h3>
                     </div>
-                    <div class="m-b-10" style="display: flex">
-                        <h3 style="margin-right: 5px;">Current Contracted Power:</h3><h3 class="title-current-contract"> {{ current_contract }}</h3>
+                    <div class="overview-wrap m-b-30">
+                        <h3 class="title-current-contracted">Current Contracted Power: <span class="color-wwc">{{ current_contract }} kW</span></h3>
                     </div>
                 </div>
             </div>
@@ -76,7 +70,7 @@
                   <div class="card-header title-card">Smart - {{ no_adjustment_price_contract }}kW</div>
                   <div class="card-body">
                     <h1 class="title-price"><span class="save-label">save: </span>{{ no_adjustment_price }} <span class="price-label">€/year</span> </h1>
-                    <p class="card-text">You do not have to adjust your current habits! This contracted power is greater
+                    <p class="card-text">You do not have to adjust your current habits! This contracted power is higher
                         than your maximum registered power!</p>
                   </div>
                 </div>
@@ -88,7 +82,7 @@
                   <div class="card-body">
                     <h1 class="title-price"><span class="save-label">save: </span>{{ small_adjustment_price }} <span class="price-label">€/year</span> </h1>
                     <p class="card-text">This contracted power is bellow the maximum registered in two years. Besides you
-                    only surpass the limit {{percentil_small_adjustment}}% of the times! Do your think you can change you habits and save money?</p>
+                    only surpass the limit {{percentil_small_adjustment}}% of the times! Do your think you can change your habits and save money?</p>
                   </div>
                 </div>
             {% endif %}
@@ -98,7 +92,7 @@
                       <div class="card-body">
                         <h1 class="title-price"><span class="save-label">save: </span>{{ medium_adjustment_price }} <span class="price-label">€/year</span> </h1>
                         <p class="card-text">With a little bit more effort you can lower your bill! Currently you cross the
-                            limit {{percentil_some_adjustments }}%, are you willing to change tour routine to save money?</p>
+                            limit {{percentil_some_adjustments }}% of the times, are you willing to change your routine to save money?</p>
                       </div>
                     </div>
 

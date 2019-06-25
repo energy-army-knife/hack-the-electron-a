@@ -14,10 +14,6 @@
         text-align:center;
         font-size: x-large;
     }
-    .title-current-tariff{
-        color: rgba(56, 56, 56, 0.74);
-        font-family: inherit;
-    }
 
     </style>
 
@@ -42,10 +38,10 @@
             <div class="row" style="margin-bottom: 20px">
                 <div class="col-md-12">
                     <div class="overview-wrap m-b-30">
-                        <h1 class="title-1">Tariff Recommender</h1>
+                        <h1 class="title-1">Tariff Recommended</h1>
                     </div>
-                    <div class="m-b-10" style="display: flex">
-                        <h3 style="margin-right: 5px;">Current Tariff:</h3><h3 class="title-current-tariff"> {{ current_tariff }}</h3>
+                    <div class="overview-wrap m-b-30">
+                        <h3 class="title-current-contracted">Current Tariff: <span class="color-wwc">{{ current_tariff }}</span></h3>
                     </div>
                 </div>
             </div>
@@ -55,7 +51,7 @@
             </div>
             {% else %}
                 <div class="alert alert-warning" role="alert">
-                  Your current tariff is not suited your power consumption, you could save some money by changing your tariff.
+                  Your current tariff is not suited to your power consumption, you could save some money by changing your tariff.
                     Take a look below to see the options available!
                 </div>
             {% endif %}
