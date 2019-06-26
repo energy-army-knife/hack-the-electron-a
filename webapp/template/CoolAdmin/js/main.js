@@ -890,7 +890,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Percentage of the power spent',
+                  labelString: 'Percentage of total power consumption',
                   fontFamily: "Poppins",
                 }
               }]
