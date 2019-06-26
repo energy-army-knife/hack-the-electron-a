@@ -444,7 +444,7 @@ $(document).ready(function() {
             labels: x_axis,
             defaultFontFamily: 'Poppins',
             datasets: [{
-              label: 'waisted PV generation',
+              label: 'wasted PV generation',
               data: generated_PV_waisted,
               backgroundColor: 'rgba(220,53,69,0.75)',
             }, {
