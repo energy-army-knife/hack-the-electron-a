@@ -872,7 +872,7 @@ $(document).ready(function() {
             ]
           },
           options: {
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
             legend: {
               display: false
             },
@@ -887,6 +887,11 @@ $(document).ready(function() {
                 ticks: {
                   beginAtZero: true,
                   fontFamily: "Poppins"
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Percentage of total power consumption',
+                  fontFamily: "Poppins",
                 }
               }]
             }
