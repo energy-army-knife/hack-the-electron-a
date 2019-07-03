@@ -75,7 +75,7 @@
                             <a href="{% url 'analyser' %}?meter={{ meter_id }}">
                                 <i class="fas fa-chart-bar"></i>Analyser</a>
                         </li>
-                        <li> {{ active_tab_photovoltaic}}
+                        <li {{ active_tab_photovoltaic}}>
                             <a href="{% url 'photovoltaic' %}?meter={{ meter_id }}">
                                 <i class="fas fa-certificate"></i>Photovoltaic</a>
                         </li>

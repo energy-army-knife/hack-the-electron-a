@@ -99,14 +99,15 @@
     <div class="section__content section__content--p30">
         <div class="container-fluid" >
             <h3 class="title-2 m-b-40">{{ start_month }}-{{ today }}</h3>
+
             <div>
                 <div class="row m-b-30">
-                    <div class="col-6">
+                    <div class="col-lg-6 m-b-30">
                         <div class="au-card"  style="height: 100%">
                             <div class="au-card-inner">
                                 <h3>Bill</h3>
                                 <div class="row m-b-30" style="padding: 20px">
-                                    <div class="col-5">
+                                    <div class="col-lg-5">
                                         <div class="row">
                                             <p>This month</p>
                                             {% if bar_plot_values.0 < bar_plot_values.1%}
@@ -118,7 +119,7 @@
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <div class="col-7">
+                                    <div class="col-lg-7">
                                         <div class="row">
                                             <p>Expected next month</p>
                                              {% if bar_plot_values.1 < bar_plot_values.2%}
@@ -135,7 +136,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-6">
+                    <div class="col-lg-6 m-b-30">
                         <div class="au-card" style="height: 100%">
                             <div class="au-card-inner" style="height: 100%">
                                 <h3 class="m-b-30">Tariff</h3>
@@ -162,7 +163,7 @@
                                             </div>
                                         </div>
 
-                                    <div class="col-8">
+                                    <div class="col-lg-8">
                                         <canvas id="percent-chart"></canvas>
                                     </div>
 
@@ -210,6 +211,7 @@
                 <canvas id="power-mean-month"></canvas>
               </div>
             </div>
+
             {% if meter_id == "meter_EDP" %}
                 <div class="au-card m-b-30">
                     <h3 class="m-b-30">Appliances</h3>

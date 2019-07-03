@@ -68,39 +68,39 @@
     <div class="section__content section__content--p30">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-12 m-b-30">
                     <div class="overview-wrap">
                         <h2 class="title-1">Analyser</h2>
                     </div>
                 </div>
             </div>
-            <div class="m-b-30">
+            <div class="container m-b-30">
                 <form action="{% url 'analyser' %}?meter={{ meter_id }}" method="post">
                     {% csrf_token  %}
                      <input type="hidden" name="meter_id" value="{{ meter_id }}">
-                    <div class="form-group row">
-                      <label for="id-date-start" class="col-2 col-form-label">Date</label>
-                      <div class="col-3">
+                    <div class="form-group row m-b-30">
+                      <label for="id-date-start" class="col-lg-2 col-form-label">Date</label>
+                      <div class="col-lg-4">
                         <input class="form-control" type="date" value={{ period_start }} id="id-date-start" name="date-start">
                       </div>
-                         <div class="col-3">
+                         <div class="col-lg-4 m-b-5">
                         <input class="form-control" type="date" value={{ period_end }} id="id-date-end" name="date-end">
                       </div>
-                        <div>
+                        <div class="col-lg-2">
                         <button type="submit" class="btn btn-dark">Ok</button>
-                    </div>
+                        </div>
                     </div>
                 </form>
             </div>
             <h1  class="m-b-30 color-wwc" style="text-align: center">{{ bill }} €</h1>
             <div class="row m-b-30">
-                <div class="col-5">
+                <div class="col-lg-5 m-b-30">
                     <div class="au-card" style="height: 100%">
                         <div class="au-card-inner" style="height: 100%">
                         <h3 class="m-b-30">Tariff</h3>
                             <div class="plot-position">
                                 <div class="row no-gutters">
-                                    <div class="col-4">
+                                    <div class="col-lg-4">
                                         <div class="chart-note-wrap">
                                             <div class="chart-note mr-0 d-block">
                                                 <span class="dot dot--blue"></span>
@@ -121,7 +121,7 @@
                                         </div>
                                     </div>
 
-                                <div class="col-8">
+                                <div class="col-lg-8">
                                     <canvas id="percent-chart"></canvas>
                                 </div>
 
@@ -138,7 +138,7 @@
                     </div>
                 </div>
                 </div>
-                <div class="col-7">
+                <div class="col-lg-7">
                     <div class="au-card" style="height: 100%">
                         <div class="au-card-inner" style="height: 100%">
                         <h3 class="m-b-30">Max Power Spent by Hour</h3>
