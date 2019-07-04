@@ -288,6 +288,16 @@ def index(request):
 
     return render(request, 'index.html', param)
 
+# Create your views here.
+@login_required
+def contact(request):
+    meter_id = get_meter_id_from_query_parm(request)
+
+    param = default_parameters(meter_id)
+    param["active_tab_device_contacts"] = "class=active has-sub"
+
+    return render(request, 'contacts.html', param)
+
 
 @login_required
 def analyser(request):

@@ -33,5 +33,6 @@ urlpatterns = [
     url(r'^contract_subscription/$', views.contract_subscription, name='contract_subscription'),
     url(r'^tariff_subscription/$', views.tariff_subscription, name='tariff_subscription'),
     url(r'^notifications/$', views.notifications, name='notificatons'),
+    url(r'^contact/$', views.contact, name='contact'),
     url(r'^favicon\.ico$', RedirectView.as_view(url='static/images/favicon.ico')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
