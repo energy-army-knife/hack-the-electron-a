@@ -17,13 +17,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.views.generic import RedirectView
 
 from webapp import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include('django.contrib.auth.urls')),
     url(r'^$', views.index, name='index'),
     url(r'^analyser/$', views.analyser, name='analyser'),
     url(r'^last_bills/$', views.last_bills, name='last_bills'),
