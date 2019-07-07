@@ -105,11 +105,11 @@
                     <div class="col-lg-6 m-b-30">
                         <div class="au-card"  style="height: 100%">
                             <div class="au-card-inner">
-                                <h3>Bill</h3>
+                                <h3>Fatura</h3>
                                 <div class="row m-b-30" style="padding: 20px">
                                     <div class="col-lg-5">
                                         <div class="row">
-                                            <p>This month</p>
+                                            <p>Este mês</p>
                                             {% if bar_plot_values.0 < bar_plot_values.1%}
                                                 <img class="box-image-alert-bill" src="{% static "images/icon/up.png" %}" alt="Billing is higher">
                                                 <h3 style="color: #ff1a00">{{ percentage_bill.0 }}%</h3>
@@ -121,7 +121,7 @@
                                     </div>
                                     <div class="col-lg-7">
                                         <div class="row">
-                                            <p>Expected next month</p>
+                                            <p>Próximo mês</p>
                                              {% if bar_plot_values.1 < bar_plot_values.2%}
                                                 <img class="box-image-alert-bill" src="{% static "images/icon/up.png" %}" alt="Billing is higher">
                                                 <h3 style="color: #ff1a00">{{ percentage_bill.1 }}%</h3>
@@ -139,25 +139,37 @@
                     <div class="col-lg-6 m-b-30">
                         <div class="au-card" style="height: 100%">
                             <div class="au-card-inner" style="height: 100%">
-                                <h3 class="m-b-30">Tariff</h3>
+                                <h3 class="m-b-30">Tarifa</h3>
                                 <div class="plot-position">
                                     <div class="row no-gutters">
                                         <div class="col-4">
                                             <div class="chart-note-wrap">
+                                                {% if tariff == 1 %}
                                                 <div class="chart-note mr-0 d-block">
                                                     <span class="dot dot--blue"></span>
-                                                    <span>Peak</span>
+                                                    <span>Simples</span>
                                                 </div>
-                                                {% if tariff > 1 %}
+                                                {% elif tariff == 2 %}
+                                                <div class="chart-note mr-0 d-block">
+                                                    <span class="dot dot--blue"></span>
+                                                    <span>Fora de Vazio</span>
+                                                </div>
                                                 <div class="chart-note mr-0 d-block">
                                                     <span class="dot dot--red"></span>
-                                                    <span>Off-Peak</span>
+                                                    <span>Vazio</span>
                                                 </div>
-                                                {% endif %}
-                                                {% if tariff > 2 %}
+                                                {% else %}
+                                                <div class="chart-note mr-0 d-block">
+                                                    <span class="dot dot--blue"></span>
+                                                    <span>Ponta</span>
+                                                </div>
+                                                <div class="chart-note mr-0 d-block">
+                                                    <span class="dot dot--red"></span>
+                                                    <span>Cheias</span>
+                                                </div>
                                                 <div class="chart-note mr-0 d-block">
                                                     <span class="dot dot--green"></span>
-                                                    <span>Super-Off-Peak</span>
+                                                    <span>Vazio</span>
                                                 </div>
                                                 {% endif %}
                                             </div>
@@ -169,20 +181,20 @@
 
                                     <div class="chart-note-wrap">
                                         <div class="chart-note mr-0 d-block">
-                                            <span>Inner circle: % of the bill in each Tariff period</span>
+                                            <span>Círculo interno: % de cada período na fatura total</span>
                                         </div>
                                         <div class="chart-note mr-0 d-block">
-                                            <span>Outer circle: % of the total used power in each Tariff period</span>
+                                            <span>Círculo Externo: % da potência utilizada em cada período</span>
                                         </div>
                                     </div>
                                 </div>
                                {% if current_tariff != best_tariff %}
                                     <div class="alert alert-danger alert-position" role="alert" style="margin-top: 20px">
-                                      Tariff is not optimized for your power consumption, click <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}" class="alert-link">here</a>.
+                                      A sua tarifa não está optimizada para o seu consumo energético, para saber mais clique <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}" class="alert-link">aqui</a>.
                                     </div>
                                {% else %}
                                    <div class="alert alert-success alert-position" role="alert" style="margin-top: 20px">
-                                      Congratulations! Your current tariff {{ current_tariff }} is optimized for your power consumption! Detailed info <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}" class="alert-link">here</a>.
+                                      Parabéns! A sua tarifa {{ current_tariff }} está optimizada para o seu consumo! Informação detalhada <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}" class="alert-link">aqui</a>.
                                     </div>
                               {% endif %}
                           </div>
@@ -191,17 +203,17 @@
                 </div>
             </div>
             <div class="au-card m-b-30">
-                <h3 class="m-b-30">Usage Prediction</h3>
+                <h3 class="m-b-30">Previsão de Consumo</h3>
                 <canvas id="overview-month-chart"></canvas>
             </div>
 
             <div class="au-card m-b-30" style="height: 100%">
-                <h3 class="m-b-20">Contracted Power</h3>
+                <h3 class="m-b-20">Potência Contratada</h3>
                 <div class="au-card-inner" style="height: 100%">
                 {% if contracted_power != best_contracted_power %}
                 <div class="m-b-30">
                     <div class="alert alert-danger alert-position" role="alert">
-                      Contracted Power is not optimized for your power consumption, click <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}" class="alert-link">here</a>.
+                      A sua potência contratada não está optimizada para o seu consumo, clique <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}" class="alert-link">aqui</a> para saber mais.
                     </div>
                 </div>
                 {% endif %}
@@ -214,7 +226,7 @@
 
             {% if meter_id == "meter_EDP" %}
                 <div class="au-card m-b-30">
-                    <h3 class="m-b-30">Appliances</h3>
+                    <h3 class="m-b-30">Equipamentos</h3>
                     <div class="au-card-inner">
                         <canvas id="appliancesbarChart"></canvas>
                     </div>

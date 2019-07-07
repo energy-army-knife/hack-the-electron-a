@@ -58,11 +58,11 @@ def get_meter_id_from_query_parm(request):
 
 def get_name_tariff(tariff: TariffType):
     if tariff == TariffType.SIMPLE:
-        return "Simple"
+        return "Simples"
     elif tariff == TariffType.TWO_PERIOD:
-        return "Two-Periods"
+        return "Bi-Horária"
     elif tariff == TariffType.THREE_PERIOD:
-        return "Three-Period"
+        return "Tri-Horária"
 
 
 def get_power_grouped_by_days(power_data: pd.DataFrame) -> (list, list):
@@ -132,12 +132,12 @@ def get_parameters_analyser(meter_id: str, period_start: datetime, period_end: d
 
     x, y = get_power_grouped_by_days(power_loader_meter)
 
-    current_month_dataset = {"label": "Cost [€]",
+    current_month_dataset = {"label": "Custo [€]",
                              "x": x_cost_per_day,
                              "y": y_cost_per_day,
                              "color": "#00000", "doted": "false", "axis": 'A'}
 
-    cost_month_dataset = {"label": "Mean Power spent [kW]",
+    cost_month_dataset = {"label": "Média da potência consumida [kW]",
                              "x": x,
                              "y": y,
                              "color": "#0063BC", "doted": "false", "axis": 'B'}
@@ -196,12 +196,12 @@ def get_parameters_period_overview(meter_id: str, period_start: datetime, period
                                                                          meter_info.tariff).get_total(), 2)
     if meter_id == "meter_EDP":
         x = appliance_data[START_MONTH:TODAY].sum(axis=0)
-        allowed = {'air1': "AC", 'car1': "EV", 'clotheswasher_dryg1': "WasherDryer", \
-                'furnace1': "Furnace", 'use': 'use'}
+        allowed = {'air1': "Ar Condicionado", 'car1': "Carro Elétrico", 'clotheswasher_dryg1': "Máquina de lavar e secar", \
+                'furnace1': "Termoacumulador", 'use': 'use'}
         percentage = dict(map(lambda i: (allowed.get(i[0], i[0].capitalize()), \
             100*i[1]/x["use"]), x.items()))
         percentage.pop("use")
-        percentage["Others"] = 100 - np.sum(list(percentage.values()))
+        percentage["Outros"] = 100 - np.sum(list(percentage.values()))
         appliances_label = list(percentage.keys())
         appliances_data = list(map(lambda x: round(x, 1), percentage.values()))
     else:
@@ -226,7 +226,7 @@ def get_parameters_period_overview(meter_id: str, period_start: datetime, period
 
     spent_period_overview_label, spent_period_overview_data = get_power_grouped_by_days(power_loader_meter)
 
-    predict_dataset = {"label": prediction_start_date.strftime("%m-%Y") + " (Expected)",
+    predict_dataset = {"label": prediction_start_date.strftime("%m-%Y") + " (Previsão)",
                        "x": prediction_group_month[0], "y": prediction_group_month[1],
                        "color": "#00000", "doted": "true"}
 
@@ -245,7 +245,7 @@ def get_parameters_period_overview(meter_id: str, period_start: datetime, period
     bar_plot_values = [round(billing_period_month_last_year, 2), round(billing_period.get_total(), 2),
                        round(cost_prediction, 2)]
     bar_plot_labels = [same_period_last_year_start.strftime("%m-%Y"), period_start.strftime("%m-%Y"),
-                       prediction_start_date.strftime("%m-%Y") + " (Expected)"]
+                       prediction_start_date.strftime("%m-%Y") + " (Previsão)"]
 
     percentage_bill = [int(abs(bar_plot_values[0] - bar_plot_values[1]) * 100 / bar_plot_values[0]),
                        int(abs(bar_plot_values[1] - bar_plot_values[2]) * 100 / bar_plot_values[1])]
@@ -506,7 +506,7 @@ def device_simulator(request):
 
         if time_of_day > step_d:
             time_of_day = step_d
-            param["warning"] = "Daily usage exceeds equipment capacity, it was set to the maximum: {}.".format(time_of_day)
+            param["warning"] = "Este equipamento apenas permite uma utilização de {0} vezes por dia.".format(time_of_day)
         else:
             param["warning"] = ""
 
@@ -548,9 +548,9 @@ def device_simulator(request):
         y_3 = device_overview_data
 
         dataset_y2 = {
-            "label": "Current power usage ({} to {})".format(str(start_datetime.date()), str(end_datetime.date())),
+            "label": "Consumo atual ({} to {})".format(str(start_datetime.date()), str(end_datetime.date())),
             "x": x_2, "y": y_2, "color": "#0063bc", "doted": "false"}
-        dataset_y3 = {"label": "Equipment power usage", "x": x_3, "y": y_3, "color": "#000000", "doted": "true"}
+        dataset_y3 = {"label": "Potência utilizada pelo equipamento", "x": x_3, "y": y_3, "color": "#000000", "doted": "true"}
         datasets_overview = [dataset_y3, dataset_y2]
 
         old_bill = calculator.compute_total_cost(power_data, meter_info.contracted_power, meter_info.tariff)
@@ -562,7 +562,7 @@ def device_simulator(request):
         needed_contracted_power = recommend_contract(max_power)
 
         if actual_contracted_power != needed_contracted_power:
-            param["change_contracted_power"] = "Current contracted power may be insufficient for this equipment, consider changing to {}".format(needed_contracted_power)
+            param["change_contracted_power"] = "A potência contratada atual é inferior à exigida pelo equipamento. Para a simulação foi necessário ajustar a potência contratada para {}.".format(needed_contracted_power)
         else:
             param["change_contracted_power"] = ""
 

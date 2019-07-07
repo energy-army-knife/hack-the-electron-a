@@ -70,7 +70,7 @@
             <div class="row">
                 <div class="col-md-12 m-b-30">
                     <div class="overview-wrap">
-                        <h2 class="title-1">Analyser</h2>
+                        <h2 class="title-1">Pesquisa</h2>
                     </div>
                 </div>
             </div>
@@ -79,7 +79,7 @@
                     {% csrf_token  %}
                      <input type="hidden" name="meter_id" value="{{ meter_id }}">
                     <div class="form-group row m-b-30">
-                      <label for="id-date-start" class="col-lg-2 col-form-label">Date</label>
+                      <label for="id-date-start" class="col-lg-2 col-form-label">Data</label>
                       <div class="col-lg-4">
                         <input class="form-control" type="date" value={{ period_start }} id="id-date-start" name="date-start">
                       </div>
@@ -97,27 +97,39 @@
                 <div class="col-lg-5 m-b-30">
                     <div class="au-card" style="height: 100%">
                         <div class="au-card-inner" style="height: 100%">
-                        <h3 class="m-b-30">Tariff</h3>
+                        <h3 class="m-b-30">Tarifa</h3>
                             <div class="plot-position">
                                 <div class="row no-gutters">
                                     <div class="col-lg-4">
                                         <div class="chart-note-wrap">
-                                            <div class="chart-note mr-0 d-block">
-                                                <span class="dot dot--blue"></span>
-                                                <span>Peak</span>
-                                            </div>
-                                            {% if tariff > 1 %}
-                                            <div class="chart-note mr-0 d-block">
-                                                <span class="dot dot--red"></span>
-                                                <span>Off-Peak</span>
-                                            </div>
-                                            {% endif %}
-                                            {% if tariff > 2 %}
-                                            <div class="chart-note mr-0 d-block">
-                                                <span class="dot dot--green"></span>
-                                                <span>Super-Off-Peak</span>
-                                            </div>
-                                            {% endif %}
+                                            {% if tariff == 1 %}
+                                                <div class="chart-note mr-0 d-block">
+                                                    <span class="dot dot--blue"></span>
+                                                    <span>Simples</span>
+                                                </div>
+                                                {% elif tariff == 2 %}
+                                                <div class="chart-note mr-0 d-block">
+                                                    <span class="dot dot--blue"></span>
+                                                    <span>Fora de Vazio</span>
+                                                </div>
+                                                <div class="chart-note mr-0 d-block">
+                                                    <span class="dot dot--red"></span>
+                                                    <span>Vazio</span>
+                                                </div>
+                                                {% else %}
+                                                <div class="chart-note mr-0 d-block">
+                                                    <span class="dot dot--blue"></span>
+                                                    <span>Ponta</span>
+                                                </div>
+                                                <div class="chart-note mr-0 d-block">
+                                                    <span class="dot dot--red"></span>
+                                                    <span>Cheias</span>
+                                                </div>
+                                                <div class="chart-note mr-0 d-block">
+                                                    <span class="dot dot--green"></span>
+                                                    <span>Vazio</span>
+                                                </div>
+                                                {% endif %}
                                         </div>
                                     </div>
 
@@ -127,10 +139,10 @@
 
                                 <div class="chart-note-wrap">
                                     <div class="chart-note mr-0 d-block">
-                                        <span>Inner circle: % of the bill in each Tariff period</span>
+                                        <span>Círculo interno: % de cada período na fatura total</span>
                                     </div>
                                     <div class="chart-note mr-0 d-block">
-                                        <span>Outer circle: % of the total used power in each Tariff period</span>
+                                        <span>Círculo Externo: % da potência utilizada em cada período</span>
                                     </div>
                                 </div>
                             </div>
@@ -141,7 +153,7 @@
                 <div class="col-lg-7">
                     <div class="au-card" style="height: 100%">
                         <div class="au-card-inner" style="height: 100%">
-                        <h3 class="m-b-30">Max Power Spent by Hour</h3>
+                        <h3 class="m-b-30">Máximo de potência consumida por hora</h3>
                         <div class="progress">
                           <div class="progress-bar" role="progressbar" style="width: {{ percentage_contracted_power_registered }}%;" aria-valuenow="{{ percentage_contracted_power_registered }}" aria-valuemin="0" aria-valuemax="100">{{ max_contracted_power_registered }}/{{ contracted_power }} kW</div>
                         </div>
@@ -151,7 +163,7 @@
                 </div>
             </div>
             <div class="au-card m-b-30">
-                <h3 class="m-b-30">Usage</h3>
+                <h3 class="m-b-30">Consumo</h3>
                 <canvas id="overview-period-chart"></canvas>
             </div>
 

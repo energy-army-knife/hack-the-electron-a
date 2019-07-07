@@ -36,7 +36,7 @@ class TariffRecommender:
 
     def get_tariff_billing_by_months(self, power_data: pd.DataFrame, contracted_power: float) -> dict:
         months = [g for n, g in power_data.groupby(pd.TimeGrouper('M'))]
-        name_months = [month.index[0].strftime("%B-%Y") for month in months]
+        name_months = [month.index[0].strftime("%m-%Y") for month in months]
 
         months_billing = {}
         for i, month in enumerate(months):

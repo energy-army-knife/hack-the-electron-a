@@ -73,35 +73,35 @@
                         </li>
                         <li {{ active_tab_analyser }}>
                             <a href="{% url 'analyser' %}?meter={{ meter_id }}">
-                                <i class="fas fa-chart-bar"></i>Analyser</a>
+                                <i class="fas fa-chart-bar"></i>Pesquisa</a>
                         </li>
                         <li {{ active_tab_photovoltaic}}>
                             <a href="{% url 'photovoltaic' %}?meter={{ meter_id }}">
-                                <i class="fas fa-certificate"></i>Photovoltaic</a>
+                                <i class="fas fa-certificate"></i>Simulador de PV's</a>
                         </li>
                          <li {{ active_tab_device_simulator }}>
                             <a href="{% url 'device_simulator' %}?meter={{ meter_id }}">
-                                <i class="fas fa-credit-card"></i>Equipment Simulator</a>
+                                <i class="fas fa-credit-card"></i>Simulador de Equipamentos</a>
                         </li>
                         <li {{ active_subscription }}>
                             <a class="js-arrow" href="#">
-                            <i class="fas fa-eur"></i>Recommendations</a>
+                            <i class="fas fa-eur"></i>Recomendações</a>
                             <ul class="navbar-mobile-sub__list list-unstyled js-sub-list">
                                 <li>
-                                <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}">Tariff</a>
+                                <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}">Tarifa</a>
                                 </li>
                                 <li>
-                                <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}">Contracted Power</a>
+                                <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}">Potência Contratada</a>
                                 </li>
                             </ul>
                         </li>
                          <li {{ active_tab_last_bills }}>
                             <a href="{% url 'last_bills' %}?meter={{ meter_id }}">
-                                <i class="fas fa-table"></i>Latest Bills</a>
+                                <i class="fas fa-table"></i>Faturas</a>
                         </li>
                         <li {{ active_tab_device_contacts }}>
                                 <a href="{% url 'contact' %}?meter={{ meter_id }}">
-                                    <i class="fas fa-envelope"></i>Contact us!</a>
+                                    <i class="fas fa-envelope"></i>Contactos</a>
                         </li>
                     </ul>
                 </div>
@@ -125,35 +125,35 @@
                         </li>
                         <li {{ active_tab_analyser }}>
                             <a href="{% url 'analyser' %}?meter={{ meter_id }}">
-                                <i class="fas fa-chart-bar"></i>Analyser</a>
+                                <i class="fas fa-chart-bar"></i>Pesquisa</a>
                         </li>
                         <li {{ active_tab_photovoltaic }}>
                             <a href="{% url 'photovoltaic' %}?meter={{ meter_id }}">
-                                <i class="fas fa-certificate"></i>Photovoltaic</a>
+                                <i class="fas fa-certificate"></i>Simulador de PV's</a>
                         </li>
                         <li {{ active_tab_device_simulator }}>
                             <a href="{% url 'device_simulator' %}?meter={{ meter_id }}">
-                                <i class="fas fa-credit-card"></i>Equipment Simulator</a>
+                                <i class="fas fa-credit-card"></i>Simulador de Equipamentos</a>
                         </li>
                         <li {{ active_subscription }}>
                             <a class="js-arrow" href="#">
-                            <i class="fas fa-eur"></i>Recommendations</a>
+                            <i class="fas fa-eur"></i>Recomendações</a>
                             <ul class="list-unstyled navbar__sub-list js-sub-list">
                                 <li>
-                                <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}">Tariff</a>
+                                <a href="{% url 'tariff_subscription' %}?meter={{ meter_id }}">Tarifa</a>
                                 </li>
                                 <li>
-                                <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}">Contracted Power</a>
+                                <a href="{% url 'contract_subscription' %}?meter={{ meter_id }}">Potência Contratada</a>
                                 </li>
                             </ul>
                         </li>
                         <li {{ active_tab_last_bills }}>
                             <a href="{% url 'last_bills' %}?meter={{ meter_id }}">
-                                <i class="fas fa-table"></i>Latest Bills</a>
+                                <i class="fas fa-table"></i>Faturas</a>
                         </li>
                         <li {{ active_tab_device_contacts }}>
                                 <a href="{% url 'contact' %}?meter={{ meter_id }}">
-                                    <i class="fas fa-envelope"></i>Contact us!</a>
+                                    <i class="fas fa-envelope"></i>Contactos</a>
                         </li>
                     </ul>
                 </nav>
@@ -168,7 +168,7 @@
                 <div class="section__content section__content--p30">
                     <div class="container-fluid">
                         <div class="header-wrap" style="float: left;">
-                            <h5 style="margin-top: 10px">Today: {{ today }}</h5>
+                            <h5 style="margin-top: 10px">Hoje: {{ today }}</h5>
                         </div>
                         <div class="header-wrap" style="float: right;">
                             <div class="header-button">

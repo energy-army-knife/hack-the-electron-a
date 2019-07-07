@@ -39,10 +39,10 @@
             <div class="row" style="margin-bottom: 20px">
                 <div class="col-md-12">
                     <div class="overview-wrap m-b-30">
-                        <h3 class="title-1">Contracted Power Recommended</h3>
+                        <h3 class="title-1">Recommendações da Potência Contratada</h3>
                     </div>
                     <div class="overview-wrap m-b-30">
-                        <h3 class="title-current-contracted">Current Contracted Power: <span class="color-wwc">{{ current_contract }} kW</span></h3>
+                        <h3 class="title-current-contracted">Potência Contratada Atual: <span class="color-wwc">{{ current_contract }} kW</span></h3>
                     </div>
                 </div>
             </div>
@@ -50,28 +50,27 @@
             </div>
             {% if no_adjustment_price == 0 and small_adjustment_price == 0 and medium_adjustment_price == 0 %}
             <div class="alert alert-success" role="alert">
-                  Congratulations! Your contracted power fits your routine habits perfectly, You do not need to change it.
+                  Parabéns! A sua potência contratada ajusta-se perfeitamente aos seus hábitos de consumo energético.
             </div>
             {% elif no_adjustment_price < 0 and small_adjustment_price <= 0 and medium_adjustment_price <= 0%}
                 <div class="alert alert-danger" role="alert">
-                  Warning! You exceeded your contracted power at least once in the past. If you were in the next
-                    contract level you would pay {{ no_adjustment_price }} more.
+                  Alerta! O seu consumo energético ultrapassou pelo menos uma vez a sua potência contratada.
+                    Caso não consiga adaptar os seus hábitos de consumo e deseja aumentar a potência contractada a sua fatura irá aumentar {{ no_adjustment_price }} €.
                 </div>
             {% else %}
                 <div class="alert alert-warning" role="alert">
-                  You have a contracted power above your power consumption, you could save some money by changing your contracted power.
-                    Take a look below to see the options available!
+                  A sua potência contratada atual é superior ao seu consumo energético, poderá poupar algum dinheiro alterando a potência contratada.
+                   Veja abaixo as opções disponíveis!
                 </div>
             {% endif %}
 
             <div class="card-deck">
             {% if no_adjustment_price > 0%}
                 <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: rgba(25,133,0,0.50)">
-                  <div class="card-header title-card">Smart - {{ no_adjustment_price_contract }}kW</div>
+                  <div class="card-header title-card">Inteligente - {{ no_adjustment_price_contract }}kW</div>
                   <div class="card-body">
-                    <h1 class="title-price"><span class="save-label">save: </span>{{ no_adjustment_price }} <span class="price-label">€/year</span> </h1>
-                    <p class="card-text">You do not have to adjust your current habits! This contracted power is higher
-                        than your maximum registered power!</p>
+                    <h1 class="title-price"><span class="save-label">poupe: </span>{{ no_adjustment_price }} <span class="price-label">€/ano</span> </h1>
+                    <p class="card-text">Não precisará de alterar os seus hábitos de consumo energético! Esta potência contratada é superior ao máximo registado em sua casa nos últimos dois anos.</p>
                   </div>
                 </div>
             {% endif %}
@@ -80,19 +79,18 @@
                 <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: rgba(25,133,0,0.66)">
                   <div class="card-header title-card">Eco - {{ small_adjustment_price_contract }}kW</div>
                   <div class="card-body">
-                    <h1 class="title-price"><span class="save-label">save: </span>{{ small_adjustment_price }} <span class="price-label">€/year</span> </h1>
-                    <p class="card-text">This contracted power is bellow the maximum registered in two years. Besides you
-                    only surpass the limit {{percentil_small_adjustment}}% of the times! Do your think you can change your habits and save money?</p>
+                    <h1 class="title-price"><span class="save-label">poupe: </span>{{ small_adjustment_price }} <span class="price-label">€/ano</span> </h1>
+                    <p class="card-text">Esta potência contratada está abaixo do máximo registado nos últimos dois anos. No entanto, a potência registada apenas ultrapassou
+                     o limite {{percentil_small_adjustment}}% das vezes! Acha que conseguiria mudar os seus hábitos para poupar algum dinheiro?</p>
                   </div>
                 </div>
             {% endif %}
             {% if medium_adjustment_price > 0 and small_adjustment_price != medium_adjustment_price%}
                     <div class="card text-white mb-3" style="max-width: 22.3rem; background-color: #198500">
-                      <div class="card-header title-card">Super saving - {{ medium_adjustment_price_contract }}kW</div>
+                      <div class="card-header title-card">Super poupança - {{ medium_adjustment_price_contract }}kW</div>
                       <div class="card-body">
-                        <h1 class="title-price"><span class="save-label">save: </span>{{ medium_adjustment_price }} <span class="price-label">€/year</span> </h1>
-                        <p class="card-text">With a little bit more effort you can lower your bill! Currently you cross the
-                            limit {{percentil_some_adjustments }}% of the times, are you willing to change your routine to save money?</p>
+                        <h1 class="title-price"><span class="save-label">poupe: </span>{{ medium_adjustment_price }} <span class="price-label">€/ano</span> </h1>
+                        <p class="card-text">Com um pouco de esforço iria conseguir reduzir significamente a sua fatura energética. Atualmente apenas {{percentil_some_adjustments }}% das vezes o potência registada ultrapassou a contratada, está disposto a mudar a sua rotina para poupar dinheiro?</p>
                       </div>
                     </div>
 

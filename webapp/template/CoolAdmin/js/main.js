@@ -1,4 +1,5 @@
 $(document).ready(function() {
+
   (function ($) {
     // USE STRICT
     "use strict";
@@ -14,7 +15,7 @@ $(document).ready(function() {
           data: {
             datasets: [
               {
-                label: "Hours distribution",
+                label: "Distribuição horária",
                 data: [percentage_last_month_peak, percentage_last_month_off_peak, percentage_last_month_super_off_peak],
                 backgroundColor: [
                   '#00b5e9',
@@ -37,7 +38,7 @@ $(document).ready(function() {
                 ]
               },
                 {
-                label: "Cost distribution",
+                label: "Distribuição custos",
                 data: [percentage_last_month_peak_cost, percentage_last_month_off_peak_cost, percentage_last_month_super_off_peak_cost],
                 backgroundColor: [
                   '#00b5e9',
@@ -185,10 +186,11 @@ $(document).ready(function() {
               xAxes: [{
                 display: true,
                 type: "time",
-
                 time: {
-                  format: "MM-DD-YYYY",
-                  unit: "day",
+                    unit: "day",
+                    displayFormats: {
+                        day: 'DD-MM-YYYY'
+                    }
                 },
                 gridLines: {
                   display: false,
@@ -196,7 +198,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: false,
-                  labelString: 'Day of the Month'
+                  labelString: 'Dia do mês'
                 },
                 ticks: {
                   fontFamily: "Poppins"
@@ -210,7 +212,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Mean Power Spent [kW]',
+                  labelString: 'Média da potência consumida[kW]',
                   fontFamily: "Poppins"
 
                 },
@@ -269,9 +271,11 @@ $(document).ready(function() {
               xAxes: [{
                 display: true,
                 type: "time",
-
                 time: {
-                  unit: "day",
+                    unit: "day",
+                    displayFormats: {
+                        day: 'DD-MM-YYYY'
+                    }
                 },
                 gridLines: {
                   display: false,
@@ -279,7 +283,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Date'
+                  labelString: 'Data'
                 },
                 ticks: {
                   fontFamily: "Poppins"
@@ -295,7 +299,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Mean Power Spent [kW]',
+                  labelString: 'Média da potência consumida [kW]',
                   fontFamily: "Poppins"
 
                 },
@@ -312,7 +316,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Cost [€]',
+                  labelString: 'Custo [€]',
                   fontFamily: "Poppins"
 
                 },
@@ -347,7 +351,7 @@ $(document).ready(function() {
             type: 'line',
             defaultFontFamily: 'Poppins',
             datasets: [{
-              label: 'Without Panels and Batteries',
+              label: 'Sem painéis e baterias',
               data: total_load,
               backgroundColor: 'transparent',
               borderColor: 'rgba(220,53,69,0.75)',
@@ -357,7 +361,7 @@ $(document).ready(function() {
               pointBorderColor: 'transparent',
               pointBackgroundColor: 'rgba(220,53,69,0.75)',
             }, {
-              label: "With Panels and Batteries",
+              label: "Com painéis e baterias",
               data: load_from_grid,
               backgroundColor: 'transparent',
               borderColor: 'rgba(40,167,69,0.75)',
@@ -398,7 +402,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Hour of the Day'
+                  labelString: 'Hora do dia'
                 },
                 ticks: {
                   fontFamily: "Poppins"
@@ -412,7 +416,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Total Power Spent (normalized)',
+                  labelString: 'Total a potência consumida (normalizada)',
                   fontFamily: "Poppins"
 
                 },
@@ -444,15 +448,15 @@ $(document).ready(function() {
             labels: x_axis,
             defaultFontFamily: 'Poppins',
             datasets: [{
-              label: 'wasted PV generation',
+              label: 'energia gerada pelos PV desperdiçada',
               data: generated_PV_waisted,
               backgroundColor: 'rgba(220,53,69,0.75)',
             }, {
-              label: 'used PV generation',
+              label: 'energia gerada pelos PV utilizada',
               data: generated_PV_used,
               backgroundColor: 'rgba(50,253,69,0.75)',
             }, {
-              label: 'used from batteries',
+              label: 'energia usada das baterias',
               data: battery_used,
               backgroundColor: 'rgba(50,50,250,0.75)',
             }]
@@ -487,7 +491,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Hour of the Day'
+                  labelString: 'Hora do dia'
                 },
                 ticks: {
                   fontFamily: "Poppins"
@@ -502,7 +506,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Power [kW]',
+                  labelString: 'Potência [kW]',
                   fontFamily: "Poppins"
 
                 },
@@ -555,7 +559,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Investment [€]'
+                  labelString: 'Investmento [€]'
                 },
                 ticks: {
                   fontFamily: "Poppins"
@@ -569,7 +573,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Pay Back Period [Years]',
+                  labelString: 'Periodo de retorno [anos]',
                   fontFamily: "Poppins"
 
                 },
@@ -605,7 +609,7 @@ $(document).ready(function() {
             defaultFontFamily: 'Poppins',
             datasets: [{
               data: power_loader_meter_hours_max,
-              label: "Maximum Power Spent [kW]",
+              label: "Máximo da potência consumida [kW]",
               backgroundColor: 'rgba(0,103,255,.15)',
               borderColor: 'rgba(0,103,255,0.5)',
               borderWidth: 3.5,
@@ -647,7 +651,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Hour of the Day'
+                  labelString: 'Hora do dia'
                 },
                 ticks: {
                   fontFamily: "Poppins"
@@ -661,7 +665,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Maximum Power Spent [kW]',
+                  labelString: 'Máximo da potência consumida [kW]',
                   fontFamily: "Poppins"
                 },
                 ticks: {
@@ -691,7 +695,7 @@ $(document).ready(function() {
         ctx.height = 150;
         var myListOfDatasets = [{
               data: max_contract_power_by_month,
-              label: "Max Power Spent [kW]",
+              label: "Máx da potência consumida [kW]",
               backgroundColor: 'rgba(0,103,255,.15)',
               borderColor: 'rgba(0,103,255,0.5)',
               borderWidth: 3.5,
@@ -701,7 +705,7 @@ $(document).ready(function() {
               pointBackgroundColor: 'rgba(0,103,255,0.5)',
             },
           {   data: contracted_power_values,
-              label: "Current Contract " + label_current_contract,
+              label: "Potência contratada atual " + label_current_contract,
               backgroundColor: 'transparent',
               borderColor: 'rgba(255,26,0,0.5)',
               borderWidth: 3.5,
@@ -765,7 +769,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: false,
-                  labelString: 'Month'
+                  labelString: 'Mês'
                 },
                 ticks: {
                   fontFamily: "Poppins"
@@ -779,7 +783,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Power Spent [kW]',
+                  labelString: 'Potência consumida [kW]',
                   fontFamily: "Poppins"
                 },
                 ticks: {
@@ -810,7 +814,7 @@ $(document).ready(function() {
             labels: bar_plot_labels,
             datasets: [
               {
-                label: "Cost",
+                label: "Custo",
                 data: bar_plot_values,
                 borderColor: "rgba(0, 123, 255, 0.9)",
                 borderWidth: "0",
@@ -837,7 +841,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Cost [€]',
+                  labelString: 'Custo [€]',
                   fontFamily: "Poppins",
                 }
               }]
@@ -862,7 +866,7 @@ $(document).ready(function() {
             labels: appliances_label,
             datasets: [
               {
-                label: "Cost",
+                label: "Custo",
                 data: appliances_data,
                 borderColor: "rgba(0, 123, 255, 0.9)",
                 borderWidth: "0",
@@ -890,7 +894,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Percentage of total power consumption',
+                  labelString: 'Percentagem da potência total consumida',
                   fontFamily: "Poppins",
                 }
               }]
@@ -915,21 +919,21 @@ $(document).ready(function() {
             labels: months_tariff_label,
             datasets: [
               {
-                label: "Simple Tariff",
+                label: "Simples",
                 data: simple_tariff_cross_months,
                 borderColor: "rgba(0, 123, 255, 0.9)",
                 borderWidth: "0",
                 backgroundColor: "rgba(0, 123, 255, 0.5)"
               },
                 {
-                label: "Two-Period Tariff",
+                label: "Bi-horária",
                 data: two_tariff_cross_months,
                 borderColor: "rgba(0,161,2,0.9)",
                 borderWidth: "0",
                 backgroundColor: "rgba(0,161,2, 0.5)"
               },
                 {
-                label: "Three Period Tariff",
+                label: "Tri-Horária",
                 data: three_tariff_cross_months,
                 borderColor: "rgba(255,26,0,0.9)",
                 borderWidth: "0",
@@ -959,7 +963,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Cost [€]',
+                  labelString: 'Custo [€]',
                   fontFamily: "Poppins",
                 }
               }]

@@ -55,10 +55,10 @@
             <div class="row m-b-30">
                 <div class="col-md-12">
                     <div class="overview-wrap m-b-30">
-                        <h2 class="title-1">Equipment Simulator</h2>
+                        <h2 class="title-1">Simulador de Equipamentos</h2>
                     </div>
                     <div class="overview-wrap">
-                        <p class="m-b-10 color-wwc" style="font-weight: bold">Do you want to acquire a new equipment and calculate its impact on your bill? Fill the fields below and click <span style="color: #000000"> Simulate</span> find the results! </p>
+                        <p class="m-b-10 color-wwc" style="font-weight: bold"> Antes de adquirir um equipamento gostava de saber qual será o seu impacto na sua conta de eletricidade? Preencha os campos abaixo e clique em <span style="color: #000000"> Simular</span> para descobrir os resultados! </p>
                     </div>
                 </div>
             </div>
@@ -67,7 +67,7 @@
                     {% csrf_token  %}
                     <input type="hidden" name="meter-id" value="{{ meter_id }}">
                     <div class="form-group">
-                        <label for="appliance-id">Choose Equipment</label>
+                        <label for="appliance-id">Selecione o Equipmento</label>
                         <select id="appliance-id" name="appliance-name">
                             {% for appliance in all_devices %}
                                 <option value="{{ appliance }}" id="appliance">{{ appliance }}</option>
@@ -75,7 +75,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="id-time-of-day">Daily Usage</label>
+                        <label for="id-time-of-day">Utilização diária</label>
                         <select id="id-time-of-day" name="time-of-day">
                             <option>1</option>
                             <option>2</option>
@@ -87,7 +87,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="id-weekly-usage">Weekly Usage</label>
+                        <label for="id-weekly-usage">Utilização semanal</label>
                         <select id="id-weekly-usage" name="weekly-usage">
                             <option>1</option>
                             <option>2</option>
@@ -99,7 +99,7 @@
                         </select>
                     </div>
                     <div>
-                        <button type="submit" class="btn btn-dark" >Simulate</button>
+                        <button type="submit" class="btn btn-dark" >Simular</button>
                     </div>
                 </form>
             </div>
@@ -108,7 +108,7 @@
 
             <div class="au-card m-b-30" style="width: 100%">
                 <div class="text">
-                    <h3 class="m-b-30" style="text-align: center">{{ appliance_name }}: <span style="color: #0063bc">{{ dif_bill }} €/month</span></h3>
+                    <h3 class="m-b-30" style="text-align: center">{{ appliance_name }}: <span style="color: #0063bc">{{ dif_bill }} €/mês</span></h3>
 
                     <div>
                         {% if warning|length %}
@@ -128,10 +128,10 @@
                     </div>
                     <div class="row m-b-30">
                         <div class="col-6">
-                            <h4 style="text-align: center">Daily Usage: {{time_of_day}}</h4>
+                            <h4 style="text-align: center">Utilização diária: {{time_of_day}}</h4>
                         </div>
                         <div class="col-6">
-                            <h4 style="text-align: center">Weekly Usage: {{weekly_usage}}</h4>
+                            <h4 style="text-align: center">Utilização semanal: {{weekly_usage}}</h4>
                         </div>
                     </div>
                 <div>
@@ -148,5 +148,6 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 {% endblock %}

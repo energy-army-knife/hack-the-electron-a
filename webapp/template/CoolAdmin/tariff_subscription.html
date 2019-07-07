@@ -38,50 +38,50 @@
             <div class="row" style="margin-bottom: 20px">
                 <div class="col-md-12">
                     <div class="overview-wrap m-b-30">
-                        <h1 class="title-1">Tariff Recommended</h1>
+                        <h1 class="title-1">Recomendação da Tarifa</h1>
                     </div>
                     <div class="overview-wrap m-b-30">
-                        <h3 class="title-current-contracted">Current Tariff: <span class="color-wwc">{{ current_tariff }}</span></h3>
+                        <h3 class="title-current-contracted">Tarifa Atual: <span class="color-wwc">{{ current_tariff }}</span></h3>
                     </div>
                 </div>
             </div>
             {% if simple_tariff_savings <= 0  and two_tariff_savings <= 0 and three_tariff_savings <= 0 %}
             <div class="alert alert-success" role="alert">
-                  Congratulations! Your tariff fits your routine habits perfectly, You do not need to change it.
+                  Parabéns! A sua tarifa ajusta-se perfeitamente aos seus hábitos de consumo energético.
             </div>
             {% else %}
                 <div class="alert alert-warning" role="alert">
-                  Your current tariff is not suited to your power consumption, you could save some money by changing your tariff.
-                    Take a look below to see the options available!
+                  A sua tarifa atual não é a mais adequada para o seu consumo energético, poderia poupar algum dinheiro alterando a tarifa contratada.
+                    Veja abaixo quanto pode poupar com outras tarifas!
                 </div>
             {% endif %}
             <div class="center-div">
                 <div class="card-deck" >
                     {% if simple_tariff_savings > 0 %}
                     <div class="card text-white mb-3" style="max-width: 33.3rem; background-color: rgba(0, 123, 255, 0.5)">
-                      <div class="card-header title-card">Simple</div>
+                      <div class="card-header title-card">Simples</div>
                       <div class="card-body">
-                        <h1 class="title-price"><span class="save-label">save:</span> {{ simple_tariff_savings }} <span class="price-label">€/year</span></h1>
-                        <p class="card-text">The electricity rate is the same (normal rate) every day of the week and at any time of the year.</p>
+                        <h1 class="title-price"><span class="save-label">poupe:</span> {{ simple_tariff_savings }} <span class="price-label">€/ano</span></h1>
+                        <p class="card-text">O custo do consumo energético é o mesmo (taxa normal) a qualquer hora do dia e em qualquer altura do ano.</p>
                       </div>
                     </div>
                     {% endif %}
                     {% if two_tariff_savings > 0 %}
                     <div class="card text-white mb-3" style="max-width: 33.3rem; background-color: rgba(0,161,2, 0.5)">
-                      <div class="card-header title-card">Two-Periods</div>
+                      <div class="card-header title-card">Bi-Horária</div>
                       <div class="card-body">
-                        <h1 class="title-price"><span class="save-label">save:</span> {{ two_tariff_savings }} <span class="price-label">€/year</span></h1>
-                        <p class="card-text">The electricity rate depends on the consumption schedule and can be charged at two rates: peak or off-peak.</p>
+                        <h1 class="title-price"><span class="save-label">poupe:</span> {{ two_tariff_savings }} <span class="price-label">€/ano</span></h1>
+                        <p class="card-text">O custo da eletricidade depende da hora a que esta está a ser consumida, nesta opção existem dois periodos de faturação: vazio e fora de vazio. As horas de vazio têm um custo inferior às horas fora de vazio.</p>
                       </div>
                     </div>
                     {% endif %}
                     {% if three_tariff_savings > 0 %}
                     <div class="card text-white mb-3" style="max-width: 33.3rem; background-color: rgba(255,26,0,0.5)">
-                      <div class="card-header title-card">Three-Periods</div>
+                      <div class="card-header title-card">Tri-Horária</div>
                       <div class="card-body">
-                        <h1 class="title-price"><span class="save-label">save:</span> {{ three_tariff_savings }} <span class="price-label">€/year</span></h1>
-                        <p class="card-text">The electricity rate depends on the consumption schedule and can be charged at Peak, Off-peak or Super-off peak.
-                        Super-off peak hours are cheaper, Off-peak hours are charged at an intermediate price and Peak hours are more expensive.</p>
+                        <h1 class="title-price"><span class="save-label">poupe:</span> {{ three_tariff_savings }} <span class="price-label">€/ano</span></h1>
+                        <p class="card-text">O custo da eletricidade depende da hora de consumo, nesta opção existem três periodos de faturação: vazio, fora de vazio e ponta.
+                        O custo de eletricidade é mais alto nas horas de ponta e mais baixo na hora de vazio.</p>
                       </div>
                     </div>
                     {% endif %}
