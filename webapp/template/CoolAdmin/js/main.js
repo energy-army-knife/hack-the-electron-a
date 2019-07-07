@@ -212,7 +212,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Média da potência consumida[kW]',
+                  labelString: 'Média da potência consumida [kW]',
                   fontFamily: "Poppins"
 
                 },
@@ -416,7 +416,7 @@ $(document).ready(function() {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: 'Total a potência consumida (normalizada)',
+                  labelString: 'Total da potência consumida (normalizada)',
                   fontFamily: "Poppins"
 
                 },
