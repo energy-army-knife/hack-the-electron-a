@@ -1,6 +1,6 @@
 # Hack the electron-A!
 
-Hi, this project was developed in the scope of the competition [Hack The Electron-A](https://taikai.network/edpdistribuicao/challenges/hacktheelectron-a). 
+Hi, this project was developed in the scope of the competition [Hack The Electron-A](https://taikai.network/en/edp-distribuicao/challenges/hacktheelectron-a). 
 The main purpose of this competition was to improve energy efficiency!
 
 ## Demo 
@@ -114,3 +114,4 @@ best_contracted_power = recommend_contract(power_loader.get_power_meter_id(meter
 print("Best contracted Power {0}".format(best_contracted_power))
 ```
 ## Authors
+[Bruno Galhardo](https://www.linkedin.com/in/bruno-galhardo/), [Fátima Machado](https://www.linkedin.com/in/mfatimamachado/), [Joana Faria](https://www.linkedin.com/in/joanafaria3/), [João Domingos](https://www.linkedin.com/in/joao-domingos/), [Tiago Cerqueira](https://www.linkedin.com/in/tiago-cerqueira-a705878/)
