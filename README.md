@@ -3,13 +3,16 @@
 Hi, this project was developed in the scope of the competition [Hack The Electron-A](https://taikai.network/edpdistribuicao/challenges/hacktheelectron-a). 
 The main purpose of this competition was to improve energy efficiency!
 
-## Getting Started
+## Demo 
 
+[![capa](https://github.com/energy-army-knife/hack-the-electron-a/blob/master/resources/screenshot_button.png)](https://streamable.com/cg6svj)
 
-## Prerequisites
+## Install
+
+### Prerequisites
 The project is developed in Python, all the libraries required to execute it successfully are in the file requirements.txt.
 
-## Run
+### Run
 
 To run the project and see the project interface just open the terminal and go to the base directory of this project and type the following command:
 ```
